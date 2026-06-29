@@ -12,10 +12,8 @@ Rails.application.routes.draw do
   resources :pages, only: [ :index ]
   get "pages/rules", to: "pages#rules"
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  resources :stats, only: [ :index ]
+  get "stats", to: "stats#index"
 
-  # Defines the root path route ("/")
   root "games#index"
 end
