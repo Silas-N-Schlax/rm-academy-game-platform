@@ -2,18 +2,18 @@
   nav.sidebar.sidebar--drawer.sidebar--padded
     img.sidebar__brand src="/logo.png" alt="Go Fish Logo"/
     .sidebar__content.sidebar__content--start
-      a.btn.btn--no-border.btn--sidebar href="/" class=('btn--active' if active == 'games/index')
+      a.btn.btn--no-border.btn--sidebar href=root_path class=('btn--active' if active == 'games/index')
         i.li.li-fish.icon
         p Games
 
-      a.btn.btn--no-border.btn--sidebar href="/games/history" class=('btn--active' if active == 'games/history')
+      a.btn.btn--no-border.btn--sidebar href=games_history_path class=('btn--active' if active == 'games/history')
         i.li.li-history.icon
         p History
 
-      a.btn.btn--no-border.btn--sidebar href="/pages/rules" class=('btn--active' if active == 'pages/rules')
+      a.btn.btn--no-border.btn--sidebar href=pages_rules_path class=('btn--active' if active == 'pages/rules')
         i.li.li-list-check.icon
         p Rules
-      a.btn.btn--no-border.btn--sidebar href="/stats" class=('btn--active' if active == 'stats/index')
+      a.btn.btn--no-border.btn--sidebar href=stats_path class=('btn--active' if active == 'stats/index')
         i.li.li-chart-column-big.icon
         p Stats
 
