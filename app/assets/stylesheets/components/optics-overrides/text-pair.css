@@ -1,3 +1,7 @@
 .text-pair {
   font-size: var(--op-font-small);
+
+  &.text-pair--inline {
+    align-items: center;
+  }
 }

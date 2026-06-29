@@ -1,0 +1,23 @@
+.page {
+  inline-size: 100%;
+  margin-block: 0;
+  margin-inline: auto;
+  max-inline-size: var(--op-breakpoint-medium);
+  padding-block: 0;
+  padding-inline: var(--op-space-large);
+
+  .page__content {
+    padding-inline: var(--op-space-medium);
+  }
+
+  .page__subtitle {
+    font-size: var(--op-font-x-large);
+    font-weight: var(--op-font-weight-semi-bold);
+    margin-block-end: var(--op-space-large);
+  }
+
+  .page__paragraph {
+    font-size: var(--op-font-medium);
+    margin-block-end: var(--op-space-medium);
+  }
+}
