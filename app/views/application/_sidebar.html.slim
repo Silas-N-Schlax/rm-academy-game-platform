@@ -1,0 +1,23 @@
+.op-page__sidebar
+  nav.sidebar.sidebar--drawer.sidebar--padded
+    img.sidebar__brand src="/logo.png" alt="Go Fish Logo"/
+    .sidebar__content.sidebar__content--start
+      a.btn.btn--no-border.btn--sidebar href="/" class=('btn--active' if active == 'games/index')
+        i.li.li-fish.icon
+        p Games
+
+      a.btn.btn--no-border.btn--sidebar href="/games/history" class=('btn--active' if active == 'games/history')
+        i.li.li-history.icon
+        p History
+
+      a.btn.btn--no-border.btn--sidebar href="/pages/rules" class=('btn--active' if active == 'pages/rules')
+        i.li.li-list-check.icon
+        p Rules
+      a.btn.btn--no-border.btn--sidebar href="/stats" class=('btn--active' if active == 'stats/index')
+        i.li.li-chart-column-big.icon
+        p Stats
+
+    .sidebar__content.sidebar__content--end
+      .divider.divider--medium
+      .button.btn.btn--no-border Profile
+      .button.btn.btn--no-border Log Out
