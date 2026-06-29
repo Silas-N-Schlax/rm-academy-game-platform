@@ -1,0 +1,5 @@
+.icon {
+  &.icon--neutral {
+    color: var(--op-color-primary-on-plus-eight-alt);
+  }
+}

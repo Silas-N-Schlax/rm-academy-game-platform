@@ -1,0 +1,37 @@
+.simple-page {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .simple-page__body {
+    background-color: var(--op-color-primary-plus-six);
+    color: var(--op-color-primary-on-plus-six);
+    box-shadow: var(--op-shadow-x-large);
+    color: var(--op-color-primary-on-plus-six);
+    padding: var(--op-space-large);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+  }
+
+  .simple-page__form {
+    text-align: center;
+  }
+
+  .simple-page__logo {
+    display: flex;
+    justify-content: center;
+  }
+
+  .simple-page__logo-img {
+    --_gf-logo-height: calc(var(--op-size-unit) * 40);
+    height: var(--_gf-logo-height);
+    box-shadow: var(--op-shadow-medium);
+  }
+
+  .simple-page__button {
+    width: 100%
+  }
+}

@@ -1,0 +1,6 @@
+.content-header {
+  align-items: center;
+  .content-header__title {
+    font-size: var(--op--font-small);
+  }
+}

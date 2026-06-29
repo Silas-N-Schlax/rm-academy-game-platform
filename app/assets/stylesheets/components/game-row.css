@@ -1,0 +1,25 @@
+.game-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--op-space-x-small) var(--op-space-medium);
+  background-color: var(--op-color-neutral-plus-eight);
+  color: var(--op-color-neutral-on-plus-eight);
+  
+  .game-row__title {
+    font-size: var(--op-font-medium);
+  }
+
+  .game-row__action {
+    display: flex;
+    align-items: center;
+    gap: var(--op-space-x-large);
+    color: var(--op-color-neutral-on-plus-eight-alt)
+  }
+
+  .game-row__button {
+    font-size: var(--op-font-x-small);
+    padding: var(--op-space-2x-small) var(--op-space-x-small);
+    gap: var(--op-space-2x-small)
+  }
+}

@@ -1,0 +1,78 @@
+.gf-game {
+  --_gf-side-width: calc(var(--op-size-unit) * 83.5); /* 334px */
+  --_gf-bottom-height: calc(var(--op-size-unit) * 60); /* 240px */
+
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  background-color: var(--op-color-neutral-plus-max);
+  grid-template-columns: 1fr var(--_gf-side-width);
+  grid-template-rows: 1fr var(--_gf-bottom-height);
+  grid-template-areas:
+   "game-board game-feed"
+   "player-hand player-books";
+
+  .gf-game--border {
+    border: solid var(--op-border-width) var(--op-color-border);
+  }
+
+  .gf-game__board {
+    grid-area: game-board;
+    overflow: hidden;
+  }
+
+  .gf-game__cards {
+    padding-bottom: var(--op-space-2x-large);
+    padding: var(--op-space-medium)
+
+  }
+
+  .gf-game__feed {
+    grid-area: game-feed;
+    overflow: visible;
+  }
+
+  .gf-game__hand {
+    grid-area: player-hand;
+    overflow: hidden;
+  }
+
+  .gf-game__books {
+    grid-area: player-books;
+    overflow: hidden;
+  }
+}
+
+
+/* --op-breakpoint-small */
+@media (width <= 768px) {
+  .gf-game {
+    --_gf-board-min-width: calc(var(--op-size-unit) * 85); /* 340px */
+    --_gf-feed-min-width: calc(var(--op-size-unit) * 50); /* 200px */
+    --_gf-hand-min-width: calc(var(--op-size-unit) * 70); /* 280px */
+    --_gf-books-min-width: calc(var(--op-size-unit) * 50); /* 200px */
+
+    /* overflow: auto; */
+
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 2fr;
+
+    grid-template-areas:
+    "game-board"
+    "player-hand"
+    "player-books"
+    "game-feed";
+
+    /* .gf-game__board {
+      overflow: visible;
+    }
+
+    .gf-game__hand {
+      overflow: visible;
+    }
+
+    .gf-game__books {
+      overflow: visible;
+    } */
+  }
+}

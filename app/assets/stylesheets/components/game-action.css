@@ -1,0 +1,25 @@
+.game-action {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--op-color-primary-plus-seven);
+  color: var(--op-color-primary-on-plus-seven);
+  border: solid var(--op-border-width) var(--op-color-primary-plus-six);
+  border-radius: var(--op-radius-x-large);
+  padding: var(--op-space-small);
+  gap: var(--op-space-small);
+
+  .game-action__options {
+    display: flex;
+    gap: var(--op-space-small);
+  }
+
+  .game-action__option {
+    flex-grow: 1;
+    gap: var(--op-space-2x-small);
+    padding: 0;
+  }
+
+  .game-action__button {
+    width: 100%;
+  }
+}

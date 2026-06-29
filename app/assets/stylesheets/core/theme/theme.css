@@ -1,0 +1,19 @@
+:root {
+  --op-color-primary-h: 40;
+  --op-color-primary-s: 38%;
+  --op-color-primary-l: 40%;
+
+  --op-color-neutral-h: 40;
+  --op-color-neutral-s: 4%;
+  /* --op-color-neutral-l: 80%; */
+
+  --op-radius-medium: 0;
+  --op-radius-x-large: 0;
+  --op-radius-circle: 4px;
+}
+
+[data-tooltip-text] {
+  --_op-tooltip-background-color: var(--op-color-alerts-warning-plus-three);
+  --_op-tooltip-text-color: var(--op-color-alerts-warning-on-plus-three);
+  --_op-tooltip-tooltip-radius: var(--op-radius-small);
+}

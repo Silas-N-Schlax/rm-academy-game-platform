@@ -1,0 +1,5 @@
+.form-error-summary {
+  padding: var(--op-space-small);
+  margin-block-end: 0;
+
+}

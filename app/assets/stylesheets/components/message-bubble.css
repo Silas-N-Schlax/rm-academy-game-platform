@@ -1,0 +1,22 @@
+.message-bubble {
+  padding: var(--op-space-small);
+  border: solid var(--op-border-width) var(--op-color-primary-plus-seven);
+  border-radius: var(--op-radius-x-large);
+  background-color: var(--op-color-primary-plus-max);
+  color: var(--op-color-primary-on-plus-max);
+  font-weight: var(--op-font-weight-semi-bold);
+  min-height: calc(var(--op-size-unit) * 10); /* 40px */
+  flex-grow: 2;
+
+  &.message-bubble--go-fish {
+    background-color: var(--op-color-alerts-warning-plus-seven);
+    color: var(--op-color-alerts-warning-on-plus-seven-alt);
+    border-color: var(--op-color-alerts-warning-plus-five);
+  }
+
+  &.message-bubble--no-cards {
+    background-color: var(--op-color-alerts-danger-plus-five);
+    color: var(--op-color-alerts-danger-on-plus-five-alt);
+    border-color: var(--op-color-alerts-danger-plus-four);
+  }
+}

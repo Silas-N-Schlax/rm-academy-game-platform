@@ -1,0 +1,43 @@
+.game-feed {
+  height: 100%;
+  justify-content: space-between;
+  overflow-y: auto;
+
+  .game-feed__logs {
+    --_gf-max-log-height: calc(var(--op-size-unit) * 15); /* 400px */
+
+    max-height: var(--_gf-max-log-height);
+    overflow-y: visible;
+    scrollbar-gutter: stable;
+  }
+
+  .game-feed__turn {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: var(--op-space-medium);
+    gap: var(--op-space-x-small);
+  }
+
+  .game-feed__question {
+    background-color: var(--op-color-primary-plus-five);
+    color: var(--op-color-primary-on-plus-five-alt);
+    padding: var(--op-space-small);
+    border-radius: var(--op-radius-x-large);
+    min-height: calc(var(--op-size-unit) * 12); /* 48px */
+  }
+
+  .game-feed__results {
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--op-space-small);
+    gap: var(--op-space-x-small);
+  }
+
+  .game-feed__result {
+    display: flex;
+    align-items: center;
+    gap: var(--op-space-x-small);
+    font-size: var(--op-font-x-small);
+  }
+}

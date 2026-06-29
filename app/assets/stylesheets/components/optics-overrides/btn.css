@@ -1,0 +1,7 @@
+.btn {
+  &.btn--sidebar {
+    display: flex;
+    align-items: center;
+    gap: var(--op-space-small);
+  }
+}

@@ -1,0 +1,11 @@
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--op-space-x-large);
+
+  .game-list__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--op-space-medium)
+  }
+}

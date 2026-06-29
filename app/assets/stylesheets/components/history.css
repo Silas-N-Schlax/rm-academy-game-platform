@@ -1,0 +1,18 @@
+.history {
+  flex-grow: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .history__players {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .history__replay {
+    &:hover {
+      background-color: var(--op-color-primary-plus-five);
+      color: var(--op-color-primary-on-plus-five);
+    }
+  }
+}

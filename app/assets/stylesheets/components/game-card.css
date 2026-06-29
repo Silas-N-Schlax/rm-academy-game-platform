@@ -1,0 +1,17 @@
+.game-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .game-card__title {
+    flex-grow: 1;
+  }
+
+  .game-card__size {
+    min-width: 250px;
+  }
+
+  .game-card__btn {
+    min-width: 75px;
+  }
+}
