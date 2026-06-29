@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
 
   resources :games, only: [ :index ]
+  get "games/history", to: "games#history"
 
   resources :pages, only: [ :index ]
   get "pages/rules", to: "pages#rules"

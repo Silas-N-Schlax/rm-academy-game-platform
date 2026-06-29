@@ -5,4 +5,9 @@ RSpec.describe 'Games', type: :system do
     expect(page).to have_content 'Your Games'
     expect(page).to have_content 'All Games'
   end
+
+  it 'shows history of games' do
+    visit '/games/history'
+    expect(page).to have_content 'History'
+  end
 end
