@@ -1,14 +1,11 @@
-@import url('https://cdn.jsdelivr.net/npm/@rolemodel/optics@2.3.1/dist/css/optics+lucide_icons.min.css');
-
-
 body {
   overflow: hidden;
   background-color: var(--op-color-neutral-plus-max);
 }
 
 p, a {
-  padding: none;
-  margin: none;
+  padding: 0;
+  margin: 0;
   text-decoration: none;
   color: inherit
 }
