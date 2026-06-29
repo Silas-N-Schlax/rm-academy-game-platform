@@ -64,3 +64,9 @@ end
 gem "slim", "~> 5.2"
 
 gem "slim-rails", "~> 4.0"
+
+gem "rspec-rails", "~> 8.0"
+
+gem "capybara", "~> 3.40"
+
+gem "selenium-webdriver", "~> 4.45"
