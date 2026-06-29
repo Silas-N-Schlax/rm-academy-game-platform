@@ -5,7 +5,7 @@
   max-inline-size: var(--op-breakpoint-medium);
   padding-block: 0;
   padding-inline: var(--op-space-large);
-
+  border-inline: solid var(--op-border-width) var(--op-color-border);
   .page__content {
     padding-inline: var(--op-space-medium);
   }
