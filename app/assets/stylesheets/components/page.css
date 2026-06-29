@@ -6,8 +6,19 @@
   padding-block: 0;
   padding-inline: var(--op-space-large);
   border-inline: solid var(--op-border-width) var(--op-color-border);
+
   .page__content {
     padding-inline: var(--op-space-medium);
+    display: flex;
+    flex-direction: column;
+    gap: var(--op-space-large)
+  }
+
+  .page__section {
+    background-color: var(--op-color-neutral-plus-max);
+    color: var(--op-color-neutral-on-plus-max);
+    box-shadow: var(--op-shadow-medium);
+    padding: var(--op-space-large)
   }
 
   .page__subtitle {
@@ -18,6 +29,5 @@
 
   .page__paragraph {
     font-size: var(--op-font-medium);
-    margin-block-end: var(--op-space-medium);
   }
 }
