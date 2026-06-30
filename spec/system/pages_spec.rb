@@ -1,6 +1,8 @@
 require 'rails_helper'
 RSpec.describe 'Pages', type: :system do
+  let!(:user) { create(:user) }
   it 'shows the rules' do
+    log_in_user(user)
     visit pages_rules_path
     expect(page).to have_content 'Rules'
     expect(page).to have_content 'Go Fish'
