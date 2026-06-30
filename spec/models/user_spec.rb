@@ -22,12 +22,12 @@ RSpec.describe User, type: :model do
       expect(user).to be_invalid
     end
 
-    it 'returns false if the password is too long' do
+    it 'returns false if the password is too short' do
       user = build(:user, password: '123')
       expect(user).to be_invalid
     end
 
-    it 'returns false if the password is too short' do
+    it 'returns false if the password is too long' do
       user = build(:user, password: '1234567891013829318972398724984')
       expect(user).to be_invalid
     end
