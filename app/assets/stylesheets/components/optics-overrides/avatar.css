@@ -1,0 +1,13 @@
+.avatar {
+  --_gp-avatar-size-x-large: calc(34 * var(--op-size-unit));
+  --_gp-avatar-5x-large: calc(50 * var(--op-size-unit));
+
+
+  &.avatar--x-large {
+    --__op-avatar-size: var(--_gp-avatar-size-x-large);
+  }
+
+  &.avatar--5x-large {
+    --__op-avatar-size: var(--_gp-avatar-5x-large);
+  }
+}
