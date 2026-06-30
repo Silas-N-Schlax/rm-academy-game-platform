@@ -17,5 +17,7 @@ Rails.application.routes.draw do
   resources :stats, only: [ :index ]
   get "stats", to: "stats#index"
 
+  resources :users, only: [ :new, :create ]
+
   root "games#index"
 end
