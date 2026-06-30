@@ -14,4 +14,10 @@ RSpec.describe 'Games', type: :system do
     log_in_user build :user
     expect(current_path).to eq new_session_path
   end
+
+  it 'logs user our when sends to login page if logout' do
+    log_in_user(user)
+    click_on 'Log Out'
+    expect(current_path).to eq new_session_path
+  end
 end

@@ -19,5 +19,5 @@
 
     .sidebar__content.sidebar__content--end
       .divider.divider--medium
-      .button.btn.btn--no-border Profile
-      .button.btn.btn--no-border Log Out
+      / = button_to 'Profile', users_profile_path, method: :get, class: 'btn btn--no-border'
+      = button_to 'Log Out', session_path, method: :delete, class: 'btn btn--no-border'
