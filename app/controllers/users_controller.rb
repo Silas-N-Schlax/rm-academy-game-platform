@@ -13,4 +13,7 @@ class UsersController < ApplicationController
       redirect_to new_user_path, alert: "There was a problem signing up..."
     end
   end
+
+  def show
+  end
 end
