@@ -9,7 +9,7 @@
 
   --op-radius-medium: 0;
   --op-radius-x-large: 0;
-  --op-radius-circle: 4px;
+  /* --op-radius-circle: 4px; */
 }
 
 [data-tooltip-text] {
