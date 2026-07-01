@@ -6,17 +6,15 @@
 
       .simple-page__form
         = form_with url: users_path do |f|
-          = f.text_field :name, required: true, autofocus: true, autocomplete: "name", placeholder: "Enter your name", maxlength: 25, value: params[:name]
-          = f.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address]
-          = f.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72
-          = f.password_field :confirm_password, required: true, autocomplete: "confirm-password", placeholder: "Enter your password again", maxlength: 72
-          = f.submit 'Sign Up'
+          .form-group#signup-form
+            = f.text_field :name, required: true, autofocus: true, autocomplete: "name", placeholder: "Enter your name", maxlength: 25, value: params[:name], class: "form-control form-control--small"
+            = f.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "form-control form-control--small"
+            = f.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "form-control form-control--small"
+            = f.password_field :confirm_password, required: true, autocomplete: "confirm-password", placeholder: "Enter your password again", maxlength: 72, class: "form-control form-control--small"
+            = f.submit 'Sign Up', class: "btn btn--primary simple-page__button"
 
-        / form action=users_path method='POST'
-        /   .form-group
-        /     / input.form-control.form-control--small name='name' type='text' placeholder='Name' minlength=4
-        /     input.form-control.form-control--small name='email' type='email' placeholder='example@gmail.com' minlength=4
-        /     input.form-control.form-control--small name='password' type='password' placeholder='password' minlength=4
-        /     / input.form-control.form-control--small name='confirm password' type='password' placeholder='confirm password' minlength=4
+            .text-pair.text-pair--inline.justify-center
+              = link_to 'Have an account?', new_session_path, class: "text-pair__subtitle"
 
-        /   button.btn.btn--primary.simple-page__button type='submit' Sign-up
+          = tag.div(flash[:alert], style: "color:red") if flash[:alert]
+          = tag.div(flash[:notice], style: "color:green") if flash[:notice]

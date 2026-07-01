@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
 
   def new
+    render layout: "application_no_sidebar"
   end
 
   def create
