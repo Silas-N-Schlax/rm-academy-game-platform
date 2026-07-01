@@ -14,6 +14,8 @@ RSpec.describe 'Games', type: :system do
     visit root_path
     expect(current_path).to eq new_session_path
     log_in_user(user)
+    # sign_in_as user
+    visit root_path
     expect(page).to have_content 'Your Games'
     expect(page).to have_content 'All Games'
   end
@@ -26,6 +28,7 @@ RSpec.describe 'Games', type: :system do
 
   it 'sends user to sign up page if they click link' do
     log_in_user build :user
+    scroll_link_into_view('Don\'t have an account?')
     click_on 'Don\'t have an account?'
     expected_selector = '#signup-form'
     expect(page).to have_selector expected_selector

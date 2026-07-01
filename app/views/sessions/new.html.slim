@@ -4,18 +4,30 @@
       .simple-page__logo
         img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
 
-      .simple-page__form
-        = form_with url: session_path do |form|
-          .form-group#login-form
-            = form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "form-control form-control--small"
-            = form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "form-control form-control--small"
-            = form.submit "Sign In", class: "btn btn--primary simple-page__button"
 
-          .text-pair.text-pair--inline.justify-center
-            = link_to "Forgot password?", new_password_path, class: "text-pair__subtitle"
-            = link_to 'Don\'t have an account?', new_user_path, class: "text-pair__subtitle"
 
-          = tag.div(flash[:alert], style: "color:red") if flash[:alert]
-          = tag.div(flash[:notice], style: "color:green") if flash[:notice]
+
+      .simple-page__form#login-form
+        = simple_form_for :session, url: session_path do |f|
+          = f.input :email_address
+          = f.input :password
+          = f.button :submit, "Sign In"
+        .text-pair.text-pair--inline.justify-center
+          = link_to "Forgot password?", new_password_path, class: "text-pair__subtitle"
+          = link_to 'Don\'t have an account?', new_user_path, class: "text-pair__subtitle"
+
+      / .simple-page__form
+      /   = form_with url: session_path do |form|
+      /     .form-group#login-form
+      /       = form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "form-control form-control--small"
+      /       = form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "form-control form-control--small"
+      /       = form.submit "Sign In", class: "btn btn--primary simple-page__button"
+
+      /     .text-pair.text-pair--inline.justify-center
+      /       = link_to "Forgot password?", new_password_path, class: "text-pair__subtitle"
+      /       = link_to 'Don\'t have an account?', new_user_path, class: "text-pair__subtitle"
+
+      /     = tag.div(flash[:alert], style: "color:red") if flash[:alert]
+      /     = tag.div(flash[:notice], style: "color:green") if flash[:notice]
 
 

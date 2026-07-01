@@ -4,17 +4,12 @@
       .simple-page__logo
         img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
 
-      .simple-page__form
-        = form_with url: users_path do |f|
-          .form-group#signup-form
-            = f.text_field :name, required: true, autofocus: true, autocomplete: "name", placeholder: "Enter your name", maxlength: 25, value: params[:name], class: "form-control form-control--small"
-            = f.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "form-control form-control--small"
-            = f.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72, class: "form-control form-control--small"
-            = f.password_field :confirm_password, required: true, autocomplete: "confirm-password", placeholder: "Enter your password again", maxlength: 72, class: "form-control form-control--small"
-            = f.submit 'Sign Up', class: "btn btn--primary simple-page__button"
-
-            .text-pair.text-pair--inline.justify-center
-              = link_to 'Have an account?', new_session_path, class: "text-pair__subtitle"
-
-          = tag.div(flash[:alert], style: "color:red") if flash[:alert]
-          = tag.div(flash[:notice], style: "color:green") if flash[:notice]
+      .simple-page__form#signup-form
+        = simple_form_for @user do |f|
+          = f.input :name
+          = f.input :email_address
+          = f.input :password
+          = f.input :confirm_password
+          = f.button :submit, "Sign Up"
+        .text-pair.text-pair--inline.justify-center
+          = link_to 'Have an account?', new_session_path, class: "text-pair__subtitle"
