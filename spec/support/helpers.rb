@@ -10,4 +10,5 @@ RSpec.configure do |c|
   c.include SelectHelper, type: :system
   c.include TestElementHelper, type: :system
   c.include SigninHelper, type: :system
+  c.include ScreenControlHelper, type: :system
 end
