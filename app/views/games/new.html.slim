@@ -1,0 +1,15 @@
+.container.container--xs
+  .simple-page
+    .simple-page__body
+      .simple-page__logo
+        img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
+
+      .simple-page__form#new-game-form
+        = simple_form_for @game do |f|
+          = f.input :name
+          = f.input :game_type,
+              as: :select,
+              collection: ['Go Fish', 'War'],
+              include_blank: 'Select a Game Type'
+          = f.input :game_size, as: :integer
+          = f.button :submit, "Create Game"
