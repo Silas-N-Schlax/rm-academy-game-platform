@@ -70,3 +70,5 @@ gem "rspec-rails", "~> 8.0"
 gem "capybara", "~> 3.40"
 
 gem "selenium-webdriver", "~> 4.45"
+
+gem "simple_form", "~> 5.4"
