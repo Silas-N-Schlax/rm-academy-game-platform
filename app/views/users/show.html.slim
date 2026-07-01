@@ -1,0 +1,36 @@
+.page
+  header.content-header
+    .content-header__details
+      .content-header__title
+        | Welcome #{Current.user.name}!
+    .divider.divider--medium
+
+
+  .page__content
+    .op-stack
+    .card.card--padded.card--shadow-large
+      .op-split
+        .op-stack.text-center
+          img.avatar.avatar--5x-large#profile-avatar src="/default_avatar.png" alt="Avatar"/
+          p @#{Current.user.name}
+
+        .op-stack
+          .text-pair.text-pair--inline
+            .text-pair__title
+             | Email:
+            .text-pair__subtitle
+              | #{Current.user.email_address}
+
+          .text-pair.text-pair--inline
+            .text-pair__title
+              | Password:
+            .op-split
+              .text-pair__subtitle
+                | ••••••••••
+              = link_to 'edit', users_show_path, method: :get, class: "text-pair__subtitle"
+
+          .text-pair.text-pair--inline
+            .text-pair.text-pair__title
+              | Account Created:
+            .text-pair.text-pair__subtitle
+             | #{Current.user.created_at.strftime("%B %d, %Y")}
