@@ -13,8 +13,7 @@ RSpec.describe 'Games', type: :system do
   it 'sends user to root path when given valid input with no sidebar' do
     visit root_path
     expect(current_path).to eq new_session_path
-    log_in_user(user)
-    # sign_in_as user
+    sign_in_as user
     visit root_path
     expect(page).to have_content 'Your Games'
     expect(page).to have_content 'All Games'
@@ -35,7 +34,8 @@ RSpec.describe 'Games', type: :system do
   end
 
   it 'logs user our when sends to login page if logout' do
-    log_in_user(user)
+    sign_in_as user
+    visit root_path
     click_on 'Log Out'
     expected_selector = '#login-form'
     expect(page).to have_selector expected_selector

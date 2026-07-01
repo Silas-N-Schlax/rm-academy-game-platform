@@ -27,7 +27,8 @@ RSpec.describe 'Users', type: :system do
 
   it 'shows profile page' do
     user = create(:user)
-    log_in_user(user)
+    sign_in_as user
+    visit root_path
 
     click_on 'Profile'
     expect(page).to have_content user.name
