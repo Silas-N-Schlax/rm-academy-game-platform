@@ -28,6 +28,7 @@ end
 # require only the support files necessary.
 
 Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
@@ -73,5 +74,4 @@ RSpec.configure do |config|
       abort "\nYour assets didn't compile. Exiting WITHOUT running any tests. Review the output above to resolve any errors." unless prep_passed
     end
   end
-  config.filter_run_when_matching :focus
 end

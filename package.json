@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "@rolemodel/optics": "^2.4.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
   }
 }

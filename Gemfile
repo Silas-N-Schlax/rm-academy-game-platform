@@ -57,18 +57,18 @@ group :development do
   gem 'rolemodel-rails', github: 'RoleModel/rolemodel_rails'
 end
 
-group :development, :test do
-  gem "factory_bot_rails"
-end
-
 gem "slim", "~> 5.2"
-
 gem "slim-rails", "~> 4.0"
-
-gem "rspec-rails", "~> 8.0"
-
-gem "capybara", "~> 3.40"
-
-gem "selenium-webdriver", "~> 4.45"
-
 gem "simple_form", "~> 5.4"
+
+
+group :test do
+  gem "capybara", "~> 3.40"
+  gem "selenium-webdriver", "~> 4.45"
+  gem "capybara-playwright-driver"
+  gem "factory_bot_rails"
+  gem "parallel_tests"
+  gem "turbo_tests", require: false
+  gem "rspec_junit_formatter", require: false
+  gem "rspec-rails"
+end
