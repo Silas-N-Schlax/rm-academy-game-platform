@@ -16,7 +16,7 @@ RSpec.describe 'Games', type: :system do
     sign_in_as user
     visit root_path
     expect(page).to have_content 'Your Games'
-    expect(page).to have_content 'All Games'
+    expect(page).to have_content 'Open Games'
   end
 
   it 'sends back to login if given invalid input and no sidebar' do
