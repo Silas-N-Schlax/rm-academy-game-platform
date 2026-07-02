@@ -73,4 +73,5 @@ RSpec.configure do |config|
       abort "\nYour assets didn't compile. Exiting WITHOUT running any tests. Review the output above to resolve any errors." unless prep_passed
     end
   end
+  config.filter_run_when_matching :focus
 end
