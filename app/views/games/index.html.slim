@@ -1,7 +1,7 @@
 .op-page__main
   main.op-page__main-content
     .game-list
-      section
+      section#user-games
         header.content-header
           .content-header__details
             h2.content-header__title Your Games
@@ -11,26 +11,29 @@
               p New Game
 
         .game-list__cards
-          .card.game-row
-            .game-row__title Game 1
-            .game-row__action
-              .game-row__player-count This Game is Full
-              button.btn.game-row__btn
-                p Play Now
-                i.icon.li.li-play
+          - @games.each do |game|
+            - if game.joined?(@user.id)
+              .card.game-row
+                .game-row__title #{game.name}
+                .game-row__action
+                  .game-row__player-count #{game.status(message:true)}
+                  = link_to 'Play', game_path(game), class: 'btn game-row__btn'
 
-      section
+
+
+      section#open-games
         header.content-header
           .content-header__details
-            h2.content-header__title All Games
+            h2.content-header__title Open Games
 
         .game-list__cards
-          .card.game-row
-            .game-row__title Game 1
-            .game-row__action
-              .game-row__player-count This Game is Full
-              button.btn.game-row__btn
-                p Join
+          - @games.each do |game|
+            - unless game.joined?(@user.id) || game.status == 'started'
+              .card.game-row
+                .game-row__title #{game.name}
+                .game-row__action
+                  .game-row__player-count #{game.status(message:true)}
+                  = button_to 'Join', join_path(game), class: 'btn game-row__btn'
 
 
 
