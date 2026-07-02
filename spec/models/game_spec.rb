@@ -59,4 +59,86 @@ RSpec.describe Game, type: :model do
       expect(result[:max]).to eq expected_max
     end
   end
+
+
+  describe '#joined?' do
+    let(:game) { create :game }
+    let(:user) { create :user }
+    it 'returns true if player has already joined' do
+      game.players.create!(user_id: user.id, game_id: game.id)
+      expect(game.joined?(user.id)).to be true
+    end
+    it 'returns false if player has not joined' do
+      expect(game.joined?(user.id)).to be false
+    end
+  end
+
+  describe '#open_spots?' do
+    let(:game) { create :game }
+    let(:user) { create :user }
+    it 'returns true if game is not full' do
+      game.players.create!(user_id: user.id, game_id: game.id)
+      expect(game.open_spots?).to be true
+    end
+    it 'returns false if game is full' do
+      6.times do
+        game.players.create!(user_id: user.id, game_id: game.id)
+      end
+      expect(game.open_spots?).to be false
+    end
+  end
+
+  describe '#status' do
+    let!(:game) { create :game }
+    let(:user) { create :user }
+    before { game.players.create!(user_id: user.id, game_id: game.id) }
+    it 'returns "waiting" if game is waiting on more players' do
+      expected_message = 'waiting'
+      expect(game.status).to eq expected_message
+    end
+
+    it 'returns "started" if game has started' do
+      game.started_at = Time.new
+      expected_message = 'started'
+      expect(game.status).to eq expected_message
+    end
+
+    it 'returns "finished" if game has finished' do
+      game.finished_at = Time.new
+      expected_message = 'finished'
+      expect(game.status).to eq expected_message
+    end
+
+    it 'returns not full message if param passed in' do
+      expected_message = '1/2 players'
+      expect(game.status(message: true)).to eq expected_message
+    end
+
+    it 'returns full message if param passed in' do
+      5.times do
+        game.players.create!(user_id: user.id, game_id: game.id)
+      end
+      expected_message = 'started'
+      expect(game.status(message: true)).to eq expected_message
+    end
+  end
+
+  describe '#can_join?' do
+    let!(:game) { create :game }
+    let(:user) { create :user }
+    # before { game.players.create!(user_id: user.id, game_id: game.id) }
+    it 'returns true if user has not joined and the game is not started' do
+      expect(game.can_join?(user.id)).to be true
+    end
+
+    it 'returns false if user cannot join if they have joined' do
+      game.players.create!(user_id: user.id, game_id: game.id)
+      expect(game.can_join?(user.id)).to be false
+    end
+
+    it 'returns false if the game is started' do
+      game.started_at = Time.now
+      expect(game.can_join?(user.id)).to be false
+    end
+  end
 end
