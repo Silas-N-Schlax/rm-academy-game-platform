@@ -10,7 +10,8 @@ Rails.application.routes.draw do
 
   resources :games, only: [ :index, :new, :create ]
   get "games/history", to: "games#history"
-  get "games/:id/show", to: "games#show"
+  get "games/:id", to: "games#show", as: "game"
+  post "games/join/:id", to: "games#join", as: "join"
 
   resources :pages, only: [ :index ]
   get "pages/rules", to: "pages#rules"
