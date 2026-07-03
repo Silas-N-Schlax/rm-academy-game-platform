@@ -19,7 +19,6 @@ RSpec.describe 'Users', type: :system do
 
   it 'sends user to login page when they click on link' do
     visit new_user_path
-    scroll_link_into_view('Have an account?')
     click_on 'Have an account?'
     expected_selector = '#login-form'
     expect(page).to have_selector expected_selector
@@ -40,7 +39,6 @@ RSpec.describe 'Users', type: :system do
     fill_in "Email address", with: 'example@example.com'
     fill_in "Password", with: 'password'
     fill_in 'Confirm password', with: 'password'
-
-    scroll_button_into_view('Sign Up').click
+    click_on 'Sign Up'
   end
 end
