@@ -16,13 +16,16 @@
             tbody
               tr
                 th Games Played:
-                th 50
+                th #{@stat.total_games(@user)}
               tr
                 th Games Won:
-                th 25
+                th #{@stat.total_wins(@user)}
+              tr
+                th Games Lost:
+                th #{@stat.total_losses(@user)}
               tr
                 th W/L Ratio:
-                th 66.67%
+                th #{@stat.total_average(@user)}%
 
     .op-grid.op-grid--2-column
       .card.card--padded.card--shadow-large
@@ -36,29 +39,16 @@
               tbody
                 tr
                   th Games Played:
-                  th 50
+                  th #{@stat.total_games_by_game(@user)}
                 tr
                   th Games Won:
-                  th 25
-                tr
-                  th W/L Ratio:
-                  th 66.67%
-
-      .card.card--padded.card--shadow-large
-        .op-split
-          .op-stack.text-align
-            img.avatar.avatar-x-large src="/logo.png" alt="Avatar"/
-            p Go Fish
-
-          .op-stack
-            table.table.table--auto-layout
-              tbody
-                tr
-                  th Games Played:
-                  th 50
+                  th #{@stat.total_wins_by_game(@user)}
                 tr
                   th Games Won:
-                  th 25
+                  th #{@stat.total_losses_by_game(@user)}
                 tr
                   th W/L Ratio:
-                  th 66.67%
+                  th #{@stat.total_average_by_game(@user)}%
+
+      .op-split
+        / Make dynamic for multiple types of games later
