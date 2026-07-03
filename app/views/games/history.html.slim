@@ -13,41 +13,19 @@
           th Winner
           th # Players
           th Game Played
-          th Game Length
+          th Time Elapsed
 
       tbody
-        tr
-          th Go Fish
-          th Silas
-          th 6
-          th June 29, 2026
-          th 12:56
+        - @games.select { |game| game.players.find { |player| player.user.id == @user.id } }.each do |game|
+          - unless game.started_at.nil?
+            tr data-testid='history-column'
+              th #{game.name}
+              - if game.winner
+                th #{game.winner.user.name}
+              - else
+                th ⚠️
 
-        tr
-          th Go Fish
-          th Joby
-          th 6
-          th June 29, 2026
-          th 12:56
-
-        tr
-          th Go Fish
-          th William
-          th 6
-          th June 29, 2026
-          th 12:56
-
-        tr
-          th Go Fish
-          th Natalie
-          th 6
-          th June 29, 2026
-          th 12:56
-
-        tr
-          th Go Fish
-          th Gabe
-          th 6
-          th June 29, 2026
-          th 12:56
+              th #{game.game_size}
+              th #{game.started_at.strftime("%B %d, %Y")}
+              th #{game.formatted_time}
 

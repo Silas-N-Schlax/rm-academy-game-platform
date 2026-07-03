@@ -11,7 +11,7 @@
               p New Game
 
         .game-list__cards
-          - @games.each do |game|
+          - @games.select { |game| game.players.each { |player| player.game == @user } }.each do |game|
             - if game.joined?(@user.id)
               .card.game-row
                 .game-row__title #{game.name}

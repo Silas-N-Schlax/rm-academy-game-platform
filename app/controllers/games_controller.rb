@@ -4,15 +4,15 @@ class GamesController < ApplicationController
   end
 
   def index
-    @games = Game.all.to_a
-    @user = find_user
+    @games = Game.all
+    @user = current_user
   end
 
   def create
     @game = Game.new(user_params)
-    @user = find_user
+    @user = current_user
     if @game.save
-      @game.players.create!(user_id: @user.id, game_id: @game.id)
+      @game.players.create(user_id: @user.id)
       redirect_to game_path(@game.id)
     else
       render :new, status: :unprocessable_content
@@ -21,7 +21,7 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
-    @user = User.find(Current.session.user_id)
+    @user = current_user
     unless @game.joined?(@user.id)
       redirect_to root_path
     end
@@ -29,22 +29,23 @@ class GamesController < ApplicationController
 
   def join
     @game = Game.find(params[:id])
-    @user = User.find(Current.session.user_id)
-    if @game.can_join?(@user.id)
-      @game.players.create!(user_id: @user.id, game_id: @game.id)
-      redirect_to game_path(@game)
+    @user = current_user
+    if @game.open_spots? && @game.players.create(user_id: @user.id)
+      redirect_to game_path(@game.id)
     else
       redirect_to root_path
     end
   end
 
   def history
+    @games = Game.all
+    @user = current_user
   end
 
   private
 
-  def find_user
-    User.find(Current.session.user_id)
+  def current_user
+    Current.session.user
   end
 
   def user_params

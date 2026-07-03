@@ -1,9 +1,9 @@
 class Game < ApplicationRecord
   has_many :players, dependent: :destroy
+  has_many :users, through: :players
 
   validates :name, presence: true, length: { minimum: 4 }
   validates :game_type, presence: true, inclusion: { in: ->(game) { game.valid_game_types } }
-  # ^ Create enum for game_type validation
   validates :game_size, presence: true
   validate :valid_game_size
 
@@ -23,8 +23,7 @@ class Game < ApplicationRecord
   end
 
   def joined?(user_id)
-    players = Player.where(user_id:)
-    return true if players.find { |player| player.game_id == self.id }
+    return true if Player.find_by(user_id:, game_id: self.id)
 
     false
   end
@@ -35,6 +34,10 @@ class Game < ApplicationRecord
     false
   end
 
+  def winner
+    self.players.find_by(winner: true)
+  end
+
   def status(message: false)
     response = nil
     response = "waiting" if self.started_at.nil?
@@ -43,6 +46,15 @@ class Game < ApplicationRecord
 
     response = format_status_message if message
     response
+  end
+
+  def formatted_time
+    return 0 unless self.finished_at
+    total_seconds = self.finished_at - self.started_at
+    hours = total_seconds / 3600
+    minutes = (total_seconds % 3600) / 60
+    seconds = total_seconds % 60
+    format("%02d:%02d:%02d", hours, minutes, seconds)
   end
 
   private

@@ -8,7 +8,7 @@ RSpec.describe 'Games', type: :system do
     before do
       sign_in_as user
       visit games_path
-      game.players.create!(user_id: user.id, game_id: game.id)
+      game.players.create(user_id: user.id, game_id: game.id)
     end
     it 'shows the games index' do
       expect(page).to have_content 'Your Games'
@@ -42,18 +42,29 @@ RSpec.describe 'Games', type: :system do
         let(:game3) { create :game }
         before do
           2.times do
-            game3.players.create!(game_id: game3.id, user_id: user.id)
+            game3.players.create(game_id: game3.id, user_id: user.id)
           end
         end
       end
     end
   end
 
-  it 'shows history of games' do
-    sign_in_as user
-    visit games_history_path
-    expect(page).to have_content 'History'
+  context 'when the history page is displayed' do
+    let!(:game1) { create :finished_game }
+    let!(:game2) { create :finished_game }
+    let!(:user) { create :user }
+    let!(:player) { create(:player_as_winner, user:, game: game1) }
+    before do
+      sign_in_as user
+      visit games_history_path
+    end
+    it 'shows history of games' do
+      expect(page).to have_content 'History'
+      expect(page).to have_css '[data-testid="history-column"]', count: 1
+      expect(page).to have_content user.name
+    end
   end
+
 
   context 'when a users click new game button' do
     it 'shows the new game page' do
@@ -102,3 +113,4 @@ RSpec.describe 'Games', type: :system do
     click_on 'Create Game'
   end
 end
+
