@@ -20,19 +20,42 @@ module GoFish
       deal
     end
 
+    def as_json
+      {
+        "players" => players.map { |player| player.as_json },
+        "deck" => deck.as_json,
+        "current_player_idx" => current_player_idx,
+        "results" => results
+      }
+    end
+
     def self.create(players)
       game = Game.new(
-        players: players.map { |player| GoFish::Player.new(player.user.name, player.id) },
+        players: players.map { |player| GoFish::Player.new(name: player.user.name, id: player.id) },
       )
       game.start
       game
     end
 
-    def self.load(game_state)
-      # takes in game_state and loads the objects
-      # sends back the object
+    def self.from_json(json)
+      Game.new(
+        players: json["players"].map { |player| GoFish::Player.from_json(player) },
+        deck: GoFish::Deck.from_json(json["deck"]),
+        current_player_idx: json["current_player_idx"],
+        results: json["results"]
+      )
     end
 
+    def self.load(json)
+      return nil if json.blank?
+      self.from_json(json)
+    end
+
+    def self.dump(game)
+      game.as_json
+    end
+
+    private_class_method :from_json
     private
 
     def deal

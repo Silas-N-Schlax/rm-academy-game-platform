@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe GoFish::Game, type: :model do
-  let(:player1) { GoFish::Player.new('player1', 1) }
-  let(:player2) { GoFish::Player.new('player2', 2) }
+  let(:player1) { GoFish::Player.new(name: 'player1', id: 1) }
+  let(:player2) { GoFish::Player.new(name: 'player2', id: 2) }
 
   describe '.create' do
     context 'when a game has not already been created' do
@@ -19,10 +19,33 @@ RSpec.describe GoFish::Game, type: :model do
         expect(result.deck.cards_left).to eq expected_deck_size
       end
     end
+
+    context 'when a game has already been created'
   end
 
   describe '.load' do
-    it 'loads the current game state to an object'
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    let(:game_player1) { game.players.first }
+    let(:game_player2) { game.players.last }
+    before { game.start }
+    it 'loads the current game state to an object' do
+      loaded_game = GoFish::Game.load(described_class.dump(game))
+      expected_deck_size = 38
+      expect(loaded_game.players.count).to eq game.players.count
+      expect(loaded_game.current_player_idx).to be_zero
+      expect(loaded_game.results).to be_empty
+      expect(loaded_game.deck.cards_left).to eq expected_deck_size
+    end
+    it 'returns nil if the state is empty' do
+      expect(described_class.load({})).to be nil
+    end
+  end
+
+  describe '.dump' do
+    let!(:game) { described_class.new(players: [ player1, player2 ], deck: [ GoFish::Card.new('J') ]) }
+    it 'returns as hash' do
+      expect(GoFish::Game.dump(game)).to be_a Hash
+    end
   end
 
   describe '#start' do
@@ -47,8 +70,8 @@ RSpec.describe GoFish::Game, type: :model do
       end
     end
     context 'when a game is started with 4 players' do
-      let(:player3) { GoFish::Player.new('player3', 3) }
-      let(:player4) { GoFish::Player.new('player4', 4)  }
+      let(:player3) { GoFish::Player.new(name: 'player3', id: 3) }
+      let(:player4) { GoFish::Player.new(name: 'player4', id: 4)  }
       let(:game) { described_class.new(players: [ player1, player2, player3, player4 ]) }
       before { game.start }
       it 'deals 5 cards to each player' do
@@ -57,6 +80,52 @@ RSpec.describe GoFish::Game, type: :model do
           expect(player.hand_size).to eq expected_hand_size
         end
       end
+    end
+  end
+
+  describe '#as_json' do
+    let(:card) { GoFish::Card.new('J') }
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    let(:expected_hash) do
+      {
+        "players" => [
+          {
+            "name" => player1.name,
+            "id" => player1.id,
+            "books" => [],
+            "hand" =>  [
+              "rank" => 'J',
+              "suit" => 'Spades'
+            ]
+          },
+          {
+            "name" => player2.name,
+            "id" => player2.id,
+            "books" => [],
+            "hand" =>  [
+              "rank" => 'J',
+              "suit" => 'Spades'
+            ]
+          }
+        ],
+        "deck" => [
+          {
+            "rank" => 'J',
+            "suit" => 'Spades'
+          }
+        ],
+        "current_player_idx" => 0,
+        "results" => []
+      }
+    end
+    before do
+      game.deck = [ card ]
+      game.players.each do |player|
+        player.hand = [ card ]
+      end
+    end
+    it 'returns expected hash' do
+      expect(GoFish::Game.dump(game)).to eq expected_hash
     end
   end
 end
