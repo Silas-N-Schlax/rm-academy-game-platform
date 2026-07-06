@@ -1,0 +1,35 @@
+.op-page__main
+  main.op-page__main-content
+    .game-list
+      section#user-games
+        header.content-header
+          .content-header__details
+            h2.content-header__title Your Games
+          .content-header__aside
+            = link_to new_game_path, class: 'btn btn--primary' do
+              i.icon.li.li-circle-plus
+              p New Game
+
+        .game-list__cards
+          - if @user.games.empty?
+            .game-list__no-data You have no active games...
+
+          - else
+            - @user.games.each do |game|
+              - if game.joined?(@user.id)
+                = render partial: 'game_card', locals: { item: game, btn_msg: 'Play', btn_path: game_path(game), post: false }
+
+      section#open-games
+        header.content-header
+          .content-header__details
+            h2.content-header__title Open Games
+
+        .game-list__cards
+          - games = @game.open_games
+          - if games.empty?
+            .game-list__no-data There are no open games to join...
+
+          - else
+            - games.each do |game|
+              = render partial: 'game_card', locals: { item: game, btn_msg: 'Join', btn_path: join_path(game), post: true }
+

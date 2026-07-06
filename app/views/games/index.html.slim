@@ -1,39 +1,5 @@
-.op-page__main
-  main.op-page__main-content
-    .game-list
-      section#user-games
-        header.content-header
-          .content-header__details
-            h2.content-header__title Your Games
-          .content-header__aside
-            = link_to new_game_path, class: 'btn btn--primary' do
-              i.icon.li.li-circle-plus
-              p New Game
-
-        .game-list__cards
-          - @games.select { |game| game.players.each { |player| player.game == @user } }.each do |game|
-            - if game.joined?(@user.id)
-              .card.game-row
-                .game-row__title #{game.name}
-                .game-row__action
-                  .game-row__player-count #{game.status(message:true)}
-                  = link_to 'Play', game_path(game), class: 'btn game-row__btn'
-
-
-
-      section#open-games
-        header.content-header
-          .content-header__details
-            h2.content-header__title Open Games
-
-        .game-list__cards
-          - @games.each do |game|
-            - unless game.joined?(@user.id) || game.status == 'started'
-              .card.game-row
-                .game-row__title #{game.name}
-                .game-row__action
-                  .game-row__player-count #{game.status(message:true)}
-                  = button_to 'Join', join_path(game), class: 'btn game-row__btn'
-
-
+- if @game.open_games.empty? && @user.games.empty?
+  = render 'index-empty'
+- else
+  = render 'index'
 

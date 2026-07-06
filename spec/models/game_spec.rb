@@ -164,4 +164,21 @@ RSpec.describe Game, type: :model do
       expect(game.winner).to eq player
     end
   end
+
+  describe '#open-games' do
+    let!(:user) { create :user }
+    let!(:user2) { create :user2 }
+    let!(:game1) { create :game }
+    let!(:game2) { create :finished_game }
+    let!(:game3) { create :game }
+    let!(:player) { create(:player_as_winner, user:, game: game2) }
+    before do
+      create(:player, user: user2, game: game3)
+    end
+    it 'returns list of open games' do
+      expected_output = [ game1 ]
+      game = described_class.new
+      expect(game.open_games).to eq expected_output
+    end
+  end
 end

@@ -34,6 +34,13 @@ class Game < ApplicationRecord
     false
   end
 
+  def open_games
+    Game.where.missing(:players)
+      .where(finished_at: nil, started_at: nil)
+      .group("games.id")
+      .having("COUNT(players.id) < games.game_size")
+  end
+
   def winner
     self.players.find_by(winner: true)
   end

@@ -49,6 +49,33 @@ RSpec.describe 'Games', type: :system do
     end
   end
 
+  context 'when the user does not have all the content' do
+    let(:user) { create :user }
+    before do
+      sign_in_as user
+      visit root_path
+    end
+    it 'displays "no games" page with create button when no games' do
+      expected_content = 'crickets...'
+      expect(page).to have_content expected_content
+    end
+
+    it 'displays "you have no games" when no games to show' do
+      create :game
+      visit root_path
+      expected_content = 'You have no active games...'
+      expect(page).to have_content expected_content
+    end
+
+    it 'displays "no open games available" when no open games to show' do
+      game = create :game
+      create(:player, game:, user:)
+      visit root_path
+      expected_content = 'There are no open games to join...'
+      expect(page).to have_content expected_content
+    end
+  end
+
   context 'when the history page is displayed' do
     let!(:game1) { create :finished_game }
     let!(:game2) { create :finished_game }
@@ -67,6 +94,10 @@ RSpec.describe 'Games', type: :system do
 
 
   context 'when a users click new game button' do
+    before do
+      game = create :game
+      create(:player, game:, user:)
+    end
     it 'shows the new game page' do
       sign_in_as user
       visit games_path
@@ -113,4 +144,3 @@ RSpec.describe 'Games', type: :system do
     click_on 'Create Game'
   end
 end
-

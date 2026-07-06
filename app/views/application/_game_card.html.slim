@@ -1,0 +1,8 @@
+.card.game-row
+  .game-row__title #{item.name}
+  .game-row__action
+    .game-row__player-count #{item.status(message:true)}
+    - if post
+      = button_to btn_msg, btn_path, class: 'btn game-row__btn'
+    - else
+      = link_to btn_msg, btn_path, class: 'btn game-row__btn'

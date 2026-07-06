@@ -17,7 +17,7 @@
 
       tbody
         - @games.select { |game| game.players.find { |player| player.user.id == @user.id } }.each do |game|
-          - unless game.started_at.nil?
+          - unless game.finished_at.nil?
             tr data-testid='history-column'
               th #{game.name}
               - if game.winner
