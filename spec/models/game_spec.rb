@@ -181,4 +181,30 @@ RSpec.describe Game, type: :model do
       expect(game.open_games).to eq expected_output
     end
   end
+
+  describe '#start!' do
+    let!(:user) { create :user }
+    let!(:user2) { create :user2 }
+    let!(:game) { create :game }
+    let!(:player1) { create(:player, user:, game:) }
+    let!(:player2) { create(:player, user: user2, game:) }
+    context 'when a game has not already been started' do
+      it 'starts a game and returns the object' do
+        expected_remaining_cards = 38
+        result = game.start!
+        expect(result.deck.cards_left).to eq expected_remaining_cards
+        expect(result).to be_a GoFish::Game
+      end
+    end
+
+    context 'when a game has already been started' do
+      it 'returns nil' do
+        game.start!
+        result = game.start!
+        expected_remaining_cards = 38
+        expect(result.deck.cards_left).to eq expected_remaining_cards
+        expect(result).to be_a GoFish::Game
+      end
+    end
+  end
 end

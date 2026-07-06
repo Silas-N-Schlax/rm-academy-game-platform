@@ -1,11 +1,21 @@
 class Game < ApplicationRecord
   has_many :players, dependent: :destroy
   has_many :users, through: :players
+  serialize :game_state, coder: GoFish::Game
 
   validates :name, presence: true, length: { minimum: 4 }
   validates :game_type, presence: true, inclusion: { in: ->(game) { game.valid_game_types } }
   validates :game_size, presence: true
   validate :valid_game_size
+
+  def start!
+    return self.game_state unless self.game_state.nil?
+    game = GoFish::Game.create(self.players)
+
+    self.game_state = GoFish::Game.dump(game)
+    save!
+    self.game_state
+  end
 
   def valid_game_types
     game_details_hash.keys
