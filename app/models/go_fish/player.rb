@@ -37,6 +37,15 @@ module GoFish
       books.size
     end
 
+    def as_json
+      {
+        name: name,
+        id: id,
+        books: [],
+        hand: hand.map { |card| card.as_json }
+      }
+    end
+
     private
 
     def create_book_if_possible

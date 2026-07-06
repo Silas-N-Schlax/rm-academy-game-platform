@@ -118,4 +118,25 @@ RSpec.describe GoFish::Player, type: :model do
       expect(player.empty_hand?).to be true
     end
   end
+
+  describe '#as_json' do
+    let!(:player) { described_class.new('player1', 1) }
+    let(:expected_hash) do
+      {
+        name: player.name,
+        id: player.id,
+        books: [],
+        hand: [
+          {
+            rank: 'J',
+            suit: 'Spades'
+          }
+        ]
+      }
+    end
+    it 'returns expected hash' do
+      player.hand = [ GoFish::Card.new('J') ]
+      expect(player.as_json).to eq expected_hash
+    end
+  end
 end

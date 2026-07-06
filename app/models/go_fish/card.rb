@@ -35,6 +35,13 @@ module GoFish
       "#{SPELLED_RANKS[rank]}_of_#{suit}".downcase
     end
 
+    def as_json
+      {
+        rank: rank,
+        suit: suit
+      }
+    end
+
     def ==(other)
       rank == other.rank && suit == other.suit
     end

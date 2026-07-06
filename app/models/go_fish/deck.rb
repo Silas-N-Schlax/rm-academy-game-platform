@@ -28,5 +28,9 @@ module GoFish
     def empty?
       cards.empty?
     end
+
+    def as_json
+      cards.map { |card|  card.as_json }
+    end
   end
 end

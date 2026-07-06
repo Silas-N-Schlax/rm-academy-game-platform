@@ -57,4 +57,14 @@ it 'has a rank, suit, and value' do
       end
     end
   end
+
+  describe '#as_json' do
+    let(:card) { described_class.new('J') }
+    let(:expected_hash) do
+      {
+        rank: 'J',
+        suit: 'Spades'
+      }
+    end
+  end
 end
