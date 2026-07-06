@@ -10,13 +10,19 @@ RSpec.describe 'Games', type: :system do
     expect(page).to_not have_selector sidebar_selector
   end
 
-  it 'sends user to root path when given valid input with no sidebar' do
-    visit root_path
-    expect(current_path).to eq new_session_path
-    sign_in_as user
-    visit root_path
-    expect(page).to have_content 'Your Games'
-    expect(page).to have_content 'Open Games'
+  context 'when the user signs in' do
+    before do
+      game = create :game
+      create(:player, game:, user:)
+    end
+    it 'sends user to root path' do
+      visit root_path
+      expect(current_path).to eq new_session_path
+      sign_in_as user
+      visit root_path
+      expect(page).to have_content 'Your Games'
+      expect(page).to have_content 'Open Games'
+    end
   end
 
   it 'sends back to login if given invalid input and no sidebar' do
