@@ -26,6 +26,7 @@ class GamesController < ApplicationController
     unless @game.joined?(@user.id)
       redirect_to root_path
     end
+    render layout: "application_no_sidebar"
   end
 
   def join
