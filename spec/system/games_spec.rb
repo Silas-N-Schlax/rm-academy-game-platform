@@ -30,11 +30,15 @@ RSpec.describe 'Games', type: :system do
     end
 
     context 'when a user clicks on a game they have not joined' do
-      it 'shows them that game and joins the game if they can join' do
+      before do
         visit root_path
         click_on 'Join'
+      end
+      it 'shows them that game and joins the game if they can join' do
         expected_player_count = 1
         expect(current_path).to eq game_path(game2.id)
+        expect(page).to have_content game2.name
+        expect(page).to have_selector('.playing-card')
         expect(Player.where(game_id: game2.id).size).to eq expected_player_count
       end
 

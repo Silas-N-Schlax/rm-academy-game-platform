@@ -83,6 +83,58 @@ RSpec.describe GoFish::Game, type: :model do
     end
   end
 
+   describe '#current_player' do
+    let(:game) { described_class.new(players: [ player1, player2 ]) }
+    it 'returns the current player' do
+      expect(game.current_player).to eq player1
+    end
+  end
+
+  describe '#find_player' do
+    let(:game) { described_class.new(players: [ player1, player2 ]) }
+    context 'when provided with id for player1' do
+      it 'returns player1' do
+        result = game.find_player(player1.id)
+        expect(result.name).to eq player1.name
+      end
+    end
+
+    context 'when provided with an id for a non-existent player' do
+      it 'returns nil' do
+        player3_id = 3
+        result = game.find_player(player3_id)
+        expect(result).to be_nil
+      end
+    end
+  end
+
+  describe '#list_of_ranks' do
+    context 'when a player has 3 cards' do
+      let(:game) { described_class.new(players: [ player1 ]) }
+      before do
+        game.players.first.hand = [ GoFish::Card.new('J'), GoFish::Card.new('J'), GoFish::Card.new('10') ]
+      end
+
+      it 'returns all of players ranks' do
+        expected_size = 2
+        expect(game.list_of_ranks(player1.id).size).to eq expected_size
+      end
+    end
+  end
+
+  describe '#list_of_players' do
+    context 'when there are two players' do
+      let(:player_name) { 'Player2' }
+      let(:game) { described_class.new(players: [ player1, player2 ]) }
+      it 'returns a list of players that is not the current player' do
+        result = game.list_of_players(player1.id)
+        expected_size = 1
+        expect(result.size).to eq expected_size
+        expect(result.first.name).to eq game.players.last.name
+      end
+    end
+  end
+
   describe '#as_json' do
     let(:card) { GoFish::Card.new('J') }
     let!(:game) { described_class.new(players: [ player1, player2 ]) }

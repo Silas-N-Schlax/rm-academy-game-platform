@@ -119,6 +119,38 @@ RSpec.describe GoFish::Player, type: :model do
     end
   end
 
+  describe '#ranks' do
+    let(:player) { described_class.new(name: 'player1') }
+    let(:card) { GoFish::Card.new('J') }
+    let(:card1) { GoFish::Card.new('10') }
+    let(:card2) { GoFish::Card.new('3') }
+    before do
+      player.hand = [ card, card, card1, card1, card2 ]
+    end
+    it 'returns all ranks in array' do
+      result = player.ranks
+      expected_size = 3
+      expected_sorted_array = %w[J 10 3]
+      expect(result.size).to eq expected_size
+      expect(result).to eq expected_sorted_array
+      result.each { |rank| expect(rank).to be_a String }
+    end
+  end
+
+   describe '#sort_hand' do
+    let(:player) { described_class.new(name: 'player1') }
+    let(:card) { GoFish::Card.new('10') }
+    let(:card1) { GoFish::Card.new('2') }
+    let(:card2) { GoFish::Card.new('3') }
+    before do
+      player.hand = [ card, card1, card2 ]
+    end
+    it 'returns sorted array by rank' do
+      sorted_array = [ card1, card2, card ]
+      expect(player.sort_hand).to eq sorted_array
+    end
+  end
+
   describe '#as_json' do
     let!(:player) { described_class.new(name: 'player1', id: 1) }
     let(:expected_hash) do

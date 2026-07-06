@@ -1,5 +1,75 @@
-.hello
-  p This is def a game 👀
-  p #{@game.name}
-  p #{@game.game_type}
-  p #{@game.game_size}
+.gf-game
+  .gf-game__board.gf-game--border
+    .panel
+      .panel__header.panel__header--title
+        a href='./'
+          i.li.li-move-left.icon.icon--x-large.panel__header-link
+        span #{@game.name}
+
+      .panel__content
+        .players
+          .players__header Players
+          .players__details
+            - @game_state.players.each do |player|
+              - unless @user.name == player.name
+                = render partial: "player_accordion", locals: { player: player }
+
+  .gf-game__feed.gf-game--border
+    .panel.panel--secondary
+      .panel__header.panel__header--game-feed
+        Game Feed
+        - if @user.id == @game_state.current_player.id
+          button.badge.badge--notice Your Turn
+        - else
+          button.badge.badge--primary #{@game.current_player.name}'s Turn
+
+      .panel__content
+        .game-feed
+          .game-feed__logs
+            - @game_state.results.each do |result|
+                = render partial: "feed_turn", locals: { result: result, current_player: @user.id }
+
+        form.game-action action='/game' method='POST'
+          .game-action__options
+            .form-group.game-action__option
+              label.form-label for='players' Player
+              select.form-control.form-control--small name='players' id='players'
+                - @game_state.list_of_players(@user.id).each do |player|
+                  - return if player.nil?
+                  option#player-option value=player.id = player.name
+
+            .form-group.game-action__option
+              label.form-label for='ranks' Rank
+              select.form-control.form-control--small name='ranks' id='ranks'
+                - @game_state.list_of_ranks(@user.id).each do |rank|
+                  - return if rank.nil?
+                  option#rank-option = rank
+
+          - if @user.id == @game_state.current_player.id
+            button.btn.btn--primary.btn-small.game-action__button Ask For Cards
+          - else
+            button.btn.btn--primary.btn-small.game-action__button disabled=true Ask For Cards
+
+  .gf-game__hand.gf-game--border
+    .panel.panel--neutral
+      .panel__header.panel__header--slim
+        span Your Cards
+        span
+          .text-pair.text-pair--inline
+            span.text-pair__subtitle.text-pair__subtitle--small data-tooltip-text="Cards Remaining in Deck" data-tooltip-position="left"
+              i.icon.li.li-club.icon--medium.icon--neutral
+            span.text-pair__title.text-pair__title--small #{@game_state.deck.cards_left}
+      .panel__content
+        .gf-game__cards
+          - if @game_state.current_player.hand.empty?
+          - else
+            = render partial: 'card_collection', locals: {hand: @game_state.current_player.sort_hand, modifier: '--large', back: false}
+
+  .gf-game__books.gf-game--border
+    .panel.panel--neutral
+      .panel__header.panel__header--slim Your Books
+      .panel__content
+        .gf-game__cards
+          - if @game_state.current_player.hand.empty?
+          - else
+            = render partial: 'card_collection', locals: {hand: @game_state.current_player.books, modifier: '--medium', back: false}

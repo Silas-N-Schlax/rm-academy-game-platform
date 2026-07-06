@@ -37,6 +37,20 @@ module GoFish
       books.size
     end
 
+    def sort_hand
+      hand.sort_by { |card| Card.value(card.rank) }
+    end
+
+    def ranks
+      all_ranks = []
+      hand.map do |card|
+        next if all_ranks.include?(card.rank)
+
+        all_ranks << card.rank
+      end
+      all_ranks
+    end
+
     def as_json
       {
         "name" => name,

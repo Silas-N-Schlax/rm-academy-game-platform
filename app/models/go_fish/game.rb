@@ -20,6 +20,26 @@ module GoFish
       deal
     end
 
+    def current_player
+      players[current_player_idx]
+    end
+
+    def find_player(id)
+      players.select { |player| player.id == id }.first
+    end
+
+    def list_of_ranks(id)
+      find_player(id).ranks
+    end
+
+    def list_of_players(current_id)
+      all_players = []
+      players.map do |player|
+        all_players << player unless player.id == current_id
+      end
+      all_players
+    end
+
     def as_json
       {
         "players" => players.map { |player| player.as_json },
@@ -31,7 +51,7 @@ module GoFish
 
     def self.create(players)
       game = Game.new(
-        players: players.map { |player| GoFish::Player.new(name: player.user.name, id: player.id) },
+        players: players.map { |player| GoFish::Player.new(name: player.user.name, id: player.user_id) },
       )
       game.start
       game

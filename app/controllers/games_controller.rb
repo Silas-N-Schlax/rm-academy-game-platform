@@ -22,6 +22,7 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
     @user = current_user
+    @game_state = @game.start!
     unless @game.joined?(@user.id)
       redirect_to root_path
     end
