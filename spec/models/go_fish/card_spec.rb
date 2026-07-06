@@ -62,9 +62,23 @@ it 'has a rank, suit, and value' do
     let(:card) { described_class.new('J') }
     let(:expected_hash) do
       {
-        rank: 'J',
-        suit: 'Spades'
+        "rank" => 'J',
+        "suit" => 'Spades'
       }
+    end
+    it 'returns expected hash' do
+      expect(card.as_json).to eq expected_hash
+    end
+  end
+
+  describe '.from_json' do
+    let(:card) { described_class.new('J') }
+    it 'restores current state of the card' do
+      json = card.as_json
+      expect(GoFish::Card.from_json(json)).to have_attributes(
+        rank: card.rank,
+        suit: card.suit
+      )
     end
   end
 end

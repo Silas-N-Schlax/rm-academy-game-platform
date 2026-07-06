@@ -3,11 +3,11 @@ module GoFish
     attr_accessor :hand, :books
     attr_reader :name, :id
 
-    def initialize(name, id = 0)
+    def initialize(name:, id: 0, hand: [], books: [])
       @name = name
       @id = id
-      @hand = []
-      @books = []
+      @hand = hand
+      @books = books
     end
 
     def add_cards(cards)
@@ -39,11 +39,20 @@ module GoFish
 
     def as_json
       {
-        name: name,
-        id: id,
-        books: [],
-        hand: hand.map { |card| card.as_json }
+        "name" => name,
+        "id" => id,
+        "books" => [],
+        "hand" => hand.map { |card| card.as_json }
       }
+    end
+
+    def self.from_json(json)
+      GoFish::Player.new(
+        name: json["name"],
+        id: json["id"],
+        hand: json["hand"].map { |card| GoFish::Card.from_json(card) },
+        books: json["books"]
+      )
     end
 
     private

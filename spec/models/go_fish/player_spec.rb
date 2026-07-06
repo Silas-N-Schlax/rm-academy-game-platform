@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe GoFish::Player, type: :model do
   describe '#add_cards' do
-    let(:player) { described_class.new('player1') }
+    let(:player) { described_class.new(name: 'player1') }
     let(:card1) { GoFish::Card.new('A', 'Spades') }
     let(:card2) { GoFish::Card.new('K', 'Spades') }
     context 'when player has no cards' do
@@ -43,24 +43,24 @@ RSpec.describe GoFish::Player, type: :model do
   end
 
   describe '#hand_size' do
-    let(:player) { described_class.new('player1') }
+    let(:player) { described_class.new(name: 'player1') }
     it 'returns the current hand size' do
       expect(player.hand_size).to eq 0
     end
 
     it 'returns current hand size of hand with 1 card' do
-      player.add_cards([GoFish::Card.new('A', 'Spades')])
+      player.add_cards([ GoFish::Card.new('A', 'Spades') ])
       expect(player.hand_size).to eq 1
     end
 
     it 'returns current hand size of hand with 2 cards' do
-      player.add_cards([GoFish::Card.new('A', 'Spades'), GoFish::Card.new('10', 'Spades')])
+      player.add_cards([ GoFish::Card.new('A', 'Spades'), GoFish::Card.new('10', 'Spades') ])
       expect(player.hand_size).to eq 2
     end
   end
 
   describe '#take_cards_of_rank' do
-    let(:player) { described_class.new('player') }
+    let(:player) { described_class.new(name: 'player') }
     context 'when player does not have the correct card' do
       it 'returns nil' do
         expect(player.take_cards_of_rank('A')).to be_empty
@@ -74,7 +74,7 @@ RSpec.describe GoFish::Player, type: :model do
       end
 
       it 'returns array of card and remove card from hand' do
-        expect(player.take_cards_of_rank('A')).to eq [card]
+        expect(player.take_cards_of_rank('A')).to eq [ card ]
         expect(player.hand_size).to eq 2
       end
     end
@@ -86,29 +86,29 @@ RSpec.describe GoFish::Player, type: :model do
         player.hand = [card1, GoFish::Card.new('A'), card2]
       end
       it 'returns array of cards and remove cards from hand' do
-        expect(player.take_cards_of_rank('K')).to eq [card1, card2]
+        expect(player.take_cards_of_rank('K')).to eq [ card1, card2 ]
         expect(player.hand_size).to eq 1
       end
     end
   end
 
   describe '#books_size' do
-    let(:player) { described_class.new('player1') }
+    let(:player) { described_class.new(name: 'player1') }
     it 'returns the current hand size' do
       expect(player.books_size).to eq 0
     end
     it 'returns current hand size of hand with 1 card' do
-      player.books = ([GoFish::Book.new('A')])
+      player.books = ([ GoFish::Book.new('A') ])
       expect(player.books_size).to eq 1
     end
     it 'returns current hand size of hand with 2 cards' do
-      player.books = ([GoFish::Book.new('A'), GoFish::Book.new('K')])
+      player.books = ([ GoFish::Book.new('A'), GoFish::Book.new('K') ])
       expect(player.books_size).to eq 2
     end
   end
 
   describe '#empty_hand?' do
-    let(:player) { described_class.new('player1') }
+    let(:player) { described_class.new(name: 'player1') }
     it 'returns false if hand is full' do
       player.add_cards([ GoFish::Card.new('J') ])
       expect(player.empty_hand?).to be false
@@ -120,16 +120,16 @@ RSpec.describe GoFish::Player, type: :model do
   end
 
   describe '#as_json' do
-    let!(:player) { described_class.new('player1', 1) }
+    let!(:player) { described_class.new(name: 'player1', id: 1) }
     let(:expected_hash) do
       {
-        name: player.name,
-        id: player.id,
-        books: [],
-        hand: [
+        "name" => player.name,
+        "id" => player.id,
+        "books" => [],
+        "hand" => [
           {
-            rank: 'J',
-            suit: 'Spades'
+            "rank" => 'J',
+            "suit" => 'Spades'
           }
         ]
       }
@@ -137,6 +137,22 @@ RSpec.describe GoFish::Player, type: :model do
     it 'returns expected hash' do
       player.hand = [ GoFish::Card.new('J') ]
       expect(player.as_json).to eq expected_hash
+    end
+  end
+
+  describe '.from_json' do
+    let!(:player) { described_class.new(name: 'player1', id: 1) }
+    before do
+      player.hand = [ GoFish::Card.new('J') ]
+    end
+    it 'restores current state of the player' do
+      json = player.as_json
+      expect(GoFish::Player.from_json(json)).to have_attributes(
+        name: player.name,
+        id: player.id,
+        hand: player.hand,
+        books: player.books
+      )
     end
   end
 end

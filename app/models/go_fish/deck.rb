@@ -2,12 +2,8 @@ module GoFish
   class Deck
     attr_accessor :cards
 
-    def initialize
-      @cards = GoFish::Card::SUITS.flat_map do |suit|
-        GoFish::Card::RANKS.map do |rank|
-          GoFish::Card.new(rank, suit)
-        end
-      end
+    def initialize(cards: generate_deck)
+      @cards = cards
     end
 
     def top_card
@@ -31,6 +27,22 @@ module GoFish
 
     def as_json
       cards.map { |card|  card.as_json }
+    end
+
+    def self.from_json(json)
+      Deck.new(
+        cards: json.map { |card| GoFish::Card.from_json(card) }
+      )
+    end
+
+    private
+
+    def generate_deck
+      GoFish::Card::SUITS.flat_map do |suit|
+        GoFish::Card::RANKS.map do |rank|
+          GoFish::Card.new(rank, suit)
+        end
+      end
     end
   end
 end

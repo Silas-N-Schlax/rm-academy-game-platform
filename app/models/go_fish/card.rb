@@ -37,8 +37,8 @@ module GoFish
 
     def as_json
       {
-        rank: rank,
-        suit: suit
+        "rank" => rank,
+        "suit" => suit
       }
     end
 
@@ -52,6 +52,12 @@ module GoFish
 
     def self.value(rank)
       RANKS.index(rank)
+    end
+
+    def self.from_json(json)
+      GoFish::Card.new(
+        json["rank"], json["suit"]
+      )
     end
   end
 end

@@ -50,22 +50,31 @@ RSpec.describe GoFish::Deck, type: :model do
   end
 
   describe '#as_json' do
-    let(:deck) { described_class.new }
+    let(:deck) { described_class.new(cards: [ GoFish::Card.new('J'), GoFish::Card.new('K') ]) }
     let(:expected_hash) do
       [
         {
-          rank: 'J',
-          suit: "Spades"
+          "rank" => 'J',
+          "suit" => "Spades"
         },
         {
-          rank: 'K',
-          suit: "Spades"
+          "rank" => 'K',
+          "suit" => "Spades"
         }
       ]
     end
     it 'returns expected hash' do
-      deck.cards = [ GoFish::Card.new('J'), GoFish::Card.new('K') ]
       expect(deck.as_json).to eq expected_hash
+    end
+  end
+
+  describe '.from_json' do
+    let(:deck) { described_class.new(cards: [ GoFish::Card.new('J'), GoFish::Card.new('K') ]) }
+    it 'restores current state of the card' do
+      json = deck.as_json
+      expect(GoFish::Deck.from_json(json)).to have_attributes(
+        cards: deck.cards
+      )
     end
   end
 end
