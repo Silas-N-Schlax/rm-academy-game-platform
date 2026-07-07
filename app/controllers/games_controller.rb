@@ -23,9 +23,8 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     @user = current_user
     @game_state = @game.start!
-    unless @game.joined?(@user.id)
-      redirect_to root_path
-    end
+    return redirect_to root_path unless @game.joined?(@user.id)
+    return render :_waiting_screen, layout: "application_no_sidebar" if @game_state.nil?
     render layout: "application_no_sidebar"
   end
 

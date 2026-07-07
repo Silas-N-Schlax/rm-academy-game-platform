@@ -22,10 +22,12 @@ RSpec.describe 'Games', type: :system do
     end
 
     context 'when a user clicks on a game they joined' do
-      it 'shows them the game' do
+      it 'shows them the waiting game' do
         visit games_path
         click_on 'Play'
+        expected_content = 'Waiting for the game to start...'
         expect(current_path).to eq game_path(game.id)
+        expect(page).to have_content expected_content
       end
     end
 
@@ -38,7 +40,8 @@ RSpec.describe 'Games', type: :system do
         expected_player_count = 1
         expect(current_path).to eq game_path(game2.id)
         expect(page).to have_content game2.name
-        expect(page).to have_selector('.playing-card')
+        expected_content = 'Waiting for the game to start...'
+        expect(page).to have_content expected_content
         expect(Player.where(game_id: game2.id).size).to eq expected_player_count
       end
 
