@@ -189,16 +189,28 @@ RSpec.describe Game, type: :model do
     let!(:player1) { create(:player, user:, game:) }
     let!(:player2) { create(:player, user: user2, game:) }
     context 'when a game has not already been started' do
-      it 'starts a game and returns the object' do
-        expected_remaining_cards = 38
-        result = game.start!
-        expect(result.deck.cards_left).to eq expected_remaining_cards
-        expect(result).to be_a GoFish::Game
+      context 'when the game has the right amount of players' do
+        it 'starts a game and returns the object' do
+          expected_remaining_cards = 38
+          result = game.start!
+          expect(result.deck.cards_left).to eq expected_remaining_cards
+          expect(result).to be_a GoFish::Game
+          expect(Game.find_by(id: game.id).started_at).to_not be_nil
+          expect(Game.find_by(id: game.id).updated_at).to_not be_nil
+        end
+      end
+
+      context 'when the games does not have enough players' do
+        it 'returns nil' do
+          user3 = create(:user, email_address: 's@s.com')
+          create(:player, user: user3, game:)
+          expect(game.start!).to be_nil
+        end
       end
     end
 
     context 'when a game has already been started' do
-      it 'returns nil' do
+      it 'returns game object' do
         game.start!
         result = game.start!
         expected_remaining_cards = 38

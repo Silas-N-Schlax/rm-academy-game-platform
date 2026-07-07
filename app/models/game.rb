@@ -10,9 +10,11 @@ class Game < ApplicationRecord
 
   def start!
     return self.game_state unless self.game_state.nil?
-    game = GoFish::Game.create(self.players)
+    return nil unless can_start?
 
-    self.game_state = GoFish::Game.dump(game)
+    self.started_at = Time.now
+    self.updated_at = self.started_at
+    self.game_state = GoFish::Game.create(self.players)
     save!
     self.game_state
   end
@@ -96,6 +98,10 @@ class Game < ApplicationRecord
 
   def all_players
     Player.where(game_id: self.id)
+  end
+
+  def can_start?
+    players.size == game_size
   end
 
 
