@@ -10,7 +10,7 @@ RSpec.describe User, type: :model do
     it 'allow 2 users to join' do
       expect do
         create :user
-        create :user2
+        create :user
       end.to change(User, :count).by 2
     end
 
