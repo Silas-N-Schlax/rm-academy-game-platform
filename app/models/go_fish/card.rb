@@ -55,6 +55,7 @@ module GoFish
     end
 
     def self.from_json(json)
+      return [] if json.blank?
       GoFish::Card.new(
         json["rank"], json["suit"]
       )
