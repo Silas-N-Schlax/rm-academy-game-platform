@@ -76,7 +76,7 @@ module GoFish
         "players" => players.map { |player| player.as_json },
         "deck" => deck.as_json,
         "current_player_idx" => current_player_idx,
-        "results" => results
+        "results" => results.map(&:as_json)
       }
     end
 
@@ -93,7 +93,7 @@ module GoFish
         players: json["players"].map { |player| GoFish::Player.from_json(player) },
         deck: GoFish::Deck.from_json(json["deck"]),
         current_player_idx: json["current_player_idx"],
-        results: json["results"]
+        results: json["results"].map { |result| GoFish::TurnResult.from_json(result) }
       )
     end
 
