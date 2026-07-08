@@ -108,7 +108,8 @@ RSpec.describe GoFish::TurnResult, type: :model do
           "suit" => "Spades"
         },
         "goes_again" => false,
-        "created_book" => nil
+        "created_book" => nil,
+        "got_card" => []
       }
     end
      it 'returns expected hash' do

@@ -55,17 +55,20 @@ module GoFish
     end
 
     def as_json
-      { "current_player" => current_player.as_json,
+      {
+        "current_player" => current_player.as_json,
         "opponent" => opponent.as_json,
         "cards_taken" => cards_taken.map(&:as_json),
         "card_asked_for" => card_asked_for,
         "card_picked_up" => card_picked_up.as_json,
         "goes_again" => goes_again,
-        "created_book" => created_book.as_json }
+        "created_book" => created_book.as_json,
+        "got_card" => got_card
+      }
     end
 
     def self.from_json(json)
-      GoFish::TurnResult.new(
+      result = GoFish::TurnResult.new(
         current_player: GoFish::Player.from_json(json["current_player"]),
         opponent: GoFish::Player.from_json(json["opponent"]),
         cards_taken: json["cards_taken"].map { |card| GoFish::Card.from_json(card) },
@@ -73,6 +76,8 @@ module GoFish
         card_picked_up: GoFish::Card.from_json(json["card_picked_up"]),
         goes_again: json["goes_again"],
       )
+      json["got_card"].map { |element| result.add_got_card_record(element[0], GoFish::Card.from_json(element[1])) }
+      result
     end
 
     private
