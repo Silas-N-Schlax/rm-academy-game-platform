@@ -1,6 +1,12 @@
 class TurnsController < ApplicationController
   def create
-    @turn = Turn.new(turn_params)
+    @game = Game.find_by(id: turn_params[:game_id])
+    if Turn.new(turn_params)
+      @game.play(turn_params[:player], turn_params[:rank], turn_params[:user_id])
+      return redirect_to game_path(@game.reload)
+    else
+    end
+    render :show, layout: "application-no-sidebar"
   end
 
   private

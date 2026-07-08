@@ -7,12 +7,22 @@
         span #{@game.name}
 
       .panel__content
-        .players
-          .players__header Players
-          .players__details
-            - @game_state.players.each do |player|
-              - unless @user.name == player.name
-                = render partial: "player_accordion", locals: { player: player }
+        - if @game.winner
+          .container.container--xs
+            .simple-page
+              .simple-page__form#new-game-form
+                h2 Game Over
+                h3 #{@game.winner.user.name} won the game!
+                = link_to root_path, class: 'btn btn--primary'
+                  p My Games
+
+        - else
+          .players
+            .players__header Players
+            .players__details
+              - @game_state.players.each do |player|
+                - unless @user.name == player.name
+                  = render partial: "player_accordion", locals: { player: player }
 
   .gf-game__feed.gf-game--border
     .panel.panel--secondary
@@ -21,7 +31,7 @@
         - if @user.id == @game_state.current_player.id
           button.badge.badge--notice Your Turn
         - else
-          button.badge.badge--primary #{@game.current_player.name}'s Turn
+          button.badge.badge--primary #{@game_state.current_player.name}'s Turn
 
       .panel__content
         .game-feed
@@ -64,15 +74,16 @@
             span.text-pair__title.text-pair__title--small #{@game_state.deck.cards_left}
       .panel__content
         .gf-game__cards
-          - if @game_state.current_player.hand.empty?
+          - if @game_state.find_player(@user.id).hand.empty?
           - else
-            = render partial: 'card_collection', locals: {hand: @game_state.current_player.sort_hand, modifier: '--large', back: false}
+            = render partial: 'card_collection', locals: {hand: @game_state.find_player(@user.id).sort_hand, modifier: '--large', back: false}
 
   .gf-game__books.gf-game--border
     .panel.panel--neutral
       .panel__header.panel__header--slim Your Books
       .panel__content
         .gf-game__cards
-          - if @game_state.current_player.hand.empty?
+          - if @game_state.find_player(@user.id).hand.empty?
           - else
-            = render partial: 'card_collection', locals: {hand: @game_state.current_player.books, modifier: '--medium', back: false}
+            = render partial: 'card_collection', locals: {hand: @game_state.find_player(@user.id).books, modifier: '--medium', back: false}
+
