@@ -1,13 +1,9 @@
 require 'rails_helper'
 RSpec.describe 'Turns', type: :system do
   context 'when a valid turn is played' do
-    let!(:user) { create :user }
-    let!(:user2) { create :user2 }
     let!(:game) { create :started_game }
-    let!(:player1) { create(:player, user:, game:) }
-    let!(:player2) { create(:player, user: user2, game:) }
     before do
-      sign_in_as user
+      sign_in_as game.users.first
     end
     it 'displays a turn result' do
       visit game_path(game)
@@ -30,7 +26,7 @@ RSpec.describe 'Turns', type: :system do
         visit game_path(game)
         click_on 'Ask'
         expect(page).to have_content expected_content
-        expect(page).to have_content player1.user.name
+        expect(page).to have_content game.users.first.name
       end
     end
   end

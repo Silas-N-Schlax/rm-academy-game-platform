@@ -3,8 +3,8 @@ RSpec.describe 'Games', type: :system do
   let!(:user) { create(:user) }
 
   context 'when the user goes to the index' do
-    let!(:game) { create :game }
-    let!(:game2) { create :game }
+    let!(:game) { create(:game, player_count: 0) }
+    let!(:game2) { create(:game, player_count: 0) }
     before do
       sign_in_as user
       visit games_path
@@ -68,7 +68,7 @@ RSpec.describe 'Games', type: :system do
     end
 
     it 'displays "you have no games" when no games to show' do
-      create :game
+      create(:game, player_count: 0)
       visit root_path
       expected_content = 'You have no active games...'
       expect(page).to have_content expected_content

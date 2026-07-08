@@ -8,20 +8,15 @@ RSpec.describe GoFish::Game, type: :model do
   describe '.create' do
     context 'when a game has not already been created' do
       let!(:game) { create :started_game }
-      let!(:player1) { create(:player, user: create(:user), game:) }
-      let!(:player2) { create(:player, user: create(:user2), game:) }
-      let(:players) { [ player1, player2 ] }
-      let!(:result) { described_class.create(players) }
+      let!(:result) { described_class.create(game.players) }
       it 'initializes a game and returns an object' do
         expected_deck_size = 38
-        expect(result.players.count).to eq players.count
+        expect(result.players.count).to eq game.players.size
         expect(result.current_player_idx).to be_zero
         expect(result.results).to be_empty
         expect(result.deck.cards_left).to eq expected_deck_size
       end
     end
-
-    context 'when a game has already been created'
   end
 
   describe '.load' do

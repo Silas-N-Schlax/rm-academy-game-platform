@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Turn, type: :model do
   describe 'validations' do
-    let!(:user) { create :user }
-    let!(:user2) { create :user2 }
     let!(:game) { create :started_game }
-    let!(:player1) { create(:player, user:, game:) }
-    let!(:player2) { create(:player, user: user2, game:) }
+    let(:player1) { game.players.first }
+    let(:player2) { game.players.last }
+    let!(:user) { player1.user }
+    let!(:user2) { player2.user }
     it 'returns true if all input is valid' do
       game.start!
       game.game_state.players.first.hand = [ GoFish::Card.new('A') ]

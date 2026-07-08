@@ -74,7 +74,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#open_spots?' do
-    let(:game) { create :game }
+    let(:game) { create(:game, player_count: 0) }
     let(:user) { create :user }
     it 'returns true if game is not full' do
       game.players.create(user_id: user.id, game_id: game.id)
@@ -90,9 +90,8 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#status' do
-    let!(:game) { create :game }
+    let!(:game) { create(:game, player_count: 1) }
     let(:user) { create :user }
-    before { game.players.create(user_id: user.id, game_id: game.id) }
     it 'returns "waiting" if game is waiting on more players' do
       game = build :waiting_game
       expected_message = 'waiting'
@@ -127,7 +126,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#can_join?' do
-    let!(:game) { create :game }
+    let!(:game) { create(:game, player_count: 1) }
     let(:user) { create :user }
     it 'returns true if user has not joined and the game is not started' do
       expect(game.can_join?(user.id)).to be true
@@ -166,15 +165,9 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#open-games' do
-    let!(:user) { create :user }
-    let!(:user2) { create :user2 }
-    let!(:game1) { create :game }
+    let!(:game1) { create(:game, player_count: 0) }
     let!(:game2) { create :finished_game }
-    let!(:game3) { create :game }
-    let!(:player) { create(:player_as_winner, user:, game: game2) }
-    before do
-      create(:player, user: user2, game: game3)
-    end
+    let!(:game3) { create(:game, player_count: 1) }
     it 'returns list of open games' do
       expected_output = [ game1 ]
       game = described_class.new
@@ -183,11 +176,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#start!' do
-    let!(:user) { create :user }
-    let!(:user2) { create :user2 }
     let!(:game) { create :game }
-    let!(:player1) { create(:player, user:, game:) }
-    let!(:player2) { create(:player, user: user2, game:) }
     context 'when a game has not already been started' do
       context 'when the game has the right amount of players' do
         it 'starts a game and returns the object' do
@@ -221,11 +210,9 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#play' do
-    let!(:user) { create :user }
-    let!(:user2) { create :user2 }
     let!(:game) { create :started_game }
-    let!(:player1) { create(:player, user:, game:) }
-    let!(:player2) { create(:player, user: user2, game:) }
+    let(:user) { game.players.first.user }
+    let(:user2) { game.players.last.user }
     context 'when a valid turn is played' do
       let(:db_game) { Game.find_by(id: game.id) }
       before { game.start! }
