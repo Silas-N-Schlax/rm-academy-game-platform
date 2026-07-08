@@ -8,11 +8,11 @@ RSpec.describe Turn, type: :model do
     let!(:player1) { create(:player, user:, game:) }
     let!(:player2) { create(:player, user: user2, game:) }
     it 'returns true if all input is valid' do
-      result = build(:turn, player: player2.id, game_id: game.id, user_id: user.id)
       game.start!
       game.game_state.players.first.hand = [ GoFish::Card.new('A') ]
       game.game_state = game.game_state
       game.save!
+      result = build(:turn, player: player2.id, game_id: game.id, user_id: user.id)
       expect(result).to be_valid
     end
 
@@ -55,25 +55,17 @@ RSpec.describe Turn, type: :model do
       game.start!
       expect(result).to be_invalid
     end
-  end
 
-  describe '#play' do
-    context 'when a valid turn is played' do
-      let!(:user) { create :user }
-      let!(:user2) { create :user2 }
-      let!(:game) { create :started_game }
-      let!(:player1) { create(:player, user:, game:) }
-      let!(:player2) { create(:player, user: user2, game:) }
-      before { game.start! }
-      it 'saves updated game to the database' do
-        before_timestamp = game.updated_at
-        turn = build(:turn, player: user2.id, game_id: game.id, user_id: user.id)
-        turn.play
-        updated_game = Game.find_by(id: game.id)
-        original_player = game.game_state.players.first
-        player = updated_game.game_state.players.first
-        expect(updated_game.updated_at).to_not eq before_timestamp
-        expect(player.hand_size).to be >= original_player.hand_size + 1
+    context 'when it is not the players turn' do
+      before do
+        game.start!
+        game.game_state.players.first.hand = [ GoFish::Card.new('A') ]
+        game.game_state = game.game_state
+        game.save!
+      end
+      it 'returns false' do
+      result = build(:turn, player: player1.id, game_id: game.id, user_id: user2.id)
+      expect(result).to be_invalid
       end
     end
   end

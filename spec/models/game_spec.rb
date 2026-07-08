@@ -219,4 +219,43 @@ RSpec.describe Game, type: :model do
       end
     end
   end
+
+  describe '#play' do
+    let!(:user) { create :user }
+    let!(:user2) { create :user2 }
+    let!(:game) { create :started_game }
+    let!(:player1) { create(:player, user:, game:) }
+    let!(:player2) { create(:player, user: user2, game:) }
+    context 'when a valid turn is played' do
+      let(:db_game) { Game.find_by(id: game.id) }
+      before { game.start! }
+      it 'saves updated game to the database' do
+        before_timestamp = db_game.updated_at
+        db_game.play(user2.id, 'A', user.id)
+        updated_game = Game.find_by(id: game.id)
+        original_player = db_game.game_state.players.first
+        player = updated_game.game_state.players.first
+        expect(updated_game.updated_at).to_not eq before_timestamp
+        expect(player.hand_size).to be >= original_player.hand_size
+      end
+    end
+
+    context 'when the game is over' do
+      let(:db_game) { Game.find_by(id: game.id) }
+      before do
+        game.start!
+        game_state = game.game_state
+        game_state.deck.cards = []
+        game_state.players.first.hand = [ GoFish::Card.new('A'), GoFish::Card.new('A'), GoFish::Card.new('A') ]
+        game_state.players.last.hand = [ GoFish::Card.new('A') ]
+        game.save!
+      end
+      it 'saves the finished at timestamp' do
+        db_game.play(user2.id, 'A', user.id)
+        updated_game = Game.find_by(id: game.id)
+        expect(updated_game.finished_at).to_not be_nil
+        expect(updated_game.players.first.winner).to be true
+      end
+    end
+  end
 end

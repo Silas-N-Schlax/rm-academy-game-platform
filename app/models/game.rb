@@ -12,12 +12,22 @@ class Game < ApplicationRecord
     return self.game_state unless self.game_state.nil?
     return nil unless can_start?
 
-    self.started_at = Time.now
+    self.started_at = Time.current
     self.updated_at = self.started_at
     self.game_state = GoFish::Game.create(self.players)
     save!
     self.game_state
   end
+
+  def play(player, rank, user_id)
+    game_state = self.game_state
+    game_state.run_turn(player.to_i, rank)
+    self.game_state = game_state
+    self.updated_at = Time.current
+    end_game(game_state.winner.id) if game_state.winner
+    save!
+  end
+
 
   def valid_game_types
     game_details_hash.keys
@@ -102,6 +112,14 @@ class Game < ApplicationRecord
 
   def can_start?
     players.size == game_size
+  end
+
+  def end_game(winner_id)
+    self.finished_at = updated_at
+    player = Player.find_by(user_id: winner_id, game_id: self.id)
+    player.winner = true
+    player.updated_at = Time.current
+    player.save!
   end
 
 
