@@ -76,7 +76,7 @@ module GoFish
         card_picked_up: GoFish::Card.from_json(json["card_picked_up"]),
         goes_again: json["goes_again"],
       )
-      json["got_card"].map { |element| result.add_got_card_record(element[0], GoFish::Card.from_json(element[1])) }
+      json["got_card"].map { |element| result.add_got_card_record(element[0], GoFish::Card.from_json(element[1])) } if json["got_card"]
       result
     end
 
