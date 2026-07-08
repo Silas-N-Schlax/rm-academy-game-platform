@@ -12,7 +12,7 @@ RSpec.describe Turn, type: :model do
       game.game_state.players.first.hand = [ GoFish::Card.new('A') ]
       game.game_state = game.game_state
       game.save!
-      result = build(:turn, player: player2.id, game_id: game.id, user_id: user.id)
+      result = build(:turn, player: user2.id, game_id: game.id, user_id: user.id)
       expect(result).to be_valid
     end
 

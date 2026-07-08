@@ -3,6 +3,7 @@ RSpec.describe 'Turns', type: :system do
   context 'when a valid turn is played' do
     let!(:game) { create :started_game }
     before do
+      game.start!
       sign_in_as game.users.first
     end
     it 'displays a turn result' do
@@ -10,6 +11,13 @@ RSpec.describe 'Turns', type: :system do
       click_on 'Ask'
       expect(current_path).to eq game_path(game)
       expect(page).to have_selector('.game-feed__results')
+    end
+
+    context 'when an invalid request is given' do
+      it 'returns 400' do
+        post game_turns_path(game), params: { turn: { game_id: game.id, user_id: game.users.first.id, player: nil, rank: nil } }
+        expect(response.status).to eq 422
+      end
     end
 
     context 'when the game is over' do
