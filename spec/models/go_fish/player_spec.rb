@@ -11,6 +11,7 @@ RSpec.describe GoFish::Player, type: :model do
         player.add_cards(example_hand)
         expect(player.hand).to eq example_hand
         expect(player.hand_size).to eq 2
+        expect(player.book_created).to be_nil
       end
     end
 
@@ -32,10 +33,12 @@ RSpec.describe GoFish::Player, type: :model do
       before do
         player.hand = [ card1, card1, card1, card2 ]
       end
-      it 'creates a book with that rank' do
+      it 'creates a book with that rank and clears previous records' do
+        player.book_created = GoFish::Book.new('2')
         expected_books_size = 1
         expected_hand_size = 1
-        expect(player.add_cards([ card1 ])).to be_a GoFish::Book
+        player.add_cards([ card1 ])
+        expect(player.book_created).to be_a GoFish::Book
         expect(player.books_size).to eq expected_books_size
         expect(player.hand_size).to eq expected_hand_size
       end

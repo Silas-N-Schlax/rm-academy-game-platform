@@ -1,6 +1,6 @@
 module GoFish
   class Game
-    attr_accessor :deck, :current_player_idx, :results, :players, :book_created
+    attr_accessor :deck, :current_player_idx, :results, :players
 
     SMALL_HAND = 5
     LARGE_HAND = 7
@@ -36,8 +36,7 @@ module GoFish
 
 
     def winner
-      winning_player if deck.empty? && players.all? { |player| player.empty_hand? }
-      # ! shorten to pretzel
+      winning_player if deck.empty? && players.all?(&:empty_hand?)
     end
 
     def next_player_turn
@@ -52,7 +51,7 @@ module GoFish
     end
 
     def find_player(id)
-      players.select { |player| player.id == id }.first
+      players.find { |player| player.id == id }
     end
 
     def list_of_ranks(id)
@@ -115,16 +114,16 @@ module GoFish
       player_in_question = find_player(player_name)
       cards = player_in_question.take_cards_of_rank(rank)
 
-      self.book_created = current_player.add_cards(cards) unless cards.empty?
+      current_player.add_cards(cards) unless cards.empty?
       fishing_card = go_fish(rank) if cards.empty?
-      generate_turn_result(player_in_question, rank, cards, fishing_card, current_player, book_created)
+      generate_turn_result(player_in_question, rank, cards, fishing_card, current_player, current_player.book_created)
     end
 
     def go_fish(rank)
       card = deck.top_card
       return next_player_turn if card.nil?
 
-      self.book_created = current_player.add_cards([ card ])
+      current_player.add_cards([ card ])
       next_player_turn unless card.rank == rank
       card
     end

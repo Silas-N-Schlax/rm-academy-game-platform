@@ -1,6 +1,6 @@
 module GoFish
   class Player
-    attr_accessor :hand, :books
+    attr_accessor :hand, :books, :book_created
     attr_reader :name, :id
 
     def initialize(name:, id: 0, hand: [], books: [])
@@ -8,11 +8,14 @@ module GoFish
       @id = id
       @hand = hand
       @books = books
+      @book_created = nil
     end
 
+
     def add_cards(cards)
+      self.book_created = nil
       cards.each { |card| hand << card }
-      create_book_if_possible
+      self.book_created = create_book_if_possible
     end
 
     def take_cards_of_rank(rank)
