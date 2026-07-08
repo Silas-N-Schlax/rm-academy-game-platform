@@ -161,26 +161,9 @@ module GoFish
     end
 
     def winning_player
-      winning_players = []
-      players.each do |player|
-        winning_players << player if winning_players.empty? || winning_players.first.books_size == player.books_size
-        winning_players = [ player ] if player.books_size > winning_players.first.books_size
-      end
-      return player_highest_book_value(winning_players) if winning_players.size > 1
-
-      winning_players.first
-      # ! refactor
-    end
-
-    def player_highest_book_value(tied_players)
-      current_winner = [ nil, nil ]
-      tied_players.each do |player|
-        player.books.each do |book|
-          current_winner = [ player, book ] if current_winner[1].nil? || book.value > current_winner[1].value
-        end
-      end
-      current_winner.first
-      # ! refactor
+      highest_value = players.map(&:books_size).max
+      ties = players.select { |player| player.books_size == highest_value }
+      ties.max_by { |player| player.highest_book.value }
     end
 
     def generate_turn_result(opponent, rank, cards, card_picked_up, current_player, created_book)

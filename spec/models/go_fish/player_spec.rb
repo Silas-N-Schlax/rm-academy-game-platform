@@ -151,6 +151,19 @@ RSpec.describe GoFish::Player, type: :model do
     end
   end
 
+  describe '#highest_book' do
+    let(:player) { described_class.new(name: 'player1') }
+    let(:book) { GoFish::Book.new('K') }
+    it 'returns the highest book' do
+      player.books = [ book, GoFish::Book.new('Q'), GoFish::Book.new('2') ]
+      expect(player.highest_book).to eq book
+    end
+
+    it 'returns nil if there are no books' do
+      expect(player.highest_book).to be_nil
+    end
+  end
+
   describe '#as_json' do
     let!(:player) { described_class.new(name: 'player1', id: 1) }
     let(:expected_hash) do

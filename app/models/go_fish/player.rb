@@ -37,6 +37,12 @@ module GoFish
       books.size
     end
 
+    def highest_book
+      return if books.empty?
+
+      books.max_by(&:value)
+    end
+
     def sort_hand
       hand.sort_by { |card| Card.value(card.rank) }
     end
