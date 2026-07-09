@@ -81,7 +81,7 @@
           .gf-game__cards
             - if implementation.find_player(current_user.id).hand.empty?
             - else
-              = render partial: 'card_collection', locals: {hand: implementation.find_player(current_user.id).sort_hand, modifier: '--large', back: false}
+              = render partial: 'card_collection', locals: {hand: implementation.find_player(current_user.id).sorted_hand, modifier: '--large', back: false}
 
     .gf-game__books.gf-game--border
       .panel.panel--neutral

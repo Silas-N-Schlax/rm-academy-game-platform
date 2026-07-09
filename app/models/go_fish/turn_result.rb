@@ -1,14 +1,14 @@
 module GoFish
   class TurnResult
     attr_accessor :current_player, :opponent, :cards_taken,
-                    :card_asked_for, :card_picked_up,
+                    :rank_asked_for, :card_picked_up,
                     :goes_again, :created_book
 
-    def initialize(current_player:, opponent:, cards_taken:, card_asked_for:, card_picked_up:, goes_again:, created_book: nil)
+    def initialize(current_player:, opponent:, cards_taken:, rank_asked_for:, card_picked_up:, goes_again:, created_book: nil)
       @current_player = current_player
       @opponent = opponent
       @cards_taken = cards_taken
-      @card_asked_for = card_asked_for.upcase
+      @rank_asked_for = rank_asked_for.upcase
       @card_picked_up = card_picked_up
       @goes_again = goes_again
       @created_book = created_book
@@ -19,13 +19,13 @@ module GoFish
     end
 
     def question
-      [ "#{current_player.name} asked ", opponent.name, " for any ", card_asked_for, "s" ]
+      [ "#{current_player.name} asked ", opponent.name, " for any ", rank_asked_for, "s" ]
     end
 
     def answer
-      return "#{opponent.name} had #{cards_taken.length} #{card_asked_for}s" unless cards_taken.empty?
+      return "#{opponent.name} had #{cards_taken.length} #{rank_asked_for}s" unless cards_taken.empty?
 
-      "Go Fish: #{opponent.name} didn't have any #{card_asked_for}s"
+      "Go Fish: #{opponent.name} didn't have any #{rank_asked_for}s"
     end
 
     def go_fish(name)
@@ -59,7 +59,7 @@ module GoFish
         "current_player" => current_player.as_json,
         "opponent" => opponent.as_json,
         "cards_taken" => cards_taken.map(&:as_json),
-        "card_asked_for" => card_asked_for,
+        "rank_asked_for" => rank_asked_for,
         "card_picked_up" => card_picked_up.as_json,
         "goes_again" => goes_again,
         "created_book" => created_book.as_json,
@@ -72,7 +72,7 @@ module GoFish
         current_player: GoFish::Player.from_json(json["current_player"]),
         opponent: GoFish::Player.from_json(json["opponent"]),
         cards_taken: json["cards_taken"].map { |card| GoFish::Card.from_json(card) },
-        card_asked_for: json["card_asked_for"],
+        rank_asked_for: json["rank_asked_for"],
         card_picked_up: GoFish::Card.from_json(json["card_picked_up"]),
         goes_again: json["goes_again"],
       )

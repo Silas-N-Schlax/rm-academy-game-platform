@@ -6,7 +6,7 @@ module GoFish
       @cards = cards
     end
 
-    def top_card
+    def take_top_card
       cards.shift
     end
 

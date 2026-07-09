@@ -131,7 +131,7 @@ module GoFish
     end
 
     def go_fish(rank)
-      card = deck.top_card
+      card = deck.take_top_card
       return next_player_turn if card.nil?
 
       current_player.add_cards([ card ])
@@ -153,9 +153,9 @@ module GoFish
     def add_cards(player)
       return unless player.empty_hand? && !deck.empty?
 
-      top_card = deck.top_card
-      player.add_cards([ top_card ])
-      latest_result.add_got_card_record(player, top_card)
+      take_top_card = deck.take_top_card
+      player.add_cards([ take_top_card ])
+      latest_result.add_got_card_record(player, take_top_card)
     end
 
     def last_current_player
@@ -165,7 +165,7 @@ module GoFish
     def deal
       number_of_cards_to_deal.times do
         players.each do |player|
-          player.add_cards([ deck.top_card ])
+          player.add_cards([ deck.take_top_card ])
         end
       end
     end
@@ -181,7 +181,7 @@ module GoFish
     def generate_turn_result(opponent, rank, cards, card_picked_up, current_player, created_book)
       results << GoFish::TurnResult.new(
         current_player: current_player, opponent: opponent,
-        card_asked_for: rank, cards_taken: cards,
+        rank_asked_for: rank, cards_taken: cards,
         card_picked_up: card_picked_up, goes_again: current_player.name == self.current_player.name,
         created_book: created_book
       )

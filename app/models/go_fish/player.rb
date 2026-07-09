@@ -46,7 +46,7 @@ module GoFish
       books.max_by(&:value)
     end
 
-    def sort_hand
+    def sorted_hand
       hand.sort_by { |card| Card.value(card.rank) }
     end
 

@@ -73,7 +73,7 @@ RSpec.describe GoFish::Player, type: :model do
     context 'when player has one of the correct card' do
       let(:card) { GoFish::Card.new('A') }
       before do
-        player.hand = [card, GoFish::Card.new('K'), GoFish::Card.new('J')]
+        player.hand = [ card, GoFish::Card.new('K'), GoFish::Card.new('J') ]
       end
 
       it 'returns array of card and remove card from hand' do
@@ -86,7 +86,7 @@ RSpec.describe GoFish::Player, type: :model do
       let(:card1) { GoFish::Card.new('K') }
       let(:card2) { GoFish::Card.new('K') }
       before do
-        player.hand = [card1, GoFish::Card.new('A'), card2]
+        player.hand = [ card1, GoFish::Card.new('A'), card2 ]
       end
       it 'returns array of cards and remove cards from hand' do
         expect(player.take_cards_of_rank('K')).to eq [ card1, card2 ]
@@ -140,7 +140,7 @@ RSpec.describe GoFish::Player, type: :model do
     end
   end
 
-   describe '#sort_hand' do
+   describe '#sorted_hand' do
     let(:player) { described_class.new(name: 'player1') }
     let(:card) { GoFish::Card.new('10') }
     let(:card1) { GoFish::Card.new('2') }
@@ -150,7 +150,7 @@ RSpec.describe GoFish::Player, type: :model do
     end
     it 'returns sorted array by rank' do
       sorted_array = [ card1, card2, card ]
-      expect(player.sort_hand).to eq sorted_array
+      expect(player.sorted_hand).to eq sorted_array
     end
   end
 

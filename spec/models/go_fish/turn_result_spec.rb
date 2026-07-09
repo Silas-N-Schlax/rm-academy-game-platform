@@ -6,7 +6,7 @@ RSpec.describe GoFish::TurnResult, type: :model do
       current_player: GoFish::Player.new(name: 'Player1'),
       opponent: GoFish::Player.new(name: 'Player2'),
       cards_taken: [],
-      card_asked_for: 'K',
+      rank_asked_for: 'K',
       card_picked_up: GoFish::Card.new('J'),
       goes_again: false
     )
@@ -102,7 +102,7 @@ RSpec.describe GoFish::TurnResult, type: :model do
           "hand" => []
         },
         "cards_taken" => [],
-        "card_asked_for" => "K",
+        "rank_asked_for" => "K",
         "card_picked_up" => {
           "rank" => "J",
           "suit" => "Spades"

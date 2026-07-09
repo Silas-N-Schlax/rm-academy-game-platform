@@ -118,7 +118,8 @@ RSpec.describe GoFish::Game, type: :model do
           end
 
           it 'tells turn results a book was created' do
-            expect(game.latest_result.created_book).to_not be_nil
+            expected_rank = 'J'
+            expect(game.latest_result.created_book.rank).to eq expected_rank
           end
         end
 
@@ -314,7 +315,7 @@ RSpec.describe GoFish::Game, type: :model do
     let(:result) do
       GoFish::TurnResult.new(
         current_player: nil, opponent: nil,
-        card_asked_for: 'K', cards_taken: nil,
+        rank_asked_for: 'K', cards_taken: nil,
         card_picked_up: nil, goes_again: nil, created_book: nil
       )
     end

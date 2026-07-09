@@ -6,18 +6,18 @@ RSpec.describe GoFish::Deck, type: :model do
     expected_deck_size = 52
     expect(deck.cards_left).to eq expected_deck_size
   end
-  describe '#top_card' do
+  describe '#take_top_card' do
     let(:deck) { described_class.new }
     it 'takes the top card and removes from deck' do
-      top_card = deck.cards.first
+      take_top_card = deck.cards.first
       expected_deck_size = 51
-      expect(deck.top_card).to eq top_card
+      expect(deck.take_top_card).to eq take_top_card
       expect(deck.cards_left).to eq expected_deck_size
     end
     context 'when the deck is empty' do
       before { deck.cards = [] }
       it 'returns nil' do
-        expect(deck.top_card).to be_nil
+        expect(deck.take_top_card).to be_nil
       end
     end
   end
