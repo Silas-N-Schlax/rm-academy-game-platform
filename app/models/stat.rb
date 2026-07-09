@@ -17,23 +17,23 @@ class Stat
     average(wins, total)
   end
 
-  def total_games_by_game(user, type: "Go Fish")
-    User.find_by(id: user.id).games.where(game_type: type).count
+  def total_games_by_game(user, type: "GoFishGame")
+    User.find_by(id: user.id).games.where(type: type).count
   end
 
-  def total_wins_by_game(user, type: "Go Fish")
+  def total_wins_by_game(user, type: "GoFishGame")
     Player.where(user_id: user.id, winner: true).each  do |player|
-      player.game.game_type == type
+      player.game.type == type
     end.count
   end
 
-  def total_losses_by_game(user, type: "Go Fish")
+  def total_losses_by_game(user, type: "GoFishGame")
     Player.where(user_id: user.id, winner: nil).each  do |player|
-      player.game.game_type == type
+      player.game.type == type
     end.count
   end
 
-  def total_average_by_game(user, type: "Go Fish")
+  def total_average_by_game(user, type: "GoFishGame")
     wins = total_wins_by_game(user, type: type)
     total = total_games_by_game(user, type: type)
     average(wins, total)

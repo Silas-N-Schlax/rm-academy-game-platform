@@ -1,0 +1,89 @@
+- game = locals[:game]
+- implementation = locals[:implementation]
+.gf-game
+  .gf-game__board.gf-game--border
+    .panel
+      .panel__header.panel__header--title
+        a href='./'
+          i.li.li-move-left.icon.icon--x-large.panel__header-link
+        span #{game.name}
+
+      .panel__content
+        - if implementation.winner
+          .container.container--xs
+            .simple-page.simple-page--in-container
+              .simple-page__form#new-game-form
+                h2 Game Over
+                h3 #{implementation.winner.name} won the game!
+                = link_to root_path, class: 'btn btn--primary'
+                  p My Games
+
+        - else
+          .players
+            .players__header Players
+            .players__details
+              - implementation.players.each do |player|
+                - unless current_user.name == player.name
+                  = render partial: "player_accordion", locals: { player: player }
+
+  .gf-game__feed.gf-game--border
+    .panel.panel--secondary
+      .panel__header.panel__header--game-feed
+        Game Feed
+        - if current_user.id == implementation.current_player.id
+          button.badge.badge--notice Your Turn
+        - else
+          button.badge.badge--primary #{implementation.current_player.name}'s Turn
+
+      .panel__content
+        .game-feed
+          .game-feed__logs
+            - implementation.results.each do |result|
+                = render partial: "feed_turn", locals: { result: result, current_player: current_user.id }
+
+        = simple_form_for @turn, url: game_turns_path(game), method: :post, html: { class: 'game-action' } do |f|
+          .game-action__options
+            .game-action__option
+              = f.input :player,
+                as: :select,
+                collection: @turn.players,
+                selected: @turn.players.first,
+                input_html: { class: 'form-control--small'}
+
+            .game-action__option
+              = f.input :rank,
+                as: :select,
+                collection: @turn.ranks,
+                selected: @turn.ranks.first,
+                input_html: { class: 'form-control--small'}
+
+
+          - if current_user.id == implementation.current_player.id
+            = f.button :submit, 'Ask For Cards'
+          - else
+            = f.button :submit, 'Ask For Cards', disabled: true
+
+  .gf-game__hand.gf-game--border
+    .panel.panel--neutral
+      .panel__header.panel__header--slim
+        span Your Cards
+        span
+          .text-pair.text-pair--inline
+            span.text-pair__subtitle.text-pair__subtitle--small data-tooltip-text="Cards Remaining in Deck" data-tooltip-position="left"
+              i.icon.li.li-club.icon--medium.icon--neutral
+            span.text-pair__title.text-pair__title--small #{implementation.deck.cards_left}
+      .panel__content
+        .gf-game__cards
+          - if implementation.find_player(current_user.id).hand.empty?
+          - else
+            = render partial: 'card_collection', locals: {hand: implementation.find_player(current_user.id).sorted_hand, modifier: '--large', back: false}
+
+  .gf-game__books.gf-game--border
+    .panel.panel--neutral
+      .panel__header.panel__header--slim Your Books
+      .panel__content
+        .gf-game__cards
+          - if implementation.find_player(current_user.id).hand.empty?
+          - else
+            = render partial: 'card_collection', locals: {hand: implementation.find_player(current_user.id).books, modifier: '--medium', back: false}
+

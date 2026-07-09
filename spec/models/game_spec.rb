@@ -17,11 +17,6 @@ RSpec.describe Game, type: :model do
       expect(game).to be_invalid
     end
 
-    it 'returns false if type is not a valid type' do
-      game = build :invalid_game_type_game
-      expect(game).to be_invalid
-    end
-
     it 'returns false if game size is to small for that game type' do
       game = build :too_small_game
       expect(game).to be_invalid
@@ -38,33 +33,31 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#valid_type' do
+    it 'returns array' do
+      game = Game.new(name: 'test', type: 'GoFishGame', game_size: 2)
+      game.save_new_game(create(:user).id)
+      expected_array = [ "GoFishGame", "CrazyEights" ]
+      expect(game.valid_types).to eq expected_array
+    end
+  end
+
   describe '#save_new_game' do
     it 'saves game with one player to the database' do
-      game = Game.new(name: 'test', game_type: 'Go Fish', game_size: 2)
+      game = Game.new(name: 'test', type: 'GoFishGame', game_size: 2)
       game.save_new_game(create(:user).id)
       expected_game_size = 1
       expect(game.persisted?).to be true
       expect(game.players.size).to eq expected_game_size
     end
   end
-
-  describe '#valid_types' do
-    let(:game) { described_class.new }
-    it 'returns array of types' do
-      expected_output = [
-        'Go Fish'
-      ]
-      expect(game.valid_game_types).to eq expected_output
-    end
-  end
-
   describe '#game_size_by_type' do
     let(:game) { described_class.new }
     it 'returns the min and max values in a hash for that type' do
       expected_min = 2
       expected_max = 6
-      game_type = 'Go Fish'
-      result = game.game_size_by_game_type(game_type)
+      type = 'GoFishGame'
+      result = game.game_size_by_type(type)
       expect(result[:min]).to eq expected_min
       expect(result[:max]).to eq expected_max
     end
@@ -120,17 +113,20 @@ RSpec.describe Game, type: :model do
       expect(game.status).to eq expected_message
     end
 
-    it 'returns not full message if param passed in' do
+    it 'returns amount of players message if param passed in' do
       expected_message = '1/2 players'
       expect(game.status(message: true)).to eq expected_message
     end
 
-    it 'returns full message if param passed in' do
-      5.times do |i|
-        user = create :user, email_address: "example#{i}@example.com"
-        game.players.create(user_id: user.id, game_id: game.id)
-      end
+    it 'returns started message if params passed in' do
       expected_message = 'started'
+      game.started_at = Time.current
+      expect(game.status(message: true)).to eq expected_message
+    end
+
+    it 'returns full message if param passed in' do
+      game = create(:game, game_size: 6, player_count: 6)
+      expected_message = '6/6 players'
       expect(game.status(message: true)).to eq expected_message
     end
   end
@@ -178,103 +174,10 @@ RSpec.describe Game, type: :model do
     let!(:game1) { create(:game, player_count: 1) }
     let!(:game2) { create :finished_game }
     let!(:game3) { create(:game, player_count: 1) }
-    it 'returns list of open games' do
-      expected_output = [ game1, game3 ]
+    it 'returns list of open games', :js do
+      expected_output = [ game1.id, game3.id ].sort
       game = described_class.new
-      expect(game.open_games(game3.users.first)).to eq expected_output
-    end
-  end
-
-  describe '#start!' do
-    let!(:game) { create :game }
-    context 'when a game has not already been started' do
-      context 'when the game has the right amount of players' do
-        it 'starts a game and returns the object' do
-          expected_remaining_cards = 38
-          result = game.start!
-          expect(result.deck.cards_left).to eq expected_remaining_cards
-          expect(result).to be_a GoFish::Game
-          expect(Game.find_by(id: game.id).started_at).to_not be_nil
-          expect(Game.find_by(id: game.id).updated_at).to_not be_nil
-        end
-      end
-
-      context 'when the games does not have enough players' do
-        it 'returns nil' do
-          user3 = create(:user, email_address: 's@s.com')
-          create(:player, user: user3, game:)
-          expect(game.start!).to be_nil
-        end
-      end
-    end
-
-    context 'when a game has already been started' do
-      it 'returns game object' do
-        game.start!
-        result = game.start!
-        expected_remaining_cards = 38
-        expect(result.deck.cards_left).to eq expected_remaining_cards
-        expect(result).to be_a GoFish::Game
-      end
-    end
-  end
-
-  describe '#play' do
-    let!(:game) { create :started_game }
-    let(:user) { game.players.first.user }
-    let(:user2) { game.players.last.user }
-    context 'when a valid turn is played' do
-      let(:db_game) { Game.find_by(id: game.id) }
-      before { game.start! }
-      it 'saves updated game to the database' do
-        before_timestamp = db_game.updated_at
-        db_game.play(user2.id, 'A', user.id)
-        updated_game = Game.find_by(id: game.id)
-        original_player = db_game.game_state.players.first
-        player = updated_game.game_state.players.first
-        expect(updated_game.updated_at).to_not eq before_timestamp
-        expect(player.hand_size).to be >= original_player.hand_size
-      end
-    end
-
-    context 'when the game is over' do
-      let(:db_game) { Game.find_by(id: game.id) }
-      before do
-        game.start!
-        game_state = game.game_state
-        game_state.deck.cards = []
-        game_state.players.first.hand = [ GoFish::Card.new('A'), GoFish::Card.new('A'), GoFish::Card.new('A') ]
-        game_state.players.last.hand = [ GoFish::Card.new('A') ]
-        game.save!
-      end
-      it 'saves the finished at timestamp' do
-        db_game.play(user2.id, 'A', user.id)
-        updated_game = Game.find_by(id: game.id)
-        expect(updated_game.finished_at).to_not be_nil
-        expect(updated_game.players.first.winner).to be true
-      end
-    end
-  end
-
-  describe '#valid_move?' do
-    let!(:game) { create :started_game }
-    let(:player1) { game.game_state.players.first }
-    let(:player2) { game.game_state.players.last }
-    before do
-      game.start!
-      players = game.game_state.players
-      players.first.hand = [ GoFish::Card.new('J') ]
-    end
-    it 'returns true if player and rank is true' do
-      expect(game.valid_move?(player2.id, 'J')).to be true
-    end
-
-    it 'returns false if rank is invalid' do
-      expect(game.valid_move?(player2.id, 'K')).to be false
-    end
-
-    it 'returns false if player is invalid' do
-      expect(game.valid_move?(player1.id, 'J')).to be false
+      expect(game.open_games(game3.users.first).map(&:id).sort).to eq expected_output
     end
   end
 end

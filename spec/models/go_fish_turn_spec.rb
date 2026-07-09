@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Turn, type: :model do
+RSpec.describe GoFishTurn, type: :model do
   describe 'validations' do
     let!(:game) { create :started_game }
     let(:player1) { game.players.first }
@@ -62,8 +62,27 @@ RSpec.describe Turn, type: :model do
       game.start!
       game.game_state.players.first.hand = [ GoFish::Card.new('J') ]
       game.save!
-      turn = Turn.new(game_id: game.id, user_id: game.users.first.id, rank: 'J', player: game.users.last.id)
+      turn = game.turn_class.new(game_id: game.id, user_id: game.users.first.id, rank: 'J', player: game.users.last.id)
       expect(turn.valid_turn?).to be true
+    end
+  end
+
+  describe '#players' do
+    let!(:game) { create(:game, game_size: 4, player_count: 4) }
+    before { game.start! }
+    it 'returns a list of players in the game that is not the current user' do
+      turn = build(:turn, game_id: game.id, user_id: game.users.first.id)
+      expect(turn.players.size).to eq game.game_state.players.size - 1
+    end
+  end
+
+  describe '#ranks' do
+    let!(:game) { create(:game, game_size: 4, player_count: 4) }
+    before { game.start! }
+    it 'returns a list of ranks in the players hand' do
+      turn = build(:turn, game_id: game.id, user_id: game.users.first.id)
+      game_players = game.game_state.players
+      expect(turn.ranks).to eq game_players.first.ranks
     end
   end
 end

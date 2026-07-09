@@ -1,6 +1,6 @@
 class TurnsController < ApplicationController
   def create
-    @turn = Turn.new(turn_params.merge({ game_id: params[:game_id], user_id: Current.session.user.id }))
+    @turn = game_class.turn_class.new(turn_params)
     if @turn.valid_turn?
       return redirect_to game_path(@turn.game)
     end
@@ -10,6 +10,10 @@ class TurnsController < ApplicationController
   private
 
   def turn_params
-    params.expect(turn: [ :player, :rank ])
+    params.expect(turn: [ :player, :rank ]).merge({ game_id: params[:game_id], user_id: Current.session.user.id })
+  end
+
+  def game_class
+    Game.find(params[:game_id])
   end
 end

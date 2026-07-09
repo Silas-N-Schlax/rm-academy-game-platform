@@ -1,12 +1,14 @@
 class Game < ApplicationRecord
   has_many :players, dependent: :destroy
   has_many :users, through: :players
-  serialize :game_state, coder: GoFish::Game
+  # serialize :game_state, coder: GoFish::Game
 
   validates :name, presence: true, length: { minimum: 4 }
-  validates :game_type, presence: true, inclusion: { in: ->(game) { game.valid_game_types } }
+  validates :type, presence: true, inclusion: { in: ->(game) { game.valid_types } }
   validates :game_size, presence: true
   validate :valid_game_size
+
+  normalizes :type, with: ->(t) { t.split(" ").join }
 
   def implementation
     @implementation ||= game_state
@@ -17,35 +19,13 @@ class Game < ApplicationRecord
     self.save
   end
 
-  def start!
-    return self.game_state unless self.game_state.nil?
-    return nil unless can_start?
 
-    self.started_at = Time.current
-    self.game_state = GoFish::Game.create(self.players)
-    save!
-    self.game_state
-  end
-
-  def play(player, rank, user_id)
-    implementation = self.game_state
-    implementation.run_turn(player.to_i, rank)
-    self.game_state = implementation
-    winner = implementation.winner
-    end_game(winner.id) if winner
-    save!
-  end
-
-  def valid_move?(player, rank)
-    implementation.valid_player?(player) && implementation.valid_rank?(rank)
-  end
-
-  def valid_game_types
+  def valid_types
     game_details_hash.keys
   end
 
-  def game_size_by_game_type(game_type)
-    game_details_hash[game_type]
+  def game_size_by_type(type)
+    game_details_hash[type]
   end
 
   def can_join?(user_id)
@@ -101,20 +81,20 @@ class Game < ApplicationRecord
   private
 
   def format_status_message
-    return "started" unless open_spots?
+    return "started" if self.started_at
 
     "#{all_players.size}/#{self.game_size} players"
   end
 
   def valid_game_size
-    valid_game_size = game_size_by_game_type(game_type)
+    valid_game_size = game_size_by_type(type)
     return if valid_game_size.nil? || game_size.nil?
 
     min = valid_game_size[:min]
     max = valid_game_size[:max]
 
     if game_size < min || game_size > max
-      errors.add(:game_size, "Game size must be between #{min} and #{max} players for #{game_type}.")
+      errors.add(:game_size, "Game size must be between #{min} and #{max} players for #{type}.")
     end
   end
 
@@ -136,9 +116,13 @@ class Game < ApplicationRecord
 
   def game_details_hash
     {
-      "Go Fish" => {
+      "GoFishGame" => {
         min: 2,
         max: 6
+      },
+      "CrazyEights" => {
+        min: 2,
+        max: 7
       }
     }
   end

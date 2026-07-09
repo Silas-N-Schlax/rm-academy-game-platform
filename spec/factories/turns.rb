@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :turn do
+  factory :turn, class: 'GoFishTurn' do
     rank { 'A' }
     player { nil }
     game_id { nil }

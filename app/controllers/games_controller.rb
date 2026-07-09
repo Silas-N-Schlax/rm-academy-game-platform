@@ -17,7 +17,7 @@ class GamesController < ApplicationController
   end
 
   def show
-    @turn = Turn.new(game_id: params[:id])
+    @turn = Game.find(params[:id]).turn_class.new(game_id: params[:id], user_id: current_user.id)
     @turn.game.start!
     return redirect_to root_path unless @turn.game.joined?(current_user.id)
     render layout: "application_no_sidebar"
@@ -40,6 +40,6 @@ class GamesController < ApplicationController
   private
 
   def game_params
-    params.require(:game).permit(:name, :game_type, :game_size)
+    params.require(:game).permit(:name, :type, :game_size)
   end
 end

@@ -5,11 +5,11 @@
         img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
 
       .simple-page__form#new-game-form
-        = simple_form_for @game do |f|
+        = simple_form_for @game, url: games_path(@game) do |f|
           = f.input :name
-          = f.input :game_type,
+          = f.input :type,
               as: :select,
-              collection: ['Go Fish', 'War'],
+              collection: @game.valid_types,
               include_blank: 'Select a Game Type'
           = f.input :game_size, as: :integer
           = f.button :submit, "Create Game"

@@ -1,7 +1,9 @@
-class Turn
+class GoFishTurn
   include ActiveModel::Model
   include ActiveModel::Attributes
   include ActiveModel::Attributes::Normalization
+
+  def self.model_name = ActiveModel::Name.new(self, nil, "turn")
 
   attr_accessor :player, :rank, :game_id, :user_id
 
@@ -11,6 +13,10 @@ class Turn
 
   def user
     @user ||= User.find(user_id)
+  end
+
+  def implementation
+    @implementation ||= game.game_state
   end
 
   before_validation :normalize_inputs
@@ -26,6 +32,7 @@ class Turn
   validate :valid_move
 
   def valid_turn?
+    # ^ Rename to save (same with the game.rb)
     if self.valid?
       game.play(player, rank, user.id)
       return true
@@ -39,6 +46,14 @@ class Turn
     unless game.valid_move?(player, rank)
       errors.add("Invalid player or rank!")
     end
+  end
+
+  def players
+    implementation.list_of_players(user.id)
+  end
+
+  def ranks
+    implementation.list_of_ranks(user.id)
   end
 
   private
