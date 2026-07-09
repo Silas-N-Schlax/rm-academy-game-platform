@@ -4,6 +4,10 @@
   justify-content: center;
   align-items: center;
 
+  &.simple-page--in-container {
+    height: 65dvh
+  }
+
   .simple-page__body {
     background-color: var(--op-color-primary-plus-six);
     color: var(--op-color-primary-on-plus-six);
@@ -33,5 +37,14 @@
 
   .simple-page__button {
     width: 100%
+  }
+}
+
+/* --op-breakpoint-small */
+@media (width <= 768px) {
+  .simple-page  {
+    &.simple-page--in-container {
+     height: 100%
+   }
   }
 }

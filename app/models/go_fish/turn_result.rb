@@ -8,7 +8,7 @@ module GoFish
       @current_player = current_player
       @opponent = opponent
       @cards_taken = cards_taken
-      @rank_asked_for = rank_asked_for.upcase
+      @rank_asked_for = rank_asked_for&.upcase
       @card_picked_up = card_picked_up
       @goes_again = goes_again
       @created_book = created_book
