@@ -291,6 +291,21 @@ RSpec.describe GoFish::Game, type: :model do
           end
         end
       end
+
+      context 'when there is a tie' do
+        let!(:game_player1) { game.players.first }
+        let!(:game_player2) { game.players.last }
+        before do
+          game.deck = []
+          game_player1.hand = []
+          game_player1.books = [ GoFish::Book.new('K'), GoFish::Book.new('2') ]
+          game_player2.hand = []
+          game_player2.books = [ GoFish::Book.new('J'), GoFish::Book.new('10') ]
+        end
+        it 'returns the player with the highest book' do
+          expect(game.winner.name).to be game_player1.name
+        end
+      end
     end
   end
 

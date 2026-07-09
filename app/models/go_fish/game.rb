@@ -16,6 +16,9 @@ module GoFish
     end
 
     def start
+      # deck.cards = [GoFish::Card.new('J')]
+      # players.first.hand = [GoFish::Card.new('J'), GoFish::Card.new('J')]
+      # players.last.hand = [GoFish::Card.new('J'),]
       deck.shuffle_deck
       deal
     end
@@ -170,7 +173,9 @@ module GoFish
     def winning_player
       highest_value = players.map(&:books_size).max
       ties = players.select { |player| player.books_size == highest_value }
-      ties.max_by { |player| player.highest_book.value }
+      return ties.first if ties.size == 1
+      # binding.irb
+      ties[0].highest_book.value > ties[1].highest_book.value ? ties[0] : ties[1]
     end
 
     def generate_turn_result(opponent, rank, cards, card_picked_up, current_player, created_book)
