@@ -22,7 +22,6 @@ class Game < ApplicationRecord
     return nil unless can_start?
 
     self.started_at = Time.current
-    self.updated_at = self.started_at
     self.game_state = GoFish::Game.create(self.players)
     save!
     self.game_state
@@ -68,11 +67,12 @@ class Game < ApplicationRecord
     false
   end
 
-  def open_games
-    Game.where.missing(:players)
+  def open_games(user_id)
+    Game.joins(:players)
       .where(finished_at: nil, started_at: nil)
       .group("games.id")
       .having("COUNT(players.id) < games.game_size")
+    # ^ Make so that it only shows games the current user is not in
   end
 
   def winner
@@ -127,10 +127,9 @@ class Game < ApplicationRecord
   end
 
   def end_game(winner_id)
-    self.finished_at = updated_at
+    self.finished_at = Time.current
     player = Player.find_by(user_id: winner_id, game_id: self.id)
     player.winner = true
-    player.updated_at = Time.current
     player.save!
   end
 

@@ -47,6 +47,7 @@ module GoFish
     end
 
     def self.valid_rank?(rank)
+      return false if rank.nil?
       RANKS.include?(rank.upcase)
     end
 

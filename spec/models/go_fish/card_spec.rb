@@ -48,6 +48,10 @@ it 'has a rank, suit, and value' do
       rank = 'K'
       expect(described_class.valid_rank?(rank)).to be true
     end
+
+    it 'returns false if rank is nil' do
+      expect(described_class.valid_rank?(nil)).to be false
+    end
   end
   describe '.value' do
     context 'when provided with an index' do
