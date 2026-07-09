@@ -62,7 +62,7 @@ module GoFish
       {
         "name" => name,
         "id" => id,
-        "books" => [],
+        "books" => books.map { |book| book.as_json },
         "hand" => hand.map { |card| card.as_json }
       }
     end
@@ -72,7 +72,7 @@ module GoFish
         name: json["name"],
         id: json["id"],
         hand: json["hand"].map { |card| GoFish::Card.from_json(card) },
-        books: json["books"]
+        books: json["books"].map { |book| GoFish::Book.from_json(book) }
       )
     end
 
