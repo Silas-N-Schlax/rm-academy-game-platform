@@ -7,7 +7,7 @@ RSpec.describe 'Turns', type: :system do
       sign_in_as game.users.first
     end
     it 'displays a turn result' do
-      visit game_path(game)
+      visit game_path(game.reload)
       click_on 'Ask'
       expect(current_path).to eq game_path(game)
       expect(page).to have_selector('.game-feed__results')
@@ -20,7 +20,7 @@ RSpec.describe 'Turns', type: :system do
       end
     end
 
-    context 'when the game is over' do
+    context 'when the game ends' do
       before do
         game.start!
         game_state = game.game_state
