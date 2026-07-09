@@ -20,7 +20,7 @@ include FactoryBot::Syntax::Methods
 
 # * Populate with default users
 user1 = create :user
-user2 = create :user2
+user2 = create :user
 
 # * Create some mock games (status: waiting...)
 6.times do
