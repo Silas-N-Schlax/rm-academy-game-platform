@@ -9,28 +9,23 @@ class GamesController < ApplicationController
   end
 
   def create
-    @game = Game.new(user_params)
-    @user = current_user
-    if @game.save
-      @game.players.create(user_id: @user.id)
-      redirect_to game_path(@game.id)
-    else
-      render :new, status: :unprocessable_content
+    @game = Game.new(game_params)
+    if @game.save_new_game(current_user.id)
+      return redirect_to game_path(@game.id)
     end
+    render :new, status: :unprocessable_content
   end
 
   def show
-    @game = Game.find(params[:id])
-    @user = current_user
-    unless @game.joined?(@user.id)
-      redirect_to root_path
-    end
+    @turn = Turn.new(game_id: params[:id])
+    @turn.game.start!
+    return redirect_to root_path unless @turn.game.joined?(current_user.id)
+    render layout: "application_no_sidebar"
   end
 
   def join
     @game = Game.find(params[:id])
-    @user = current_user
-    if @game.open_spots? && @game.players.create(user_id: @user.id)
+    if @game.open_spots? && @game.players.create(user_id: current_user.id)
       redirect_to game_path(@game.id)
     else
       redirect_to root_path
@@ -44,11 +39,7 @@ class GamesController < ApplicationController
 
   private
 
-  def current_user
-    Current.session.user
-  end
-
-  def user_params
+  def game_params
     params.require(:game).permit(:name, :game_type, :game_size)
   end
 end

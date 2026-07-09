@@ -1,0 +1,9 @@
+.container.container--xs
+  .simple-page
+    .simple-page__form#new-game-form
+      h2 #{game.name}
+      h3 Waiting for the game to start...
+      h3
+        em Hint: Reload to check again
+      = link_to root_path, class: 'btn btn--primary'
+        p My Games

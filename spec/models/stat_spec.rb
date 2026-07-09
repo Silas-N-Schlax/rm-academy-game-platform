@@ -1,7 +1,7 @@
 require 'rails_helper'
 RSpec.describe Stat, type: :model do
   let!(:user1) { create :user }
-  let!(:user2) { create :user2 }
+  let!(:user2) { create :user }
   let!(:game1) { create(:finished_game) }
   let!(:game2) { create(:finished_game) }
   let!(:game3) { create(:finished_game) }

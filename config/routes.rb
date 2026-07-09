@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
 
-  resources :games, only: [ :index, :new, :create ]
+  resources :games, only: [ :index, :new, :create ] do
+    resources :turns, only: [ :create ]
+  end
   get "games/history", to: "games#history"
   get "games/:id", to: "games#show", as: "game"
   post "games/join/:id", to: "games#join", as: "join"
@@ -21,6 +23,7 @@ Rails.application.routes.draw do
 
   resources :users, only: [ :new, :create ]
   get "users/show", to: "users#show"
+
 
   root "games#index"
 end

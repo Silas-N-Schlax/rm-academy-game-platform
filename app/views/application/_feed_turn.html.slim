@@ -1,0 +1,28 @@
+.game-feed__turn
+  .game-feed__question
+    span
+      span #{result.question[0]}
+      strong #{result.question[1]}
+      span #{result.question[2]}
+      strong #{result.question[3]}#{result.question[4]}
+
+  .game-feed__results
+    .game-feed__result
+      i.icon.li.li-corner-down-right.icon--large
+      .message-bubble.message-bubble--go-fish #{result.answer}
+
+    .game-feed__result
+      - if result.go_fish(current_player)
+        i.icon.li.li-corner-down-right.icon--large
+        .message-bubble #{result.go_fish(current_player)}
+
+    .game-feed__result
+      - if result.book_created(current_player)
+        i.icon.li.li-corner-down-right.icon--large
+        .message-bubble #{result.book_created(current_player)}
+
+    - unless result&.got_card.empty?
+      - result.got_card_message(current_player).each do |message|
+        .game-feed__result
+          i.icon.li.li-corner-down-right.icon--large
+          .message-bubble.message-bubble--no-cards #{message}

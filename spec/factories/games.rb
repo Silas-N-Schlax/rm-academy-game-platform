@@ -1,8 +1,16 @@
 FactoryBot.define do
   factory :game do
-    name { "RoleModel" }
+    sequence(:name) { |n| "RoleModel#{n}" }
     game_type { "Go Fish" }
     game_size { 2 }
+
+    transient do
+      player_count { 2 }
+    end
+
+    after(:create) do |game, evaluator|
+      create_list(:player, evaluator.player_count, game: game)
+    end
 
     trait :game2 do
       name { "RockSolid" }

@@ -1,0 +1,94 @@
+module GoFish
+  class Player
+    attr_accessor :hand, :books, :book_created
+    attr_reader :name, :id
+
+    def initialize(name:, id: 0, hand: [], books: [])
+      @name = name
+      @id = id
+      @hand = hand
+      @books = books
+      @book_created = nil
+    end
+
+
+    def add_cards(cards)
+      self.book_created = nil
+      cards.each { |card| hand << card }
+      self.book_created = create_book_if_possible
+    end
+
+    def take_cards_of_rank(rank)
+      find_by_rank = ->(card) { card.rank == rank }
+
+      cards_of_rank = hand.select(&find_by_rank)
+      hand.delete_if(&find_by_rank)
+
+      cards_of_rank
+    end
+
+    def empty_hand?
+      hand.empty?
+    end
+
+
+    def hand_size
+      hand.size
+    end
+
+    def books_size
+      books.size
+    end
+
+    def highest_book
+      return if books.empty?
+
+      books.max_by(&:value)
+    end
+
+    def sorted_hand
+      hand.sort_by { |card| Card.value(card.rank) }
+    end
+
+    def ranks
+      hand.map(&:rank).uniq
+    end
+
+    def has_card?(rank)
+      hand.any? { |card| card.rank == rank }
+    end
+
+    def as_json
+      {
+        "name" => name,
+        "id" => id,
+        "books" => books.map { |book| book.as_json },
+        "hand" => hand.map { |card| card.as_json }
+      }
+    end
+
+    def self.from_json(json)
+      GoFish::Player.new(
+        name: json["name"],
+        id: json["id"],
+        hand: json["hand"].map { |card| GoFish::Card.from_json(card) },
+        books: json["books"].map { |book| GoFish::Book.from_json(book) }
+      )
+    end
+
+    private
+
+    def create_book_if_possible
+      hand.group_by(&:rank).each do |group|
+        card_group = group.last
+        create_book_and_remove_cards(group.first) if card_group.length == 4
+      end
+      books.last
+    end
+
+    def create_book_and_remove_cards(book_rank)
+      books << GoFish::Book.new(book_rank)
+      take_cards_of_rank(book_rank)
+    end
+  end
+end

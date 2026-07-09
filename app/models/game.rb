@@ -1,11 +1,44 @@
 class Game < ApplicationRecord
   has_many :players, dependent: :destroy
   has_many :users, through: :players
+  serialize :game_state, coder: GoFish::Game
 
   validates :name, presence: true, length: { minimum: 4 }
   validates :game_type, presence: true, inclusion: { in: ->(game) { game.valid_game_types } }
   validates :game_size, presence: true
   validate :valid_game_size
+
+  def implementation
+    @implementation ||= game_state
+  end
+
+  def save_new_game(user_id)
+    self.players.new(user_id: user_id)
+    self.save
+  end
+
+  def start!
+    return self.game_state unless self.game_state.nil?
+    return nil unless can_start?
+
+    self.started_at = Time.current
+    self.game_state = GoFish::Game.create(self.players)
+    save!
+    self.game_state
+  end
+
+  def play(player, rank, user_id)
+    implementation = self.game_state
+    implementation.run_turn(player.to_i, rank)
+    self.game_state = implementation
+    winner = implementation.winner
+    end_game(winner.id) if winner
+    save!
+  end
+
+  def valid_move?(player, rank)
+    implementation.valid_player?(player) && implementation.valid_rank?(rank)
+  end
 
   def valid_game_types
     game_details_hash.keys
@@ -34,11 +67,12 @@ class Game < ApplicationRecord
     false
   end
 
-  def open_games
-    Game.where.missing(:players)
+  def open_games(user_id)
+    Game.joins(:players)
       .where(finished_at: nil, started_at: nil)
       .group("games.id")
       .having("COUNT(players.id) < games.game_size")
+    # ^ Make so that it only shows games the current user is not in
   end
 
   def winner
@@ -86,6 +120,17 @@ class Game < ApplicationRecord
 
   def all_players
     Player.where(game_id: self.id)
+  end
+
+  def can_start?
+    players.size == game_size
+  end
+
+  def end_game(winner_id)
+    self.finished_at = Time.current
+    player = Player.find_by(user_id: winner_id, game_id: self.id)
+    player.winner = true
+    player.save!
   end
 
 
