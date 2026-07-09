@@ -19,6 +19,9 @@ class Game < ApplicationRecord
     self.save
   end
 
+  def start! = raise NotImplementedError, "#{self.class} must implement #required_method"
+  def play = raise NotImplementedError, "#{self.class} must implement #required_method"
+  def turn_class = raise NotImplementedError, "#{self.class} must implement #required_method"
 
   def valid_types
     game_details_hash.keys
