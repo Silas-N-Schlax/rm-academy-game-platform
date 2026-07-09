@@ -27,4 +27,14 @@ class GoFishGame < Game
   def turn_class
     GoFishTurn
   end
+
+  def players_list(user_id)
+    implementation = self.game_state
+    implementation.list_of_players(user_id)
+  end
+
+  def ranks_list(user_id)
+    implementation = self.game_state
+    implementation.list_of_ranks(user_id)
+  end
 end

@@ -1,6 +1,4 @@
-- game = @turn.game
-- implementation = game.game_state
-- if implementation.nil?
-  = render partial: "waiting_screen", locals: { game: game }
+- if @game.game_state.nil?
+  = render partial: "waiting_screen", locals: { game: @game }
 - else
-  = render game, locals: { game:, implementation: }
+  = render @game

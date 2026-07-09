@@ -56,14 +56,14 @@ RSpec.describe GoFishTurn, type: :model do
     end
   end
 
-  describe '#valid_turn?' do
+  describe '#save' do
     it 'returns true if turn was valid' do
       game = create :game
       game.start!
       game.game_state.players.first.hand = [ GoFish::Card.new('J') ]
       game.save!
       turn = game.turn_class.new(game_id: game.id, user_id: game.users.first.id, rank: 'J', player: game.users.last.id)
-      expect(turn.valid_turn?).to be true
+      expect(turn.save).to be true
     end
   end
 

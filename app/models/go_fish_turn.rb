@@ -31,8 +31,7 @@ class GoFishTurn
   validates :rank, presence: true
   validate :valid_move
 
-  def valid_turn?
-    # ^ Rename to save (same with the game.rb)
+  def save
     if self.valid?
       game.play(player, rank, user.id)
       return true

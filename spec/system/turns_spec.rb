@@ -6,7 +6,7 @@ RSpec.describe 'Turns', type: :system do
       game.start!
       sign_in_as game.users.first
     end
-    fit 'displays a turn result' do
+    it 'displays a turn result' do
       visit game_path(game.reload)
       click_on 'Ask'
       expect(current_path).to eq game_path(game)
@@ -14,9 +14,9 @@ RSpec.describe 'Turns', type: :system do
     end
 
     context 'when an invalid GoFish request is given' do
-      it 'returns 400' do
+      it 'returns 422' do
         post game_turns_path(game), params: { turn: { game_id: game.id, user_id: game.users.first.id, player: nil, rank: nil } }
-        expect(response.status).to eq 400
+        expect(response.status).to eq 422
       end
     end
 

@@ -100,4 +100,22 @@ RSpec.describe GoFishGame, type: :model do
       expect(game.turn_class).to be_a GoFishTurn.class
     end
   end
+
+  describe '#players' do
+    let!(:game) { create(:game, game_size: 4, player_count: 4) }
+    before { game.start! }
+    it 'returns a list of players in the game that is not the current user' do
+      game_players = game.game_state.players
+      expect(game.players_list(game_players.first.id).size).to eq game.game_state.players.size - 1
+    end
+  end
+
+  describe '#ranks' do
+    let!(:game) { create(:game, game_size: 4, player_count: 4) }
+    before { game.start! }
+    it 'returns a list of ranks in the players hand' do
+      game_players = game.game_state.players
+      expect(game.ranks_list(game_players.first.id)).to eq game_players.first.ranks
+    end
+  end
 end
