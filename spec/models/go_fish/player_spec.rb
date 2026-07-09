@@ -167,6 +167,17 @@ RSpec.describe GoFish::Player, type: :model do
     end
   end
 
+  describe '#has_card?' do
+    let(:player) { described_class.new(name: 'player1') }
+    before { player.hand = [ GoFish::Card.new('J') ] }
+    it 'returns true if the player has the card' do
+      expect(player.has_card?('J')).to be true
+    end
+    it 'returns false if the players does not have the card' do
+      expect(player.has_card?('K')).to be false
+    end
+  end
+
   describe '#as_json' do
     let!(:player) { described_class.new(name: 'player1', id: 1) }
     let(:expected_hash) do

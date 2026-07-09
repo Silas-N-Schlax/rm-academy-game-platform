@@ -8,6 +8,15 @@ class Game < ApplicationRecord
   validates :game_size, presence: true
   validate :valid_game_size
 
+  def implementation
+    @implementation ||= game_state
+  end
+
+  def save_new_game(user_id)
+    self.players.new(user_id: user_id)
+    self.save
+  end
+
   def start!
     return self.game_state unless self.game_state.nil?
     return nil unless can_start?
@@ -20,14 +29,17 @@ class Game < ApplicationRecord
   end
 
   def play(player, rank, user_id)
-    game_state = self.game_state
-    game_state.run_turn(player.to_i, rank)
-    self.game_state = game_state
-    self.updated_at = Time.current
-    end_game(game_state.winner.id) if game_state.winner
+    implementation = self.game_state
+    implementation.run_turn(player.to_i, rank)
+    self.game_state = implementation
+    winner = implementation.winner
+    end_game(winner.id) if winner
     save!
   end
 
+  def valid_move?(player, rank)
+    implementation.valid_player?(player) && implementation.valid_rank?(rank)
+  end
 
   def valid_game_types
     game_details_hash.keys

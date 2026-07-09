@@ -439,4 +439,35 @@ RSpec.describe GoFish::Game, type: :model do
       expect(GoFish::Game.dump(game)).to eq expected_hash
     end
   end
+
+  describe '#valid_player?' do
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    it 'returns true if player is valid' do
+      expect(game.valid_player?(player2.id)).to be true
+    end
+
+    it 'returns false if player does not exist in game' do
+      expect(game.valid_player?(player1.id)).to be false
+    end
+
+    it 'returns false if player is self' do
+      expect(game.valid_player?(1)).to be false
+    end
+  end
+
+  describe '#valid_rank?' do
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    before do
+      game.players.first.hand = [ GoFish::Card.new('J') ]
+    end
+    it 'returns true if rank is valid' do
+      expect(game.valid_rank?('J')).to be true
+    end
+    it 'returns false if rank is not a valid rank' do
+      expect(game.valid_rank?('H')).to be false
+    end
+    it 'returns false if rank is not in current players hand' do
+      expect(game.valid_rank?('K')).to be false
+    end
+  end
 end

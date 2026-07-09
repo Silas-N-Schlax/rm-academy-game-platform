@@ -54,6 +54,10 @@ module GoFish
       hand.map(&:rank).uniq
     end
 
+    def has_card?(rank)
+      hand.any? { |card| card.rank == rank }
+    end
+
     def as_json
       {
         "name" => name,

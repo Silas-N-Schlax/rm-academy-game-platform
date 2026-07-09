@@ -70,6 +70,14 @@ module GoFish
       results.last
     end
 
+    def valid_player?(player_id)
+      players.any? { |player| player.id == player_id } && player_id != current_player.id
+    end
+
+    def valid_rank?(rank)
+      Card.valid_rank?(rank) && current_player.has_card?(rank)
+    end
+
     def as_json
       {
         "players" => players.map { |player| player.as_json },

@@ -245,4 +245,26 @@ RSpec.describe Game, type: :model do
       end
     end
   end
+
+  describe '#valid_move?' do
+    let!(:game) { create :started_game }
+    let(:player1) { game.game_state.players.first }
+    let(:player2) { game.game_state.players.last }
+    before do
+      game.start!
+      players = game.game_state.players
+      players.first.hand = [ GoFish::Card.new('J') ]
+    end
+    it 'returns true if player and rank is true' do
+      expect(game.valid_move?(player2.id, 'J')).to be true
+    end
+
+    it 'returns false if rank is invalid' do
+      expect(game.valid_move?(player2.id, 'K')).to be false
+    end
+
+    it 'returns false if player is invalid' do
+      expect(game.valid_move?(player1.id, 'J')).to be false
+    end
+  end
 end
