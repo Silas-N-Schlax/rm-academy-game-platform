@@ -25,7 +25,7 @@
             h2.content-header__title Open Games
 
         .game-list__cards
-          - games = @game.open_games
+          - games = @game.open_games(@user.id)
           - if games.empty?
             .game-list__no-data There are no open games to join...
 

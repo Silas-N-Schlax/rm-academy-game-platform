@@ -3,12 +3,11 @@ RSpec.describe 'Games', type: :system do
   let!(:user) { create(:user) }
 
   context 'when the user goes to the index' do
-    let!(:game) { create(:game, player_count: 0) }
+    let!(:game) { create(:game, game_size: 3, player_count: 1) }
     let!(:game2) { create(:game, player_count: 0) }
     before do
       sign_in_as user
       visit games_path
-      game.players.create(user_id: user.id, game_id: game.id)
     end
     it 'shows the games index' do
       expect(page).to have_content 'Your Games'
@@ -21,8 +20,9 @@ RSpec.describe 'Games', type: :system do
       expect(page).to have_css('#open-games > *', count: 2)
     end
 
-    context 'when a user clicks on a game they joined' do
+    context 'when a user clicks on a game they joined', :js do
       it 'shows them the waiting game' do
+        sign_in_as game.users.first
         visit games_path
         click_on 'Play'
         expected_content = 'Waiting for the game to start...'
@@ -37,21 +37,12 @@ RSpec.describe 'Games', type: :system do
         click_on 'Join'
       end
       it 'shows them that game and joins the game if they can join' do
-        expected_player_count = 1
-        expect(current_path).to eq game_path(game2.id)
-        expect(page).to have_content game2.name
+        expected_player_count = 2
+        expect(current_path).to eq game_path(game.id)
+        expect(page).to have_content game.name
         expected_content = 'Waiting for the game to start...'
         expect(page).to have_content expected_content
-        expect(Player.where(game_id: game2.id).size).to eq expected_player_count
-      end
-
-      context 'when the user cannot join' do
-        let(:game3) { create :game }
-        before do
-          2.times do
-            game3.players.create(game_id: game3.id, user_id: user.id)
-          end
-        end
+        expect(Player.where(game_id: game.id).size).to eq expected_player_count
       end
     end
   end
@@ -68,7 +59,7 @@ RSpec.describe 'Games', type: :system do
     end
 
     it 'displays "you have no games" when no games to show' do
-      create(:game, player_count: 0)
+      create(:game, player_count: 1)
       visit root_path
       expected_content = 'You have no active games...'
       expect(page).to have_content expected_content
@@ -117,6 +108,7 @@ RSpec.describe 'Games', type: :system do
     it 'creates a new game and sends user to that page' do
       game_name = 'RoleModel'
       sign_in_as user
+      visit new_game_path
       expect do
         fill_in_new_game_form(3, game_name)
         expect(page).to have_content game_name
