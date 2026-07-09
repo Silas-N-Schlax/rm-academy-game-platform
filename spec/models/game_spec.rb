@@ -38,6 +38,16 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#save_new_game' do
+    it 'saves game with one player to the database' do
+      game = Game.new(name: 'test', game_type: 'Go Fish', game_size: 2)
+      game.save_new_game(create(:user).id)
+      expected_game_size = 1
+      expect(game.persisted?).to be true
+      expect(game.players.size).to eq expected_game_size
+    end
+  end
+
   describe '#valid_types' do
     let(:game) { described_class.new }
     it 'returns array of types' do
@@ -164,14 +174,14 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#open-games' do
-    let!(:game1) { create(:game, player_count: 0) }
+  describe '#open_games' do
+    let!(:game1) { create(:game, player_count: 1) }
     let!(:game2) { create :finished_game }
     let!(:game3) { create(:game, player_count: 1) }
     it 'returns list of open games' do
-      expected_output = [ game1 ]
+      expected_output = [ game1, game3 ]
       game = described_class.new
-      expect(game.open_games).to eq expected_output
+      expect(game.open_games(game3.users.first)).to eq expected_output
     end
   end
 
