@@ -1,0 +1,69 @@
+module CrazyEights
+  class TurnResult
+    attr_reader :current_player
+    attr_accessor :card_played,  :cards_drawn
+
+    DREW_MESSAGE_BEGINNING = "drew a".freeze
+    PLAYED_CARD_MESSAGE = "played a"
+    PLAYED_WILD_MESSAGE = "played a wild! The suit is".freeze
+
+    def initialize(current_player:, card_played: nil, cards_drawn: [])
+      @card_played = card_played
+      @current_player = current_player
+      @cards_drawn = cards_drawn
+    end
+
+    def messages_for_current
+      return [ played_message(title(true)) ] if cards_drawn.empty?
+
+      [ drew_message(title(true)), played_message(title(true)) ]
+    end
+
+    def messages_for_all
+      return [ played_message(title) ] if cards_drawn.empty?
+
+      [ drew_message(title), played_message(title) ]
+    end
+
+    def add_to_drawn_card(card)
+      cards_drawn << card
+    end
+
+    def as_json
+      {
+        "card_played" => card_played.as_json,
+        "current_player" => current_player.as_json,
+        "cards_drawn" => cards_drawn.map(&:as_json)
+      }
+    end
+
+    def self.from_json(json)
+      return if json.blank?
+      TurnResult.new(
+        card_played: Card.from_json(json["card_played"]),
+        current_player: Player.from_json(json["current_player"]),
+        cards_drawn: json["cards_drawn"].map { |card| Card.from_json(card) }
+      )
+    end
+
+    private
+
+    def drew_message(title)
+      cards = cards_drawn.map(&:to_s)
+      cards.insert(-2, "and") if cards.size > 1
+      "#{title} #{DREW_MESSAGE_BEGINNING} #{cards.join(", ")}".sub("and,", "and")
+    end
+
+    def played_message(title)
+      return "#{title} #{PLAYED_WILD_MESSAGE} #{card_played.wild_suit}" if card_played.wild_suit
+
+      "#{title} #{PLAYED_CARD_MESSAGE} #{card_played}"
+    end
+
+    def title(current = false)
+      return "You" if current
+
+      current_player.name
+    end
+  end
+end
