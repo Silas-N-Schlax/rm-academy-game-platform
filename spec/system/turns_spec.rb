@@ -71,7 +71,7 @@ RSpec.describe 'Turns', type: :system do
         find('.playing-card--large', match: :first).click
       end
       it 'allows player to play card' do
-        expected_modal_content = 'Funny message here'
+        expected_modal_content = 'Oooh, a wild.'
         expect(page).to have_content expected_modal_content
         click_on 'Play My Wild'
         expect(current_path).to eq game_path(game)

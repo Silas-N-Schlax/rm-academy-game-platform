@@ -1,4 +1,4 @@
-- if @game.open_games(current_user.id).empty? && @user.games.empty?
+- if @game.open_games(current_user.id).empty? && !@user.has_games?
   = render 'index-empty'
 - else
   = render 'index'

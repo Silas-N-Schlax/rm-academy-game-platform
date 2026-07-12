@@ -60,6 +60,8 @@ RSpec.describe 'Games', type: :system do
 
     it 'displays "you have no games" when no games to show' do
       create(:game, player_count: 1)
+      game = create(:finished_game)
+      sign_in_as game.users.first
       visit root_path
       expected_content = 'You have no active games...'
       expect(page).to have_content expected_content

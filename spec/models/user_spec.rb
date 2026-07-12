@@ -54,4 +54,20 @@ RSpec.describe User, type: :model do
       expect(user).to be_invalid
     end
   end
+
+  describe '#has_games?' do
+    it 'returns true if user has games they can play' do
+      game = create(:game)
+      expect(game.users.first.has_games?).to be true
+    end
+
+    it 'returns false if all games are finished games' do
+      game = create(:finished_game)
+      expect(game.users.first.has_games?).to be false
+    end
+    it 'returns false if there are no games' do
+      user = create :user
+      expect(user.has_games?).to be false
+    end
+  end
 end

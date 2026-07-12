@@ -11,13 +11,12 @@
               p New Game
 
         .game-list__cards
-          - if @user.games.empty?
-            .game-list__no-data You have no active games...
-
-          - else
+          - if @user.has_games?
             - @user.games.each do |game|
-              - if game.joined?(@user.id)
+              - if game.joined?(@user.id) && game.finished_at.nil?
                 = render partial: 'game_card', locals: { item: game, btn_msg: 'Play', btn_path: game_path(game), post: false }
+          - else
+            .game-list__no-data You have no active games...
 
       section#open-games
         header.content-header
