@@ -1,7 +1,6 @@
 class Game < ApplicationRecord
   has_many :players, dependent: :destroy
   has_many :users, through: :players
-  # serialize :game_state, coder: GoFish::Game
 
   validates :name, presence: true, length: { minimum: 4 }
   validates :type, presence: true, inclusion: { in: ->(game) { game.valid_types } }
@@ -123,7 +122,7 @@ class Game < ApplicationRecord
         min: 2,
         max: 6
       },
-      "CrazyEights" => {
+      "CrazyEightsGame" => {
         min: 2,
         max: 7
       }

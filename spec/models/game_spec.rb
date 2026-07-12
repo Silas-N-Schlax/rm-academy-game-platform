@@ -37,7 +37,7 @@ RSpec.describe Game, type: :model do
     it 'returns array' do
       game = Game.new(name: 'test', type: 'GoFishGame', game_size: 2)
       game.save_new_game(create(:user).id)
-      expected_array = [ "GoFishGame", "CrazyEights" ]
+      expected_array = [ "GoFishGame", "CrazyEightsGame" ]
       expect(game.valid_types).to eq expected_array
     end
   end
