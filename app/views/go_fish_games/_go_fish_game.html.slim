@@ -3,7 +3,7 @@
   .gf-game__board.gf-game--border
     .panel
       .panel__header.panel__header--title
-        a href='./'
+        a href='/'
           i.li.li-move-left.icon.icon--x-large.panel__header-link
         span #{@game.name}
 
@@ -22,7 +22,7 @@
             .players__header Players
             .players__details
               - implementation.players.each do |player|
-                - unless current_user.name == player.name
+                - unless current_user.id == player.id
                   = render partial: "player_accordion", locals: { player: player }
 
   .gf-game__feed.gf-game--border
@@ -38,9 +38,9 @@
         .game-feed
           .game-feed__logs
             - implementation.results.each do |result|
-                = render partial: "feed_turn", locals: { result: result, current_player: current_user.id }
+                = render partial: "go_fish_feed", locals: { result: result, current_player: current_user.id }
 
-        = simple_form_for @game.turn_class.new(game_id: @game.id, user_id: current_user.id), url: game_turns_path(@game), method: :post, html: { class: 'game-action' } do |f|
+        = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { class: 'game-action' } do |f|
           .game-action__options
             .game-action__option
               = f.input :player,
