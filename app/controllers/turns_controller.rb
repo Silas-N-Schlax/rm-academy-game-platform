@@ -11,6 +11,6 @@ class TurnsController < ApplicationController
   private
 
   def turn_params
-    params.expect(turn: [ :player, :rank ]).merge({ game_id: params[:game_id], user_id: Current.session.user.id })
+    params.expect(turn: [ :player, :rank, :suit, :request, :wild_suit ]).merge({ game: @game, user: Current.session.user })
   end
 end
