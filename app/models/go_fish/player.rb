@@ -81,7 +81,7 @@ module GoFish
     def create_book_if_possible
       hand.group_by(&:rank).each do |group|
         card_group = group.last
-        create_book_and_remove_cards(group.first) if card_group.length == 4
+        create_book_and_remove_cards(group.first) if card_group.size == 4
       end
       books.last
     end

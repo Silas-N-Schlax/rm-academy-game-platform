@@ -23,7 +23,7 @@ module GoFish
     end
 
     def answer
-      return "#{opponent.name} had #{cards_taken.length} #{rank_asked_for}s" unless cards_taken.empty?
+      return "#{opponent.name} had #{cards_taken.size} #{rank_asked_for}s" unless cards_taken.empty?
 
       "Go Fish: #{opponent.name} didn't have any #{rank_asked_for}s"
     end

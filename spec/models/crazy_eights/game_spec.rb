@@ -304,7 +304,7 @@ RSpec.describe CrazyEights::Game, type: :model do
       it 'initializes a game and returns an object' do
         expected_deck_size = 37
         expected_discard_pile_size = 1
-        expect(result.players.count).to eq game.players.size
+        expect(result.players.size).to eq game.players.size
         expect(result.current_player_idx).to be_zero
         expect(result.results).to be_empty
         expect(result.deck.cards_left).to eq expected_deck_size
