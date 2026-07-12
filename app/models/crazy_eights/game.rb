@@ -40,7 +40,6 @@ module CrazyEights
       return false if current_player.can_play?(discard.top_card)
 
       give_cards_to_player
-      # ^ add each card to a turn result
     end
 
     def winner?
@@ -57,6 +56,17 @@ module CrazyEights
 
     def latest_result
       results.last
+    end
+
+    def find_player(id)
+      players.find { |player| player.id == id }
+    end
+
+
+    def valid_card?(rank, suit)
+      return false unless Card.valid_rank?(rank) && Card.valid_suit?(suit)
+      return false unless current_player.has_card?(rank, suit)
+      true
     end
 
     def as_json
@@ -80,8 +90,8 @@ module CrazyEights
     def self.from_json(json)
       Game.new(
         players: json["players"].map { |player| Player.from_json(player) },
-        deck: Pile.from_json(json["deck"]),
-        discard: Pile.from_json(json["discard"]),
+        deck: Deck.from_json(json["deck"]),
+        discard: Discard.from_json(json["discard"]),
         results: json["results"].map { |result| TurnResult.from_json(result) },
         current_player_idx: json["current_player_idx"]
       )
@@ -111,7 +121,7 @@ module CrazyEights
       return next_player_turn if discard.cards_left == 1 && deck.empty?
       deck.add_cards(discard.all_but_top_card) if deck.empty?
       card = current_player.add_cards([ deck.take_top_card ])
-      add_result(drawn_card: card)
+      add_result(drawn_card: card.first)
       give_cards_to_player unless current_player.can_play?(discard.top_card)
     end
 
@@ -119,12 +129,6 @@ module CrazyEights
       new_index = current_player_idx + 1
       first_player_idx = 0
       self.current_player_idx = new_index > players.size - 1 ? first_player_idx : new_index
-    end
-
-    def valid_card?(rank, suit)
-      return false unless Card.valid_rank?(rank) && Card.valid_suit?(suit)
-      return false unless current_player.has_card?(rank, suit)
-      true
     end
 
     def deal

@@ -20,7 +20,7 @@ module CrazyEights
     end
 
     def self.from_json(json)
-      Deck.new(
+      self.new(
         cards: json.map { |card| Card.from_json(card) }
       )
     end

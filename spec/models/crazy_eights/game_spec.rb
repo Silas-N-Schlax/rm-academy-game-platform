@@ -247,9 +247,42 @@ RSpec.describe CrazyEights::Game, type: :model do
     end
   end
 
-  describe '#valid_player?'
-  describe '#valid_card?'
-  describe '#find_player'
+  describe '#valid_card?' do
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    it 'returns true if valid' do
+      expect(game.valid_card?('J', 'Spades')).to be false
+    end
+
+    it 'returns false in invalid rank' do
+      expect(game.valid_card?('0', 'Spades')).to be false
+    end
+
+    it 'returns false if invalid suit' do
+      expect(game.valid_card?('J', 'Obi')).to be false
+    end
+
+    it 'returns false if player does not have rank or suit' do
+      expect(game.valid_card?('K', 'Hearts')).to be false
+    end
+  end
+
+  describe '#find_player' do
+    let(:game) { described_class.new(players: [ player1, player2 ]) }
+    context 'when provided with id for player1' do
+      it 'returns player1' do
+        result = game.find_player(player1.id)
+        expect(result.name).to eq player1.name
+      end
+    end
+
+    context 'when provided with an id for a non-existent player' do
+      it 'returns nil' do
+        player3_id = 3
+        result = game.find_player(player3_id)
+        expect(result).to be_nil
+      end
+    end
+  end
 
   describe '#as_json' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }

@@ -35,7 +35,7 @@ module CrazyEights
     end
 
     def to_file_name
-      "#{SPELLED_RANKS[rank] || rank }_of_#{suit}".downcase
+      to_s.gsub(" ", "_").downcase
     end
 
     def as_json
