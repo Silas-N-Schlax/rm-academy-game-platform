@@ -9,8 +9,7 @@
           .card-collection.card-collection--2x-small
             - player.hand_size.times do |i|
               - if i < max_player_cards
-                img.playing-card.playing-card--2x-small src="/images/back.svg"
-                / = image_tag 'back.svg', class: 'playing-card playing-card--x-small'
+                = image_tag 'cards/back.svg', class: 'playing-card playing-card--2x-small'
           p #{player.hand_size} cards left
 
 
@@ -20,9 +19,9 @@
     .card-collection.card-collection--x-large
       = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
         = f.input :suit, as: :hidden, input_html: { request: true }
-        = image_submit_tag("/images/back.svg", class: 'playing-card playing-card--x-large')
+        = image_submit_tag("cards/back.svg", class: 'playing-card playing-card--x-large')
 
     .card-collection.card-collection--x-large id="discard-top-card-rank-#{@game.game_state.discard.top_card.rank}"
       = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
           = f.input :suit, as: :hidden, input_html: { request: true }
-          = image_submit_tag("/images/#{@game.game_state.discard.top_card.to_file_name}.svg", class: 'playing-card playing-card--x-large', disabled: true)
+          = image_submit_tag("cards/#{@game.game_state.discard.top_card.to_file_name}.svg", class: 'playing-card playing-card--x-large', disabled: true)

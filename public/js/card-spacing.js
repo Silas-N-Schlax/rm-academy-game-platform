@@ -12,8 +12,11 @@ function changeOffset() {
   const cardCollections = document.querySelectorAll('.card-collection')
   cardCollections.forEach((collection) => {
     cards = collection.querySelectorAll('.playing-card')
-    cardType = cards[0].className.split('--')
-    if (blackListedCards.includes(cardType[cardType.length - 1])) return
+    let cardType = cards[0]
+    if (cardType) {
+      cardType = cardType.className.split('--')
+      if (blackListedCards.includes(cardType[cardType.length - 1])) return
+    }
     if (cards.length == 0) return
 
     let minOffset = 15 // desktop min offset

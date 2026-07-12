@@ -1,8 +1,8 @@
 .card-collection class='card-collection#{modifier}'
   - hand.each do |card|
     - if back
-      img.playing-card class="playing-card#{modifier}" src="/images/back.svg"
+      = image_tag "cards/back.svg", class: "playing-card playing-card#{modifier}"
     - else
-      img.playing-card class="playing-card#{modifier}" src="/images/#{card}.svg"
+      = image_tag "cards/#{card}.svg", class: "playing-card playing-card#{modifier}"
 
 

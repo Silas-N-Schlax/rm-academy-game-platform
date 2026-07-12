@@ -3,4 +3,4 @@
     = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
       = f.input :rank, as: :hidden, input_html: { value: card.rank }
       = f.input :suit, as: :hidden, input_html: { value: card.suit }
-      = image_submit_tag("/images/#{card.to_file_name}.svg", class: "playing-card playing-card#{modifier}")
+      = image_submit_tag("cards/#{card.to_file_name}.svg", class: "playing-card playing-card#{modifier}")
