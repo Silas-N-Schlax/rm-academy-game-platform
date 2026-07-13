@@ -60,10 +60,11 @@ RSpec.describe CrazyEights::Game, type: :model do
         game.play_card(rank: 'J', suit: 'Hearts')
       end
       it 'plays card and finished turn' do
+        expected_results_size = 1
         expect(player.hand_size).to eq expected_hand_size
         expect(game.discard.cards_left).to eq expected_discard_pile_size
         expect(game.current_player).to_not eq player
-        expect(game.results.size).to_not be_zero
+        expect(game.results.size).to eq expected_results_size
         expect(game.current_result.current_player.id).to_not eq game.latest_result.current_player.id
       end
     end
@@ -71,13 +72,18 @@ RSpec.describe CrazyEights::Game, type: :model do
     context 'when the card is valid and its a wild' do
       let(:wild_suit) { 'Diamonds' }
        before do
-         player.hand.unshift CrazyEights::Card.new('8')
+         player.hand = [ CrazyEights::Card.new('8'), CrazyEights::Card.new('10', 'Diamonds'), CrazyEights::Card.new('7') ]
+         game.discard.cards = [ CrazyEights::Card.new('2') ]
         game
         game.play_card(rank: '8', suit: 'Spades', wild_suit:)
       end
-      it 'adds the correct wild suit to that card' do
-        top_discarded_card = game.discard.top_card
-        expect(top_discarded_card.wild_suit).to eq wild_suit
+      it 'saves the current wild suit and allows play' do
+        expect(game.wild_suit).to eq wild_suit
+        game.current_player_idx = 0
+        game.play_card(rank: '10', suit: 'Diamonds')
+        expected_hand_size = 1
+        expect(game.players.first.hand_size).to eq expected_hand_size
+        expect(game.wild_suit).to be_nil
       end
     end
 
@@ -118,20 +124,25 @@ RSpec.describe CrazyEights::Game, type: :model do
     let(:player) { game.players.first }
     before do
       game.discard.cards = [ CrazyEights::Card.new('J') ]
-      game.deck.cards = [ CrazyEights::Card.new('2') ]
+      game.deck.cards = [ CrazyEights::Card.new('2', "Hearts"), CrazyEights::Card.new('2') ]
       player.hand = [ CrazyEights::Card.new('10', 'Hearts'), CrazyEights::Card.new('2', 'Hearts') ]
     end
     context 'when player does not have any cards to play' do
       context 'when they have to pick up one card' do
         before { game.request_cards }
         it 'adds top card from deck to player hand' do
-          expected_hand_size = 3
+          expected_hand_size = 4
           expected_discard_pile_size = 1
-          expected_drawn_cards = 1
+          expected_drawn_cards = 2
           expect(game.players.first.hand_size).to eq expected_hand_size
           expect(game.deck.empty?).to be true
           expect(game.discard.cards_left).to eq expected_discard_pile_size
           expect(game.current_result.cards_drawn.size).to eq expected_drawn_cards
+        end
+
+        it 'adds result to results array' do
+          expected_results_size = 1
+          expect(game.results.size).to eq expected_results_size
         end
       end
 
@@ -249,11 +260,23 @@ RSpec.describe CrazyEights::Game, type: :model do
 
   describe '#valid_card?' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    let!(:player1_data) { game.players.first }
+    before do
+      player1_data.hand = [ CrazyEights::Card.new('J', 'Diamonds') ]
+      game.discard.cards = [ CrazyEights::Card.new('8') ]
+      game.wild_suit = 'Diamonds'
+    end
     it 'returns true if valid' do
-      expect(game.valid_card?('J', 'Spades')).to be false
+      expect(game.valid_card?('J', 'Diamonds')).to be true
     end
 
-    it 'returns false in invalid rank' do
+    it 'returns true if card is 8 and does not match anything' do
+      game.discard.cards = [ CrazyEights::Card.new('2') ]
+      player1_data.hand = [ CrazyEights::Card.new('8', 'Hearts') ]
+      expect(game.valid_card?('8', 'Hearts')).to be true
+    end
+
+    it 'returns false if invalid rank' do
       expect(game.valid_card?('0', 'Spades')).to be false
     end
 
@@ -357,29 +380,38 @@ RSpec.describe CrazyEights::Game, type: :model do
         "deck" => [
           {
             "rank" => 'J',
-            "suit" => 'Spades',
-            "wild_suit" => nil
+            "suit" => 'Spades'
           }
         ],
         "discard" => [
           {
             "rank" => 'J',
-            "suit" => 'Spades',
-            "wild_suit" => nil
+            "suit" => 'Spades'
           }
         ],
         "results" => [
           {
             "card_played" => {
                "rank" => 'J',
-              "suit" => 'Spades',
-              "wild_suit" => nil
+              "suit" => 'Spades'
             },
             "cards_drawn" => [],
-            "current_player" => nil
+            "current_player" => nil,
+            "wild_suit" => nil
           }
         ],
-        "current_player_idx" => 0
+        "current_result" => {
+          "card_played" => nil,
+          "cards_drawn" => [],
+          "current_player" => {
+            "name" => 'player1',
+            "id" => 1,
+            "hand" => []
+          },
+          "wild_suit" => nil
+        },
+        "current_player_idx" => 0,
+        "wild_suit" => nil
       }
   end
 end

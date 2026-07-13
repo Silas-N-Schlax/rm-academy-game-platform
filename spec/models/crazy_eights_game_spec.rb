@@ -105,8 +105,9 @@ RSpec.describe CrazyEightsGame, type: :model do
     let(:player2) { game.game_state.players.last }
     before do
       game.start!
-      players = game.game_state.players
-      players.first.hand = [ CrazyEights::Card.new('J') ]
+      implementation = game.game_state
+      implementation.players.first.hand = [ CrazyEights::Card.new('J') ]
+      implementation.discard.cards = [ CrazyEights::Card.new('2') ]
     end
     it 'returns true if rank and suit is true' do
       expect(game.valid_move?('J', 'Spades')).to be true
@@ -127,22 +128,4 @@ RSpec.describe CrazyEightsGame, type: :model do
       expect(game.turn_class).to be_a CrazyEightsTurn.class
     end
   end
-
-  # describe '#players' do
-  #   let!(:game) { create(:game, game_size: 4, player_count: 4) }
-  #   before { game.start! }
-  #   it 'returns a list of players in the game that is not the current user' do
-  #     game_players = game.game_state.players
-  #     expect(game.players_list(game_players.first.id).size).to eq game.game_state.players.size - 1
-  #   end
-  # end
-
-  # describe '#ranks' do
-  #   let!(:game) { create(:game, game_size: 4, player_count: 4) }
-  #   before { game.start! }
-  #   it 'returns a list of ranks in the players hand' do
-  #     game_players = game.game_state.players
-  #     expect(game.ranks_list(game_players.first.id)).to eq game_players.first.ranks
-  #   end
-  # end
 end

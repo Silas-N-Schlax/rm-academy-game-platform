@@ -8,7 +8,7 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
     CrazyEights::TurnResult.new(
       card_played: card_played,
       current_player: current_player,
-      cards_drawn: cards_drawn
+      cards_drawn: cards_drawn,
     )
   end
 
@@ -22,7 +22,8 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
     end
 
     it 'returns the correct messages when a wild was played' do
-      result.card_played = CrazyEights::Card.new('8', 'Spades', 'Hearts')
+      result.wild_suit = 'Hearts'
+      result.card_played = CrazyEights::Card.new('8', 'Spades')
       messages = result.messages_for_current
       expected_drew_cards_message = 'You drew a King of Spades, and Jack of Hearts'
       expected_played_card_message = 'You played a wild! The suit is Hearts'
@@ -34,7 +35,21 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
       result.cards_drawn = []
       messages = result.messages_for_current
       expected_played_card_message = 'You played a Jack of Spades'
+      expect(messages[0]).to be_nil
+      expect(messages[1]).to eq expected_played_card_message
+    end
+
+    it 'returns the correct message when no cards have been played' do
+      result.card_played = nil
+      messages = result.messages_for_current
+      expected_played_card_message = 'You drew a King of Spades, and Jack of Hearts'
       expect(messages[0]).to eq expected_played_card_message
+      expect(messages[1]).to be_nil
+    end
+
+    it 'returns all messages correct if cards have been played and drawn' do
+      expected_messages_count = 2
+      expect(result.messages_for_current.size).to eq expected_messages_count
     end
   end
 
@@ -48,7 +63,8 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
     end
 
     it 'returns the correct messages when a wild was played' do
-      result.card_played = CrazyEights::Card.new('8', 'Spades', 'Hearts')
+      result.wild_suit = 'Hearts'
+      result.card_played = CrazyEights::Card.new('8', 'Spades')
       messages = result.messages_for_all
       expected_drew_cards_message = "#{result.current_player.name} drew a King of Spades, and Jack of Hearts"
       expected_played_card_message = "#{result.current_player.name} played a wild! The suit is Hearts"
@@ -60,7 +76,21 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
       result.cards_drawn = []
       messages = result.messages_for_all
       expected_played_card_message = "#{result.current_player.name} played a Jack of Spades"
+      expect(messages[0]).to be_nil
+      expect(messages[1]).to eq expected_played_card_message
+    end
+
+    it 'returns the correct message when no cards have been played' do
+      result.card_played = nil
+      messages = result.messages_for_all
+      expected_played_card_message = "#{result.current_player.name} drew a King of Spades, and Jack of Hearts"
       expect(messages[0]).to eq expected_played_card_message
+      expect(messages[1]).to be_nil
+    end
+
+    it 'returns all messages correct if cards have been played and drawn' do
+      expected_messages_count = 2
+      expect(result.messages_for_all.size).to eq expected_messages_count
     end
   end
 
@@ -73,32 +103,6 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
   end
 
   describe '#as_json' do
-    let(:expected_hash) do
-      {
-       "card_played" => {
-          "rank" => 'J',
-          "suit" => 'Spades',
-          "wild_suit" => nil
-        },
-        "cards_drawn" => [
-          {
-            "rank" => 'K',
-            "suit" => 'Spades',
-            "wild_suit" => nil
-          },
-          {
-            "rank" => 'J',
-            "suit" => 'Hearts',
-            "wild_suit" => nil
-          }
-        ],
-        "current_player" => {
-          "name" => 'player',
-          "id" => 0,
-          "hand" => []
-        }
-      }
-    end
     it 'returns expected hash' do
       expect(result.as_json).to eq expected_hash
     end
@@ -107,7 +111,32 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
   describe '.from_json' do
     it 'restores current state of the card' do
       json = result.as_json
-      expect(CrazyEights::TurnResult.from_json(json).as_json).to eq json
+      expect(CrazyEights::TurnResult.from_json(json).as_json).to eq expected_hash
     end
+  end
+
+  def expected_hash
+    {
+      "card_played" => {
+        "rank" => 'J',
+        "suit" => 'Spades'
+      },
+      "cards_drawn" => [
+        {
+          "rank" => 'K',
+          "suit" => 'Spades'
+        },
+        {
+          "rank" => 'J',
+          "suit" => 'Hearts'
+        }
+      ],
+      "current_player" => {
+        "name" => 'player',
+        "id" => 0,
+        "hand" => []
+      },
+      "wild_suit" => nil
+    }
   end
 end

@@ -29,10 +29,4 @@ class CrazyEightsGame < Game
   def valid_move?(rank, suit)
     implementation.valid_card?(rank, suit)
   end
-
-  # def players_list
-  # end
-
-  # def ranks_list
-  # end
 end

@@ -11,10 +11,10 @@ module CrazyEights
 
     def current_result
       @current_result ||= TurnResult.new(current_player: current_player)
+    end
 
     def wild_suit
       @wild_suit ||= nil
-    end
     end
 
     def initialize(players:, deck: Deck.new, discard: Discard.new, current_player_idx: 0, results: [])
@@ -87,6 +87,7 @@ module CrazyEights
         "results" => results.map(&:as_json),
         "current_player_idx" => current_player_idx,
         "wild_suit" => wild_suit,
+        "current_result" => current_result.as_json
       }
     end
 
@@ -107,6 +108,7 @@ module CrazyEights
         current_player_idx: json["current_player_idx"],
       )
       game.wild_suit = json["wild_suit"]
+      game.current_result = TurnResult.from_json(json["current_result"])
       game
     end
 
@@ -125,9 +127,13 @@ module CrazyEights
 
     def add_result(card: nil, drawn_card: nil)
       current_result.card_played = card
-      results << current_result
+      add_current_result_if_possible
       self.current_result = nil unless card.nil?
       current_result.add_to_drawn_card(drawn_card) unless drawn_card.nil?
+    end
+
+    def add_current_result_if_possible
+      results << current_result unless results.include?(current_result)
     end
 
     def give_cards_to_player
