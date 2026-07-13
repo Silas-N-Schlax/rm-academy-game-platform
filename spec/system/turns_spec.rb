@@ -77,7 +77,7 @@ RSpec.describe 'Turns', type: :system do
       it 'allows player to play card' do
         expected_modal_content = 'Oooh, a wild.'
         expect(page).to have_content expected_modal_content
-        click_on 'Play My Wild'
+        click_button "Play My Wild", match: :first
         expect(current_path).to eq game_path(game)
         expect(page).to have_selector('#discard-top-card-rank-8')
       end

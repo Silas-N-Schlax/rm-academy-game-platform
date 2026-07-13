@@ -23,17 +23,18 @@
 
 
 
-  - if turn && turn['rank'] == '8' && turn['wild_suit'].nil?
-    .modal-wrapper.modal-wrapper--active.modal-wrapper--demo
-      .modal
-        .modal__header
-          | Oooh, a wild. What suit would you like it pretend to be?
-        .modal__body
-          = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
-            = f.input :rank, as: :hidden, input_html: { value: turn['rank'] }
-            = f.input :suit, as: :hidden, input_html: { value: turn['suit'] }
-            = f.input :wild_suit, as: :select, collection: ['Spades', 'Hearts', 'Diamonds', 'Clubs'], selected: 'Spades'
-            = f.button :submit, "Play My Wild"
+  / - if turn && turn['rank'] == '8' && turn['wild_suit'].nil?
+  /   .modal-wrapper.modal-wrapper--active.modal-wrapper--demo
+  /     .modal-wrapper__backdrop
+  /     .modal
+  /       .modal__header
+  /         | Oooh, a wild. What suit would you like it pretend to be?
+  /       .modal__body
+  /         = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
+  /           = f.input :rank, as: :hidden, input_html: { value: turn['rank'] }
+  /           = f.input :suit, as: :hidden, input_html: { value: turn['suit'] }
+  /           = f.input :wild_suit, as: :select, collection: ['Spades', 'Hearts', 'Diamonds', 'Clubs'], selected: 'Spades'
+  /           = f.button :submit, "Play My Wild"
 
 
 

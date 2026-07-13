@@ -3,6 +3,7 @@
   width: var(--_gf-small-card-width);
   box-shadow: var(--op-shadow-x-small);
   border-radius: var(--op-space-2x-small);
+  padding: 0px;
   height: min-content;
 
    &.playing-card--2x-small {
