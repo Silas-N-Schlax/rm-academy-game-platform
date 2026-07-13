@@ -23,5 +23,4 @@
 
     .card-collection.card-collection--x-large id="discard-top-card-rank-#{@game.game_state.discard.top_card.rank}"
       = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
-          / = f.input :suit, as: :hidden, input_html: { request: true }
           = image_submit_tag("cards/#{@game.game_state.discard.top_card.to_file_name}.svg", class: 'playing-card playing-card--x-large', disabled: true)
