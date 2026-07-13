@@ -8,8 +8,7 @@ meta name="turbo-refresh-method" content="morph"
 meta name="turbo-refresh-scroll" content="preserve"
 
 = stylesheet_link_tag "https://cdn.jsdelivr.net/npm/@rolemodel/optics@2.4.0/dist/css/optics+lucide_icons.min.css"
-= stylesheet_link_tag :app, "data-turbo-track": "reload"
-= stylesheet_link_tag 'application', 'data-turbo-track': 'reload'
-= javascript_include_tag 'application', 'data-turbo-track': 'reload', defer: true
+= stylesheet_link_tag :app
+= javascript_include_tag 'application', defer: true, type: :module
 
 = yield :head

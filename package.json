@@ -1,8 +1,27 @@
 {
   "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.23",
     "@rolemodel/optics": "^2.4.0"
   },
   "devDependencies": {
-    "playwright": "^1.61.1"
-  }
+    "@csstools/postcss-sass": "^5.1.1",
+    "css-loader": "^7.1.4",
+    "css-minimizer-webpack-plugin": "^8.0.0",
+    "esbuild": "^0.28.1",
+    "esbuild-loader": "^4.5.0",
+    "mini-css-extract-plugin": "^2.10.2",
+    "playwright": "^1.61.1",
+    "postcss": "^8.5.17",
+    "postcss-loader": "^8.2.1",
+    "postcss-preset-env": "^11.3.2",
+    "postcss-scss": "^4.0.9",
+    "webpack": "^5.108.4",
+    "webpack-cli": "^7.2.1"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets"
+  },
+  "packageManager": "yarn@4.17.1",
+  "type": "module"
 }
