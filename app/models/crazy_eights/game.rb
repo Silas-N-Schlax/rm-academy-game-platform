@@ -13,16 +13,13 @@ module CrazyEights
       @current_result ||= TurnResult.new(current_player: current_player)
     end
 
-    def wild_suit
-      @wild_suit ||= nil
-    end
-
     def initialize(players:, deck: Deck.new, discard: Discard.new, current_player_idx: 0, results: [])
       @players = players
       @deck = deck
       @discard = discard
       @current_player_idx = current_player_idx
       @results = results
+      @wild_suit
     end
 
     def start
