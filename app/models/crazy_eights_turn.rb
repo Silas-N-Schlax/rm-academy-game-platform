@@ -22,7 +22,7 @@ class CrazyEightsTurn
 
   def save
     if self.valid?
-      game.play(rank: rank, suit: suit, wild_suit: wild_suit, request: request)
+      game.play(rank: rank, suit: suit, wild_suit: wild_suit, request: !!request)
       return true
     end
     false
@@ -50,6 +50,6 @@ class CrazyEightsTurn
   end
 
   def request?
-    request == true
+    !!request == true
   end
 end

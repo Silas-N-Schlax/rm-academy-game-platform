@@ -43,6 +43,10 @@ RSpec.describe 'Turns', type: :system do
     let!(:game) { create :started_game, type: 'CrazyEightsGame' }
     before do
       game.start!
+      implementation = game.game_state
+      implementation.players.first.hand = [ CrazyEights::Card.new('J') ]
+      implementation.discard.cards = [ CrazyEights::Card.new('2') ]
+      game.save
       sign_in_as game.users.first
     end
     it 'displays a turn result' do
@@ -76,6 +80,34 @@ RSpec.describe 'Turns', type: :system do
         click_on 'Play My Wild'
         expect(current_path).to eq game_path(game)
         expect(page).to have_selector('#discard-top-card-rank-8')
+      end
+    end
+
+    context 'when a card is requested' do
+       let!(:game) { create :started_game, type: 'CrazyEightsGame' }
+      before do
+        game.start!
+        game_state = game.game_state
+        game_state.discard.cards = [ CrazyEights::Card.new('A') ]
+        game_state.players.first.hand = [ CrazyEights::Card.new('2', 'Hearts'), CrazyEights::Card.new('3', 'Hearts')  ]
+        game_state.deck.cards = [ CrazyEights::Card.new('A', 'Clubs'), CrazyEights::Card.new('A', 'Hearts') ]
+        game.save!
+        visit game_path(game)
+      end
+      it 'gives player card when they can draw' do
+        find('.playing-card--x-large', match: :first).click
+        expected_card_count = 3
+        expect(current_path).to eq game_path(game)
+        expect(page.all(:css, '.playing-card--large').count).to eq expected_card_count
+      end
+
+      it 'does not give player cards when they cannot draw' do
+        game.game_state.discard.cards = [ CrazyEights::Card.new('A', 'Hearts') ]
+        game.save!
+        find('.playing-card--x-large', match: :first).click
+        expected_card_count = 2
+        expect(current_path).to eq game_path(game)
+        expect(page.all(:css, '.playing-card--large').count).to eq expected_card_count
       end
     end
 
