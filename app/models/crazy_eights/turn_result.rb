@@ -1,26 +1,28 @@
 module CrazyEights
   class TurnResult
     attr_reader :current_player
-    attr_accessor :card_played,  :cards_drawn
+    attr_accessor :card_played, :cards_drawn, :wild_suit
 
     DREW_MESSAGE_BEGINNING = "drew a".freeze
     PLAYED_CARD_MESSAGE = "played a"
     PLAYED_WILD_MESSAGE = "played a wild! The suit is".freeze
 
-    def initialize(current_player:, card_played: nil, cards_drawn: [])
+    def initialize(current_player:, card_played: nil, cards_drawn: [], wild_suit: nil)
       @card_played = card_played
       @current_player = current_player
       @cards_drawn = cards_drawn
     end
 
     def messages_for_current
-      return [ played_message(title(true)) ] if cards_drawn.empty?
+      return [ nil, played_message(title(true)) ] if cards_drawn.empty?
+      return [ drew_message(title(true)) ] if card_played.nil?
 
       [ drew_message(title(true)), played_message(title(true)) ]
     end
 
     def messages_for_all
-      return [ played_message(title) ] if cards_drawn.empty?
+      return [ nil, played_message(title) ] if cards_drawn.empty?
+      return [ drew_message(title) ] if card_played.nil? || card_played.is_a?(Array)
 
       [ drew_message(title), played_message(title) ]
     end
@@ -33,7 +35,8 @@ module CrazyEights
       {
         "card_played" => card_played.as_json,
         "current_player" => current_player.as_json,
-        "cards_drawn" => cards_drawn.map(&:as_json)
+        "cards_drawn" => cards_drawn.map(&:as_json),
+        "wild_suit" => wild_suit
       }
     end
 
@@ -42,7 +45,8 @@ module CrazyEights
       TurnResult.new(
         card_played: Card.from_json(json["card_played"]),
         current_player: Player.from_json(json["current_player"]),
-        cards_drawn: json["cards_drawn"].map { |card| Card.from_json(card) }
+        cards_drawn: json["cards_drawn"].map { |card| Card.from_json(card) },
+        wild_suit: json["wild_suit"]
       )
     end
 
@@ -55,7 +59,7 @@ module CrazyEights
     end
 
     def played_message(title)
-      return "#{title} #{PLAYED_WILD_MESSAGE} #{card_played.wild_suit}" if card_played.wild_suit
+      return "#{title} #{PLAYED_WILD_MESSAGE} #{wild_suit}" if wild_suit
 
       "#{title} #{PLAYED_CARD_MESSAGE} #{card_played}"
     end

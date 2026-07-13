@@ -14,14 +14,12 @@ module CrazyEights
       cards.each { |card| hand << card }
     end
 
-    def take_card(rank, suit, wild_suit)
+    def take_card(rank, suit)
       find_by_rank = ->(card) { card.rank == rank && card.suit == suit }
 
       card_of_rank = hand.find(&find_by_rank)
       hand.delete_if(&find_by_rank)
 
-
-      card_of_rank.wild_suit = wild_suit if card_of_rank && card_of_rank.rank == Card::WILD_RANK
       card_of_rank
     end
 
@@ -35,7 +33,6 @@ module CrazyEights
 
     def can_play?(top_card)
       return true if hand.any? { |card| card.rank == Card::WILD_RANK }
-      return hand.any? { |card| card.rank == top_card.rank || card.suit == top_card.wild_suit } if top_card.wild_suit
       hand.any? { |card| card.rank == top_card.rank || card.suit == top_card.suit }
     end
 

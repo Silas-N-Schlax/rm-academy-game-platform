@@ -1,6 +1,7 @@
 module CrazyEights
   class Game
-    attr_accessor :players, :deck, :discard, :current_player_idx, :results, :current_result
+    attr_accessor :players, :deck, :discard, :current_player_idx,
+                  :results, :current_result, :wild_suit
 
     SMALL_HAND = 5
     LARGE_HAND = 7
@@ -10,6 +11,10 @@ module CrazyEights
 
     def current_result
       @current_result ||= TurnResult.new(current_player: current_player)
+
+    def wild_suit
+      @wild_suit ||= nil
+    end
     end
 
     def initialize(players:, deck: Deck.new, discard: Discard.new, current_player_idx: 0, results: [])
@@ -29,7 +34,9 @@ module CrazyEights
       return winning_player if winner?
       return false unless valid_card?(rank, suit)
 
-      card = current_player.take_card(rank, suit, wild_suit)
+      set_wild_suit(wild_suit)
+
+      card = current_player.take_card(rank, suit)
       discard.add_card(card)
       add_result(card: card)
       next_player_turn
@@ -65,6 +72,9 @@ module CrazyEights
 
     def valid_card?(rank, suit)
       return false unless Card.valid_rank?(rank) && Card.valid_suit?(suit)
+      top_card = discard.top_card
+      current_suit = wild_suit.nil? ? top_card.suit : wild_suit
+      return false unless (rank == top_card.rank || rank == Card::WILD_RANK) || suit == current_suit
       return false unless current_player.has_card?(rank, suit)
       true
     end
@@ -75,7 +85,8 @@ module CrazyEights
         "deck" => deck.as_json,
         "discard" => discard.as_json,
         "results" => results.map(&:as_json),
-        "current_player_idx" => current_player_idx
+        "current_player_idx" => current_player_idx,
+        "wild_suit" => wild_suit,
       }
     end
 
@@ -88,13 +99,15 @@ module CrazyEights
     end
 
     def self.from_json(json)
-      Game.new(
+      game = Game.new(
         players: json["players"].map { |player| Player.from_json(player) },
         deck: Deck.from_json(json["deck"]),
         discard: Discard.from_json(json["discard"]),
         results: json["results"].map { |result| TurnResult.from_json(result) },
-        current_player_idx: json["current_player_idx"]
+        current_player_idx: json["current_player_idx"],
       )
+      game.wild_suit = json["wild_suit"]
+      game
     end
 
     def self.load(json)
@@ -129,6 +142,11 @@ module CrazyEights
       new_index = current_player_idx + 1
       first_player_idx = 0
       self.current_player_idx = new_index > players.size - 1 ? first_player_idx : new_index
+    end
+
+    def set_wild_suit(wild_suit)
+            self.wild_suit = wild_suit if wild_suit
+      self.wild_suit = nil if wild_suit.nil?
     end
 
     def deal

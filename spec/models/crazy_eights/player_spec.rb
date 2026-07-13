@@ -49,7 +49,7 @@ RSpec.describe CrazyEights::Player, type: :model do
     let(:player) { described_class.new(name: 'player') }
     context 'when player does not have the correct card' do
       it 'returns nil' do
-        expect(player.take_card('A', 'Spades', nil)).to be_nil
+        expect(player.take_card('A', 'Spades')).to be_nil
       end
     end
 
@@ -61,20 +61,20 @@ RSpec.describe CrazyEights::Player, type: :model do
 
       it 'returns the card and remove card from hand' do
         expected_hand_size = 2
-        expect(player.take_card('A', 'Spades', nil)).to eq card
+        expect(player.take_card('A', 'Spades')).to eq card
         expect(player.hand_size).to eq expected_hand_size
       end
     end
 
     context 'when the card taken is a wild' do
-      let(:card) { CrazyEights::Card.new('8', 'Spades', 'Diamonds') }
+      let(:card) { CrazyEights::Card.new('8', 'Spades') }
       before do
         player.hand = [ card, CrazyEights::Card.new('K'), CrazyEights::Card.new('J') ]
       end
 
       it 'returns the card with a wild suit and remove card from hand' do
         expected_hand_size = 2
-        expect(player.take_card('8', 'Spades', 'Diamonds')).to eq card
+        expect(player.take_card('8', 'Spades')).to eq card
         expect(player.hand_size).to eq expected_hand_size
       end
     end
@@ -87,7 +87,7 @@ RSpec.describe CrazyEights::Player, type: :model do
       end
       it 'removes card of correct rank and suit' do
         expected_hand_size = 1
-        expect(player.take_card('K', 'Spades', nil)).to eq card1
+        expect(player.take_card('K', 'Spades')).to eq card1
         expect(player.hand_size).to eq expected_hand_size
       end
     end
@@ -150,19 +150,6 @@ RSpec.describe CrazyEights::Player, type: :model do
       player.hand = [ CrazyEights::Card.new('2', 'Hearts') ]
       expect(player.can_play?(card)).to be false
     end
-
-    context 'when the top card is an eight with a wild suit' do
-      let(:card) { CrazyEights::Card.new('K', 'Spades', 'Hearts') }
-      it 'returns true when the player has a card they can play' do
-        player.hand = [ CrazyEights::Card.new('10', 'Hearts') ]
-        expect(player.can_play?(card)).to be true
-      end
-
-      it 'returns false when the player does not have a card they can play' do
-        player.hand = [ CrazyEights::Card.new('10') ]
-        expect(player.can_play?(card)).to be false
-      end
-    end
   end
 
   describe '#as_json' do
@@ -174,8 +161,7 @@ RSpec.describe CrazyEights::Player, type: :model do
         "hand" => [
           {
             "rank" => 'J',
-            "suit" => 'Spades',
-            "wild_suit" => nil
+            "suit" => 'Spades'
           }
         ]
       }

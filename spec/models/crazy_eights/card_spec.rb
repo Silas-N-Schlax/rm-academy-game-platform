@@ -111,8 +111,7 @@ it 'has a rank, suit, and value' do
     let(:expected_hash) do
       {
         "rank" => 'J',
-        "suit" => 'Spades',
-        "wild_suit" => nil
+        "suit" => 'Spades'
       }
     end
     it 'returns expected hash' do

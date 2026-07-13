@@ -16,13 +16,12 @@ module CrazyEights
       "A" => "Ace"
     }.freeze
 
-    def initialize(rank, suit = "Spades", wild_suit = nil)
+    def initialize(rank, suit = "Spades")
       raise InvalidRank unless RANKS.include?(rank)
       raise InvalidSuit unless SUITS.include?(suit)
 
       @rank = rank
       @suit = suit
-      @wild_suit = wild_suit
     end
 
     def update_wild_suit(suit)
@@ -41,8 +40,7 @@ module CrazyEights
     def as_json
       {
         "rank" => rank,
-        "suit" => suit,
-        "wild_suit" => wild_suit
+        "suit" => suit
       }
     end
 
@@ -65,9 +63,9 @@ module CrazyEights
     end
 
     def self.from_json(json)
-      return [] if json.blank?
+      return if json.blank?
       Card.new(
-        json["rank"], json["suit"], json["wild_suit"]
+        json["rank"], json["suit"]
       )
     end
   end
