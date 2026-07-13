@@ -140,7 +140,7 @@ RSpec.describe 'Games', type: :system do
   def fill_in_new_game_form(game_size, game_name)
     visit new_game_path
     fill_in 'Name', with: game_name
-    select 'GoFishGame', from: 'Type'
+    select 'Go Fish Game', from: 'Type'
     fill_in 'Game size', with: game_size
     click_on 'Create Game'
   end

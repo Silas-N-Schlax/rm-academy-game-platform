@@ -9,7 +9,7 @@
           = f.input :name
           = f.input :type,
               as: :select,
-              collection: @game.valid_types,
+              collection: @game.valid_types.map { |item| [item.underscore.titleize, item] },
               include_blank: 'Select a Game Type'
           = f.input :game_size, as: :integer
           = f.button :submit, "Create Game"
