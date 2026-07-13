@@ -151,8 +151,9 @@ module CrazyEights
     end
 
     def set_wild_suit(wild_suit)
-            self.wild_suit = wild_suit if wild_suit
+      self.wild_suit = wild_suit if wild_suit
       self.wild_suit = nil if wild_suit.nil?
+      current_result.wild_suit = wild_suit
     end
 
     def deal

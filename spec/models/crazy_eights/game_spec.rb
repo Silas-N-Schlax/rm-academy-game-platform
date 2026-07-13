@@ -79,6 +79,7 @@ RSpec.describe CrazyEights::Game, type: :model do
       end
       it 'saves the current wild suit and allows play' do
         expect(game.wild_suit).to eq wild_suit
+        expect(game.latest_result.wild_suit).to_not be_nil
         game.current_player_idx = 0
         game.play_card(rank: '10', suit: 'Diamonds')
         expected_hand_size = 1

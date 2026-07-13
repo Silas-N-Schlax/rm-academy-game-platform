@@ -11,6 +11,7 @@ module CrazyEights
       @card_played = card_played
       @current_player = current_player
       @cards_drawn = cards_drawn
+      @wild_suit = wild_suit
     end
 
     def messages_for_current
