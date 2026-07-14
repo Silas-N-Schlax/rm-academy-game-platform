@@ -1,5 +1,5 @@
 require 'rails_helper'
-RSpec.fdescribe ArchiveGameJob, type: :job do
+RSpec.describe ArchiveGameJob, type: :job do
 
   describe '#perform' do
     context 'when there are stale games' do
