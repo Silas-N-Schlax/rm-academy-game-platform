@@ -3,9 +3,9 @@ class Game < ApplicationRecord
   has_many :users, through: :players
 
 
-  after_create_commit { broadcast_refresh_to "games" }
-  after_update_commit { broadcast_refresh_to "games" }
-  after_update_commit  { broadcast_refresh_to self }
+  after_create_commit { broadcast_refresh_later_to "games" }
+  after_update_commit { broadcast_refresh_later_to "games" }
+  after_update_commit { broadcast_refresh_later_to self }
 
   validates :name, presence: true, length: { minimum: 4 }
   validates :type, presence: true, inclusion: { in: ->(game) { game.valid_types } }
