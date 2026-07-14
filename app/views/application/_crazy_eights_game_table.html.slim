@@ -1,0 +1,26 @@
+- max_player_cards = 7
+.game-table
+  - @game.game_state.players.each do |player|
+    - unless player.id == current_user.id
+      .game-table__player
+        .game-table__player-content
+          i.li.li-circle-user-round.icon.icon--large
+          p #{player.name}
+          .card-collection.card-collection--2x-small
+            - player.hand_size.times do |i|
+              - if i < max_player_cards
+                = image_tag 'cards/back.svg', class: 'playing-card playing-card--2x-small'
+          p #{player.hand_size} cards left
+
+
+
+
+  .game-table__piles
+    .card-collection.card-collection--x-large#draw-pile
+      = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
+        = f.input :request, as: :hidden, input_html: { value: true }
+        = image_submit_tag("cards/back.svg", class: 'playing-card playing-card--x-large')
+
+    .card-collection.card-collection--x-large id="discard-top-card-rank-#{@game.game_state.discard.top_card.rank}"
+      = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
+          = image_submit_tag("cards/#{@game.game_state.discard.top_card.to_file_name}.svg", class: 'playing-card playing-card--x-large', disabled: true)

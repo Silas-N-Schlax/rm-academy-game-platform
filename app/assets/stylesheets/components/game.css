@@ -9,8 +9,14 @@
   grid-template-columns: 1fr var(--_gf-side-width);
   grid-template-rows: 1fr var(--_gf-bottom-height);
   grid-template-areas:
-   "game-board game-feed"
-   "player-hand player-books";
+    "game-board game-feed"
+    "player-hand player-books";
+
+  &.gf-game--tall-feed {
+    grid-template-areas:
+      "game-board game-feed"
+      "player-hand game-feed";
+  }
 
   .gf-game--border {
     border: solid var(--op-border-width) var(--op-color-border);
@@ -52,8 +58,6 @@
     --_gf-hand-min-width: calc(var(--op-size-unit) * 70); /* 280px */
     --_gf-books-min-width: calc(var(--op-size-unit) * 50); /* 200px */
 
-    /* overflow: auto; */
-
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr 1fr 2fr;
 
@@ -63,16 +67,12 @@
     "player-books"
     "game-feed";
 
-    /* .gf-game__board {
-      overflow: visible;
+    &.gf-game--tall-feed {
+      grid-template-areas:
+        "game-board"
+        "game-board"
+        "player-hand"
+        "game-feed";
     }
-
-    .gf-game__hand {
-      overflow: visible;
-    }
-
-    .gf-game__books {
-      overflow: visible;
-    } */
   }
 }

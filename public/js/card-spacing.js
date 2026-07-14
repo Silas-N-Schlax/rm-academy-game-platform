@@ -8,10 +8,15 @@ window.addEventListener('resize', () => {
 
 
 function changeOffset() {
+  const blackListedCards = ['x-large', '2x-small']
   const cardCollections = document.querySelectorAll('.card-collection')
-  console.log(cardCollections)
   cardCollections.forEach((collection) => {
     cards = collection.querySelectorAll('.playing-card')
+    let cardType = cards[0]
+    if (cardType) {
+      cardType = cardType.className.split('--')
+      if (blackListedCards.includes(cardType[cardType.length - 1])) return
+    }
     if (cards.length == 0) return
 
     let minOffset = 15 // desktop min offset

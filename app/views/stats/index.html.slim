@@ -28,27 +28,28 @@
                 th #{@stat.total_average(@user)}%
 
     .op-grid.op-grid--2-column
-      .card.card--padded.card--shadow-large
-        .op-split
-          .op-stack.text-center
-            img.avatar.avatar-x-large src="/logo.png" alt="Avatar"/
-            p War
+      - ["GoFishGame", 'CrazyEightsGame'].each do |type|
+        .card.card--padded.card--shadow-large
+          .op-split
+            .op-stack.text-center
+              img.avatar.avatar-x-large src="/logo.png" alt="Avatar"/
+              p #{type.underscore.titleize.sub('Game', '')}
 
-          .op-stack
-            table.table.table--auto-layout
-              tbody
-                tr
-                  th Games Played:
-                  th #{@stat.total_games_by_game(@user)}
-                tr
-                  th Games Won:
-                  th #{@stat.total_wins_by_game(@user)}
-                tr
-                  th Games Won:
-                  th #{@stat.total_losses_by_game(@user)}
-                tr
-                  th W/L Ratio:
-                  th #{@stat.total_average_by_game(@user)}%
+            .op-stack
+              table.table.table--auto-layout
+                tbody
+                  tr
+                    th Games Played:
+                    th #{@stat.total_games_by_game(@user, type:)}
+                  tr
+                    th Games Won:
+                    th #{@stat.total_wins_by_game(@user, type:)}
+                  tr
+                    th Games Won:
+                    th #{@stat.total_losses_by_game(@user, type:)}
+                  tr
+                    th W/L Ratio:
+                    th #{@stat.total_average_by_game(@user, type:)}%
 
       .op-split
         / Make dynamic for multiple types of games later

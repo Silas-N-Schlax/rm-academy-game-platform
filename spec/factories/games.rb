@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :game do
     sequence(:name) { |n| "RoleModel#{n}" }
-    game_type { "Go Fish" }
+    type { "GoFishGame" }
     game_size { 2 }
+    initialize_with { type.present? ? type.constantize.new(attributes) : Game.new(attributes) }
 
     transient do
       player_count { 2 }
@@ -14,7 +15,7 @@ FactoryBot.define do
 
     trait :game2 do
       name { "RockSolid" }
-      game_type { "Go Fish" }
+      type { "GoFishGame" }
       game_size { 3 }
     end
 
@@ -24,10 +25,6 @@ FactoryBot.define do
 
     trait :short_name do
       name { 'g' }
-    end
-
-    trait :invalid_game_type do
-      game_type { 'Scythe' }
     end
 
     trait :no_game_size do
@@ -59,7 +56,6 @@ FactoryBot.define do
 
     factory :no_name_game, traits: [ :no_name ]
     factory :short_name_game, traits: [ :short_name ]
-    factory :invalid_game_type_game, traits: [ :invalid_game_type ]
     factory :no_game_size_game, traits: [ :no_game_size ]
     factory :too_small_game, traits: [ :too_small ]
     factory :too_large_game, traits: [ :too_large ]

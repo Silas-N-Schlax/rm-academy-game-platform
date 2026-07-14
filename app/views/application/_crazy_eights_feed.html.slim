@@ -1,0 +1,19 @@
+.game-feed__turn
+  - messages = result.messages_for_all
+  - messages = result.messages_for_current if current_player.id == result.current_player.id
+  .game-feed__question
+    - if current_player.id == result.current_player.id
+      span Your Turn:
+    - else
+      span #{current_player.name}'s Turn:
+
+  .game-feed__results
+    - unless messages[0].nil?
+      .game-feed__result
+        i.icon.li.li-corner-down-right.icon--large
+        .message-bubble.message-bubble--go-fish #{messages[0]}
+
+    - unless messages[1].nil?
+      .game-feed__result
+        i.icon.li.li-corner-down-right.icon--large
+        .message-bubble #{messages[1]}

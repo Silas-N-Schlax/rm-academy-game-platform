@@ -11,4 +11,11 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { in: 6..20 }, comparison: { equal_to: :confirm_password }
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  def has_games?
+    return false if self.games.empty?
+    return true unless self.games.where(finished_at: nil).empty?
+
+    false
+  end
 end

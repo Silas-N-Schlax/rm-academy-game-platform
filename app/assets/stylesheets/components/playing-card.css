@@ -1,12 +1,14 @@
 .playing-card {
   transition: var(--op-transition-modal);
-  width: var(--_gf-small-card-width); 
+  width: var(--_gf-small-card-width);
   box-shadow: var(--op-shadow-x-small);
   border-radius: var(--op-space-2x-small);
+  padding: 0px;
   height: min-content;
 
-  &:hover {
-    margin-top: var(--_gf-small-card-hover)
+   &.playing-card--2x-small {
+    width: var(--_gf-2x-small-card-width);
+    margin-left: var(--_gf-2x-small-card-margin);
   }
 
   &.playing-card--x-small {
@@ -16,16 +18,20 @@
       margin-top: var(--_gf-x-small-card-hover)
     }
   }
-  &.playing-card--medium { 
-    width: var(--_gf-medium-card-width); 
+  &.playing-card--medium {
+    width: var(--_gf-medium-card-width);
     &:hover {
       margin-top: var(--_gf-medium-card-hover)
     }
   }
-  &.playing-card--large { 
-    width: var(--_gf-large-card-width); 
+  &.playing-card--large {
+    width: var(--_gf-large-card-width);
     &:hover {
       margin-top: var(--_gf-large-card-hover);
     }
+  }
+
+  &.playing-card--x-large {
+    width: var(--_gf-x-large-card-width);
   }
 }

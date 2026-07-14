@@ -1,0 +1,7 @@
+.modal-wrapper {
+  .modal-wrapper__backdrop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

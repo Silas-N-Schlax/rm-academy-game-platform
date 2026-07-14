@@ -1,0 +1,54 @@
+- implementation = @game.game_state
+- turn = params[:turn]
+.gf-game.gf-game--tall-feed
+  .gf-game__board.gf-game--border
+    .panel
+      .panel__header.panel__header--title
+        a href='/'
+          i.li.li-move-left.icon.icon--x-large.panel__header-link
+        span #{@game.name}
+
+      .panel__content
+        - if implementation.winner?
+          .container.container--xs
+            .simple-page.simple-page--in-container
+              .simple-page__form#new-game-form
+                h2 Game Over
+                h3 #{implementation.winning_player.name} won the game!
+                = link_to root_path, class: 'btn btn--primary'
+                  p My Games
+
+        - else
+          = render partial: 'crazy_eights_game_table'
+
+
+
+  .gf-game__feed.gf-game--border
+    .panel.panel--secondary
+      .panel__header.panel__header--game-feed
+        Game Feed
+        - if current_user.id == implementation.current_player.id
+          button.badge.badge--notice Your Turn
+        - else
+          button.badge.badge--primary #{implementation.current_player.name}'s Turn
+
+      .panel__content
+        .game-feed
+          .game-feed__logs
+            - implementation.results.each do |result|
+                = render partial: "crazy_eights_feed", locals: { result: result, current_player: implementation.find_player(current_user.id) }
+
+  .gf-game__hand.gf-game--border
+    .panel.panel--neutral
+      .panel__header.panel__header--slim
+        span Your Cards
+        span
+          .text-pair.text-pair--inline
+            span.text-pair__subtitle.text-pair__subtitle--small data-tooltip-text="Cards Remaining in Deck" data-tooltip-position="left"
+              i.icon.li.li-club.icon--medium.icon--neutral
+            span.text-pair__title.text-pair__title--small #{implementation.deck.cards_left}
+      .panel__content
+        .gf-game__cards
+          - if implementation.find_player(current_user.id).hand.empty?
+          - else
+            = render partial: 'button_card_collection', locals: {hand: implementation.find_player(current_user.id).sorted_hand, modifier: '--large', back: false}

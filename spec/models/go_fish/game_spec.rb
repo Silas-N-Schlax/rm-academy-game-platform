@@ -11,7 +11,7 @@ RSpec.describe GoFish::Game, type: :model do
       let!(:result) { described_class.create(game.players) }
       it 'initializes a game and returns an object' do
         expected_deck_size = 38
-        expect(result.players.count).to eq game.players.size
+        expect(result.players.size).to eq game.players.size
         expect(result.current_player_idx).to be_zero
         expect(result.results).to be_empty
         expect(result.deck.cards_left).to eq expected_deck_size
@@ -27,7 +27,7 @@ RSpec.describe GoFish::Game, type: :model do
     it 'loads the current game state to an object' do
       loaded_game = GoFish::Game.load(described_class.dump(game))
       expected_deck_size = 38
-      expect(loaded_game.players.count).to eq game.players.count
+      expect(loaded_game.players.size).to eq game.players.size
       expect(loaded_game.current_player_idx).to be_zero
       expect(loaded_game.results).to be_empty
       expect(loaded_game.deck.cards_left).to eq expected_deck_size

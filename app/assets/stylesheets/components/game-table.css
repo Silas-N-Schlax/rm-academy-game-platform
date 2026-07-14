@@ -1,0 +1,35 @@
+.game-table {
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  background-color: var(--op-color-neutral-plus-max);
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-template-areas:
+    "one two three four"
+    "five pile pile six";
+
+    .game-table__piles {
+      grid-area: pile;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--op-space-x-large);
+    }
+
+    .game-table__player {
+      padding: var(--op-space-large);
+
+      .game-table__player-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--op-space-small);
+        border-radius: var(--op-radius-medium);
+        box-shadow: var(--op-shadow-medium);
+        background-color: var(--op-color-neutral-plus-seven);
+        color: var(--op-color-neutral-on-plus-seven);
+      }
+    }
+}
