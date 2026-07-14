@@ -54,6 +54,14 @@ FactoryBot.define do
       finished_at { Time.new(3) }
     end
 
+    trait :archived do
+      archived_at { Time.current }
+    end
+
+    trait :stale do
+      updated_at { 3.days.ago }
+    end
+
     factory :no_name_game, traits: [ :no_name ]
     factory :short_name_game, traits: [ :short_name ]
     factory :no_game_size_game, traits: [ :no_game_size ]
@@ -62,5 +70,7 @@ FactoryBot.define do
     factory :waiting_game, traits: [ :waiting ]
     factory :started_game, traits: [ :started ]
     factory :finished_game, traits: [ :finished ]
+    factory :archived_game, traits: [ :archived, :finished ]
+    factory :stale_game, traits: [ :stale ]
   end
 end

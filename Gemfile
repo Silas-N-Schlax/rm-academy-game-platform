@@ -72,3 +72,5 @@ group :test do
   gem "rspec_junit_formatter", require: false
   gem "rspec-rails"
 end
+
+gem "good_job", "~> 4.19"
