@@ -1,3 +1,6 @@
+= turbo_stream_from @game
+
+
 - if @game.game_state.nil?
   = render partial: "waiting_screen", locals: { game: @game }
 - else

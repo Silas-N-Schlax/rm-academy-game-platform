@@ -1,5 +1,7 @@
-- if @game.open_games(current_user.id).empty? && !@user.has_games?
+= turbo_stream_from "games"
+
+- if @game.open_games(current_user.id).empty? && !current_user.has_games?
   = render 'index-empty'
 - else
-  = render 'index'
+  = render 'index', locals: { game: @game }
 

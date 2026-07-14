@@ -1,11 +1,12 @@
-- implementation = @game.game_state
+- game = @game || game
+- implementation = game.game_state
 .gf-game
   .gf-game__board.gf-game--border
     .panel
       .panel__header.panel__header--title
         a href='/'
           i.li.li-move-left.icon.icon--x-large.panel__header-link
-        span #{@game.name}
+        span #{game.name}
 
       .panel__content
         - if implementation.winner
@@ -40,7 +41,7 @@
             - implementation.results.each do |result|
                 = render partial: "go_fish_feed", locals: { result: result, current_player: current_user.id }
 
-        = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { class: 'game-action' } do |f|
+        = simple_form_for game.turn_class.new(game: game, user: current_user), url: game_turns_path(game), method: :post, html: { class: 'game-action' } do |f|
           .game-action__options
             .game-action__option
               = f.input :player,
