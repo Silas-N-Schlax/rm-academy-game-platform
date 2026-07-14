@@ -1,4 +1,4 @@
-.card.game-row
+.card.game-row id=dom_id(item)
   .game-row__title
     .text-pair.text-pair--inline
         span.text-pair__subtitle.text-pair__subtitle--small data-tooltip-text="#{item.type.underscore.titleize}" data-tooltip-position="left"
@@ -7,6 +7,6 @@
   .game-row__action
     .game-row__player-count #{item.status(message:true)}
     - if post
-      = button_to btn_msg, btn_path, class: 'btn game-row__btn'
+      = button_to "Join", join_path(item), class: 'btn game-row__btn'
     - else
-      = link_to btn_msg, btn_path, class: 'btn game-row__btn'
+      = link_to "Play", game_path(item), class: 'btn game-row__btn'
