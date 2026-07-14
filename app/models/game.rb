@@ -3,8 +3,8 @@ class Game < ApplicationRecord
   has_many :users, through: :players
 
 
-  after_create_commit :add_game_card
-  after_update_commit :update_game_cards
+  after_create_commit { broadcast_refresh_to "games" }
+  after_update_commit { broadcast_refresh_to "games" }
   after_update_commit  { broadcast_refresh_to self }
 
   validates :name, presence: true, length: { minimum: 4 }
@@ -86,20 +86,6 @@ class Game < ApplicationRecord
   end
 
   private
-
-  def update_game_cards
-    broadcast_remove_to("games", target: self) unless self.started_at.nil? && !self.finished_at.nil?
-    broadcast_remove_to("games", target: self) unless self.finished_at.nil?
-  end
-
-  def add_game_card
-    broadcast_append_to(
-      "games",
-      partial: "application/game_card",
-      locals: { item: self, post: true },
-      target: "all_games_list"
-    )
-  end
 
   def format_status_message
     return "started" if self.started_at
