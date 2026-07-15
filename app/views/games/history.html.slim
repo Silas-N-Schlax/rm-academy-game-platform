@@ -14,6 +14,7 @@
           th # Players
           th Game Played
           th Time Elapsed
+          th Game Log
 
       tbody
         - @games.select { |game| game.players.find { |player| player.user.id == @user.id } }.each do |game|
@@ -28,4 +29,6 @@
               th #{game.game_size}
               th #{game.started_at.strftime("%B %d, %Y")}
               th #{game.formatted_time}
+              th
+                = link_to "View Game", game_path(game), class: 'btn btn--no-outline'
 
