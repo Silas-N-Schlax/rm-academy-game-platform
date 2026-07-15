@@ -24,15 +24,6 @@ RSpec.describe ArchiveGameJob, type: :job do
         job.perform
         expect(Game.all.where.not(archived_at: nil).size).to eq expected_archived_size
       end
-
-      # it 'broadcasts updates to users' do
-      #   job = described_class.new
-      #   expect {
-      #     perform_enqueued_jobs do
-      #       job.perform
-      #     end
-      #   }.to have_broadcasted_to("games")
-      # end
     end
   end
 end
