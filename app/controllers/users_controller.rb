@@ -17,7 +17,29 @@ class UsersController < ApplicationController
     end
   end
 
+  def update
+    @user = User.find(current_user.id)
+    if @user.update(update_params)
+      return redirect_to users_show_path
+    end
+    render :edit, status: :unprocessable_content
+  end
+
+  def turbo_fetch
+    @user = User.new(update_params)
+  end
+
+  def edit
+    @user = User.find(current_user.id)
+  end
+
   def show
-    @user = User.new
+    @user = User.find(current_user.id)
+  end
+
+  private
+
+  def update_params
+    params.require(:user).permit(:name, :email_address, :street_address, :country, :state, :city, :zip_code)
   end
 end

@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  concern :turbo_fetch do
+    patch :turbo_fetch, on: :collection
+  end
+
   mount GoodJob::Engine => "good_job"
 
 
@@ -23,7 +27,7 @@ Rails.application.routes.draw do
   resources :stats, only: [ :index ]
   get "stats", to: "stats#index"
 
-  resources :users, only: [ :new, :create ]
+  resources :users, only: [ :new, :create, :update, :edit ], concerns: %i[turbo_fetch]
   get "users/show", to: "users#show"
 
 
