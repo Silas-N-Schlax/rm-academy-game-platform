@@ -32,6 +32,23 @@ RSpec.describe CrazyEights::Game, type: :model do
       end
     end
 
+    context 'when the discard pile is dealt an 8' do
+      let!(:game) { described_class.new(players: [ player1, player2 ]) }
+      let(:game_player1) { game.players.first }
+      let(:game_player2) { game.players.last }
+      let(:card) { CrazyEights::Card.new('8') }
+      before do
+        game.deck.cards[14] = card
+        game.send(:deal)
+      end
+      it 'gives discard a new card and shuffles card back into deck' do
+        expected_discard_pile_size = 1
+        expect(game.discard.top_card.rank).to_not eq CrazyEights::Card::WILD_RANK
+        expect(game.deck.cards.include?(card)).to be true
+        expect(game.discard.cards_left).to eq expected_discard_pile_size
+      end
+    end
+
     context 'when a game is started with 4 players' do
       let!(:game) { described_class.new(players: [ player1, player2, player3, player4 ]) }
       before { game.start }

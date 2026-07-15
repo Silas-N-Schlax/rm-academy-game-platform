@@ -165,7 +165,13 @@ module CrazyEights
           player.add_cards([ deck.take_top_card ])
         end
       end
-      discard.cards = [ deck.take_top_card ]
+      deal_card_to_discard
+    end
+
+    def deal_card_to_discard
+      top_card = deck.top_card
+      deck.shuffle_deck && deal_card_to_discard if top_card.rank == Card::WILD_RANK
+      discard.cards = [ deck.take_top_card ] unless top_card.rank == Card::WILD_RANK
     end
 
     def number_of_cards_to_deal

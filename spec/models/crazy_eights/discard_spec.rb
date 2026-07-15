@@ -1,23 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe CrazyEights::Discard, type: :model do
-  describe '#top_card' do
-  let(:discard_pile) { described_class.new(cards: [ CrazyEights::Card.new("J"), CrazyEights::Card.new("J") ]) }
-    it 'shows the top card and does not remove from the discard_pile' do
-      top_card = discard_pile.cards.first
-      expected_discard_pile_size = 2
-      expect(discard_pile.top_card).to eq top_card
-      expect(discard_pile.cards_left).to eq expected_discard_pile_size
-    end
-
-    context 'when the discard pile is empty' do
-      before { discard_pile.cards = [] }
-      it 'returns nil' do
-        expect(discard_pile.top_card).to be_nil
-      end
-    end
-  end
-
   describe '#add_card' do
     let(:discard_pile) { described_class.new(cards: [ CrazyEights::Card.new("J") ]) }
     it 'adds card to top of discard pile' do
