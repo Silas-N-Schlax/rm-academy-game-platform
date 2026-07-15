@@ -56,7 +56,7 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
   describe '#messages_for_all' do
      it 'returns correct messages when a wild was not played' do
       messages = result.messages_for_all
-      expected_drew_cards_message = "#{result.current_player.name} drew a King of Spades, and Jack of Hearts"
+      expected_drew_cards_message = "#{result.current_player.name} drew 2 cards"
       expected_played_card_message = "#{result.current_player.name} played a Jack of Spades"
       expect(messages[0]).to eq expected_drew_cards_message
       expect(messages[1]).to eq expected_played_card_message
@@ -66,7 +66,7 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
       result.wild_suit = 'Hearts'
       result.card_played = CrazyEights::Card.new('8', 'Spades')
       messages = result.messages_for_all
-      expected_drew_cards_message = "#{result.current_player.name} drew a King of Spades, and Jack of Hearts"
+      expected_drew_cards_message = "#{result.current_player.name} drew 2 cards"
       expected_played_card_message = "#{result.current_player.name} played a wild! The suit is Hearts"
       expect(messages[0]).to eq expected_drew_cards_message
       expect(messages[1]).to eq expected_played_card_message
@@ -83,7 +83,7 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
     it 'returns the correct message when no cards have been played' do
       result.card_played = nil
       messages = result.messages_for_all
-      expected_played_card_message = "#{result.current_player.name} drew a King of Spades, and Jack of Hearts"
+      expected_played_card_message = "#{result.current_player.name} drew 2 cards"
       expect(messages[0]).to eq expected_played_card_message
       expect(messages[1]).to be_nil
     end
