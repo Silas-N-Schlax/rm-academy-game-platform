@@ -2,7 +2,7 @@
   header.content-header
     .content-header__details
       .content-header__title
-        | Welcome #{Current.user.name}!
+        | Welcome #{@user.name}!
     .divider.divider--medium
 
 
@@ -12,25 +12,60 @@
       .op-split
         .op-stack.text-center
           img.avatar.avatar--5x-large#profile-avatar src="/default_avatar.png" alt="Avatar"/
-          p @#{Current.user.name}
+          p @#{@user.name}
 
         .op-stack
           .text-pair.text-pair--inline
             .text-pair__title
              | Email:
             .text-pair__subtitle
-              | #{Current.user.email_address}
+              | #{@user.email_address}
 
           .text-pair.text-pair--inline
             .text-pair__title
               | Password:
-            .op-split
-              .text-pair__subtitle
-                | ••••••••••
-              = link_to 'edit', users_show_path, method: :get, class: "text-pair__subtitle"
+            .text-pair__subtitle
+              | ••••••••••••
 
           .text-pair.text-pair--inline
             .text-pair.text-pair__title
               | Account Created:
             .text-pair.text-pair__subtitle
-             | #{Current.user.created_at.strftime("%B %d, %Y")}
+             | #{@user.created_at.strftime("%B %d, %Y")}
+
+          - unless @user.street_address.nil?
+            .text-pair.text-pair--inline
+              .text-pair__title
+                | Street Address:
+              .text-pair__subtitle
+                | #{@user.street_address}
+
+          - unless @user.country.nil?
+            .text-pair.text-pair--inline
+              .text-pair__title
+                | Country:
+              .text-pair__subtitle
+                | #{@user.country}
+
+          - unless @user.state.nil?
+            .text-pair.text-pair--inline
+              .text-pair__title
+                | State:
+              .text-pair__subtitle
+                | #{@user.state}
+
+          - unless @user.city.nil?
+            .text-pair.text-pair--inline
+              .text-pair__title
+                | City:
+              .text-pair__subtitle
+                | #{@user.city}
+
+          - unless @user.zip_code.nil?
+            .text-pair.text-pair--inline
+              .text-pair__title
+                | Zip Code:
+              .text-pair__subtitle
+                | #{@user.zip_code}
+
+          = link_to "Edit Profile", edit_user_path(@user), class: "btn btn--no-border"
