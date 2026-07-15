@@ -2,6 +2,7 @@
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.23",
+    "@rails/request.js": "^0.0.13",
     "@rolemodel/optics": "^2.4.0"
   },
   "devDependencies": {
