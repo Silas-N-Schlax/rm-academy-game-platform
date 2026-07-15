@@ -31,9 +31,9 @@ module CrazyEights
       hand.any? { |card| card.rank == rank && card.suit == suit }
     end
 
-    def can_play?(top_card)
+    def can_play?(rank, suit)
       return true if hand.any? { |card| card.rank == Card::WILD_RANK }
-      hand.any? { |card| card.rank == top_card.rank || card.suit == top_card.suit }
+      hand.any? { |card| card.rank == rank || card.suit == suit }
     end
 
     def hand_size
