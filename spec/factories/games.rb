@@ -70,7 +70,7 @@ FactoryBot.define do
     factory :waiting_game, traits: [ :waiting ]
     factory :started_game, traits: [ :started ]
     factory :finished_game, traits: [ :finished ]
-    factory :archived_game, traits: [ :archived, :finished ]
+    factory :archived_game, traits: [ :archived ]
     factory :stale_game, traits: [ :stale ]
   end
 end

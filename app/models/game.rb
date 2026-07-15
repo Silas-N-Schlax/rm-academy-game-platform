@@ -56,10 +56,9 @@ class Game < ApplicationRecord
 
   def open_games(user_id)
     Game.joins(:players)
-      .where(finished_at: nil, started_at: nil)
+      .where(finished_at: nil, started_at: nil, archived_at: nil)
       .group("games.id")
       .having("COUNT(players.id) < games.game_size")
-    # ^ Make so that it only shows games the current user is not in
   end
 
   def winner
