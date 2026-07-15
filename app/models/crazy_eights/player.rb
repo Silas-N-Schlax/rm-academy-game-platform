@@ -41,7 +41,9 @@ module CrazyEights
     end
 
     def sorted_hand
-      hand.sort_by { |card| Card.value(card.rank) }
+      hand.group_by(&:suit).map do |group|
+        group[1].sort_by { |card| Card.value(card.rank) }
+      end.flatten
     end
 
     def as_json

@@ -109,12 +109,12 @@ RSpec.describe CrazyEights::Player, type: :model do
     let(:player) { described_class.new(name: 'player1') }
     let(:card) { CrazyEights::Card.new('10') }
     let(:card1) { CrazyEights::Card.new('2') }
-    let(:card2) { CrazyEights::Card.new('3') }
+    let(:card2) { CrazyEights::Card.new('3', 'Hearts') }
     before do
       player.hand = [ card, card1, card2 ]
     end
     it 'returns sorted array by rank' do
-      sorted_array = [ card1, card2, card ]
+      sorted_array = [ card1, card, card2 ]
       expect(player.sorted_hand).to eq sorted_array
     end
   end
