@@ -3,6 +3,22 @@ require 'rails_helper'
 RSpec.describe CrazyEights::Pile, type: :model do
   let(:pile) { described_class.new(cards: [ CrazyEights::Card.new("J"), CrazyEights::Card.new("J"), CrazyEights::Card.new("J") ]) }
 
+  describe '#top_card' do
+    it 'shows the top card and does not remove from the pile' do
+      top_card = pile.cards.first
+      expected_pile_size = 3
+      expect(pile.top_card).to eq top_card
+      expect(pile.cards_left).to eq expected_pile_size
+    end
+
+    context 'when the discard pile is empty' do
+      before { pile.cards = [] }
+      it 'returns nil' do
+        expect(pile.top_card).to be_nil
+      end
+    end
+  end
+
   describe '#cards_left' do
     it 'returns number of cards left' do
       expected_pile_size = 3

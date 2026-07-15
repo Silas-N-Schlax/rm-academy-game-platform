@@ -1,9 +1,5 @@
 module CrazyEights
   class Discard < Pile
-    def top_card
-      cards.first
-    end
-
     def add_card(card)
       return if card.nil?
       cards.unshift(card)

@@ -109,12 +109,12 @@ RSpec.describe CrazyEights::Player, type: :model do
     let(:player) { described_class.new(name: 'player1') }
     let(:card) { CrazyEights::Card.new('10') }
     let(:card1) { CrazyEights::Card.new('2') }
-    let(:card2) { CrazyEights::Card.new('3') }
+    let(:card2) { CrazyEights::Card.new('3', 'Hearts') }
     before do
       player.hand = [ card, card1, card2 ]
     end
     it 'returns sorted array by rank' do
-      sorted_array = [ card1, card2, card ]
+      sorted_array = [ card1, card, card2 ]
       expect(player.sorted_hand).to eq sorted_array
     end
   end
@@ -138,17 +138,17 @@ RSpec.describe CrazyEights::Player, type: :model do
     let(:card) { CrazyEights::Card.new('J') }
     it 'returns true when the player has a card they can play' do
       player.hand = [ CrazyEights::Card.new('2'), CrazyEights::Card.new('J') ]
-      expect(player.can_play?(card)).to be true
+      expect(player.can_play?(card.rank, card.suit)).to be true
     end
 
     it 'returns true if the player has 8 (wild)' do
       player.hand = [ CrazyEights::Card.new('8', 'Hearts') ]
-      expect(player.can_play?(card)).to be true
+      expect(player.can_play?(card.rank, card.suit)).to be true
     end
 
     it 'returns false when the player does not a card they can play' do
       player.hand = [ CrazyEights::Card.new('2', 'Hearts') ]
-      expect(player.can_play?(card)).to be false
+      expect(player.can_play?(card.rank, card.suit)).to be false
     end
   end
 

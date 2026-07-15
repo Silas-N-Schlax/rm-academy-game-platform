@@ -16,16 +16,16 @@ module CrazyEights
 
     def messages_for_current
       return [ nil, played_message(title(true)) ] if cards_drawn.empty?
-      return [ drew_message(title(true)) ] if card_played.nil?
+      return [ drew_message_for_current ] if card_played.nil?
 
-      [ drew_message(title(true)), played_message(title(true)) ]
+      [ drew_message_for_current, played_message(title(true)) ]
     end
 
     def messages_for_all
       return [ nil, played_message(title) ] if cards_drawn.empty?
-      return [ drew_message(title) ] if card_played.nil? || card_played.is_a?(Array)
+      return [ drew_message_for_all ] if card_played.nil? || card_played.is_a?(Array)
 
-      [ drew_message(title), played_message(title) ]
+      [ drew_message_for_all, played_message(title) ]
     end
 
     def add_to_drawn_card(card)
@@ -53,10 +53,14 @@ module CrazyEights
 
     private
 
-    def drew_message(title)
+    def drew_message_for_current
       cards = cards_drawn.map(&:to_s)
       cards.insert(-2, "and") if cards.size > 1
-      "#{title} #{DREW_MESSAGE_BEGINNING} #{cards.join(", ")}".sub("and,", "and")
+      "#{title(true)} #{DREW_MESSAGE_BEGINNING} #{cards.join(", ")}".sub("and,", "and")
+    end
+
+    def drew_message_for_all
+      "#{title} drew #{cards_drawn.size} cards"
     end
 
     def played_message(title)

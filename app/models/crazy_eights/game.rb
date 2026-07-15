@@ -41,7 +41,8 @@ module CrazyEights
 
     def request_cards
       return winning_player if winner?
-      return false if current_player.can_play?(discard.top_card)
+      top_card = discard.top_card
+      return false if current_player.can_play?(top_card.rank, current_suit(top_card.suit))
 
       give_cards_to_player
     end
@@ -121,6 +122,10 @@ module CrazyEights
     private_class_method :from_json
     private
 
+    def current_suit(card_suit)
+     wild_suit.nil? ? card_suit : wild_suit
+    end
+
 
     def add_result(card: nil, drawn_card: nil)
       current_result.card_played = card
@@ -138,7 +143,8 @@ module CrazyEights
       deck.add_cards(discard.all_but_top_card) if deck.empty?
       card = current_player.add_cards([ deck.take_top_card ])
       add_result(drawn_card: card.first)
-      give_cards_to_player unless current_player.can_play?(discard.top_card)
+      top_card = discard.top_card
+      give_cards_to_player unless current_player.can_play?(top_card.rank, current_suit(top_card.suit))
     end
 
     def next_player_turn
@@ -159,7 +165,13 @@ module CrazyEights
           player.add_cards([ deck.take_top_card ])
         end
       end
-      discard.cards = [ deck.take_top_card ]
+      deal_card_to_discard
+    end
+
+    def deal_card_to_discard
+      top_card = deck.top_card
+      deck.shuffle_deck && deal_card_to_discard if top_card.rank == Card::WILD_RANK
+      discard.cards = [ deck.take_top_card ] unless top_card.rank == Card::WILD_RANK
     end
 
     def number_of_cards_to_deal

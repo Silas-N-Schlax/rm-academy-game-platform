@@ -6,6 +6,10 @@ module CrazyEights
       @cards = cards
     end
 
+    def top_card
+      cards.first
+    end
+
 
     def cards_left
       cards.size

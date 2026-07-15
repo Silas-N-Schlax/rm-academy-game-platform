@@ -1,10 +1,9 @@
 - implementation = @game.game_state
-- turn = params[:turn]
 .gf-game.gf-game--tall-feed
   .gf-game__board.gf-game--border
     .panel
       .panel__header.panel__header--title
-        a href='/'
+        = link_to :back do
           i.li.li-move-left.icon.icon--x-large.panel__header-link
         span #{@game.name}
 

@@ -18,8 +18,8 @@ module GoFish
       @got_card ||= []
     end
 
-    def question
-      [ "#{current_player.name} asked ", opponent.name, " for any ", rank_asked_for, "s" ]
+    def question(id)
+      [ "#{current_or_opponent(id)} asked ", opponent.name, " for any ", rank_asked_for, "s" ]
     end
 
     def answer
@@ -28,22 +28,22 @@ module GoFish
       "Go Fish: #{opponent.name} didn't have any #{rank_asked_for}s"
     end
 
-    def go_fish(name)
-      return go_fish_current if name == current_player.name
+    def go_fish(id)
+      return go_fish_current if id == current_player.id
 
       go_fish_all
     end
 
-    def book_created(name)
+    def book_created(id)
       return if created_book.nil?
 
-      "#{current_or_opponent(name)} created a book of #{created_book.rank}s"
+      "#{current_or_opponent(id)} created a book of #{created_book.rank}s"
     end
 
-    def got_card_message(name)
+    def got_card_message(id)
       message_ary = []
       got_card.map do |record|
-        next message_ary << "You ran out of cards, you drew a #{record.last.rank}" if record.first.name == name
+        next message_ary << "You ran out of cards, you drew a #{record.last.rank}" if record.first.id == id
 
         message_ary << "#{record.first.name} ran out of cards, they drew a card"
       end
@@ -82,20 +82,20 @@ module GoFish
 
     private
 
-    def current_or_opponent(name)
-      return "You" if current_player.name == name
+    def current_or_opponent(id)
+      return "You" if current_player.id == id
 
       current_player.name
     end
 
     def go_fish_current
-      return if card_picked_up.nil?
+      return if card_picked_up.nil? || (card_picked_up.is_a?(Array) && card_picked_up.empty?)
 
       "You drew a #{card_picked_up.rank} of #{card_picked_up.suit} #{got_what_wanted_current}"
     end
 
     def go_fish_all
-      return if card_picked_up.nil?
+      return if card_picked_up.nil? || (card_picked_up.is_a?(Array) && card_picked_up.empty?)
 
       "#{current_player.name} drew a card #{got_what_wanted_all}"
     end

@@ -32,6 +32,23 @@ RSpec.describe CrazyEights::Game, type: :model do
       end
     end
 
+    context 'when the discard pile is dealt an 8' do
+      let!(:game) { described_class.new(players: [ player1, player2 ]) }
+      let(:game_player1) { game.players.first }
+      let(:game_player2) { game.players.last }
+      let(:card) { CrazyEights::Card.new('8') }
+      before do
+        game.deck.cards[14] = card
+        game.send(:deal)
+      end
+      it 'gives discard a new card and shuffles card back into deck' do
+        expected_discard_pile_size = 1
+        expect(game.discard.top_card.rank).to_not eq CrazyEights::Card::WILD_RANK
+        expect(game.deck.cards.include?(card)).to be true
+        expect(game.discard.cards_left).to eq expected_discard_pile_size
+      end
+    end
+
     context 'when a game is started with 4 players' do
       let!(:game) { described_class.new(players: [ player1, player2, player3, player4 ]) }
       before { game.start }
@@ -193,7 +210,35 @@ RSpec.describe CrazyEights::Game, type: :model do
       end
     end
 
-    context 'when player has a card to player' do
+    context 'when the player has a matching suit to the top card but its a wild' do
+      before do
+        game.deck.cards = [ CrazyEights::Card.new('J', 'Diamonds') ]
+        game.discard.cards = [ CrazyEights::Card.new('8') ]
+        game.wild_suit = 'Diamonds'
+        game.players.first.hand = [ CrazyEights::Card.new('2') ]
+      end
+      it 'allows them to request cards' do
+        game.request_cards
+        expected_hand_size = 2
+        expect(game.current_player.hand_size).to eq expected_hand_size
+      end
+    end
+
+    context 'when the player is picking up cards and they get a card that matches top card suit but its a wild' do
+      before do
+        game.deck.cards = [ CrazyEights::Card.new('5'), CrazyEights::Card.new('J', 'Diamonds') ]
+        game.discard.cards = [ CrazyEights::Card.new('8') ]
+        game.wild_suit = 'Diamonds'
+        game.players.first.hand = [ CrazyEights::Card.new('2') ]
+      end
+      it 'allows them to request continue to get cards' do
+        game.request_cards
+        expected_hand_size = 3
+        expect(game.current_player.hand_size).to eq expected_hand_size
+      end
+    end
+
+    context 'when player has a card to play' do
       before { player.hand = [ CrazyEights::Card.new('3') ] }
       it 'returns false' do
         expect(game.request_cards).to be false

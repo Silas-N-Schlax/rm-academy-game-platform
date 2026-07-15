@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe GoFish::TurnResult, type: :model do
   let(:results) do
     described_class.new(
-      current_player: GoFish::Player.new(name: 'Player1'),
-      opponent: GoFish::Player.new(name: 'Player2'),
+      current_player: GoFish::Player.new(name: 'Player1', id: 0),
+      opponent: GoFish::Player.new(name: 'Player2', id: 1),
       cards_taken: [],
       rank_asked_for: 'K',
       card_picked_up: GoFish::Card.new('J'),
@@ -12,12 +12,19 @@ RSpec.describe GoFish::TurnResult, type: :model do
     )
   end
   let(:current) { 'Player1' }
+  let(:current_id) { 0 }
   let(:opponent) { 'Player2' }
+  let(:opponent_id) { 1 }
 
   describe '#question' do
     it 'returns the question that was asked' do
       expected_message = 'Player1 asked Player2 for any Ks'
-      expect(results.question.join).to eq expected_message
+      expect(results.question(opponent_id).join).to eq expected_message
+    end
+
+    it 'returns the question that was asked from the current player POV' do
+      expected_message = 'You asked Player2 for any Ks'
+      expect(results.question(current_id).join).to eq expected_message
     end
   end
 
@@ -39,12 +46,12 @@ RSpec.describe GoFish::TurnResult, type: :model do
       context 'returns message telling player what they picked up' do
         it 'player gets what they wanted' do
           expected_message = 'You drew a J of Spades and do not get to go again'
-          expect(results.go_fish(current)).to eq expected_message
+          expect(results.go_fish(current_id)).to eq expected_message
         end
         it 'player does not get what they wanted' do
           results.goes_again = true
           expected_message = 'You drew a J of Spades and get to go again'
-          expect(results.go_fish(current)).to eq expected_message
+          expect(results.go_fish(current_id)).to eq expected_message
         end
       end
     end
@@ -53,17 +60,17 @@ RSpec.describe GoFish::TurnResult, type: :model do
       it 'returns message when player gets what they wanted' do
         results.goes_again = true
         expected_message = 'Player1 drew a card and gets to go again'
-        expect(results.go_fish(opponent)).to eq expected_message
+        expect(results.go_fish(opponent_id)).to eq expected_message
       end
 
       it 'returns message when player did not get what they wanted' do
         expected_message = 'Player1 drew a card and does not get to go again'
-        expect(results.go_fish(opponent)).to eq expected_message
+        expect(results.go_fish(opponent_id)).to eq expected_message
       end
 
       it 'returns nil when player did not go fishing' do
         results.card_picked_up = nil
-        expect(results.go_fish(opponent)).to be_nil
+        expect(results.go_fish(opponent_id)).to be_nil
       end
     end
   end
@@ -72,17 +79,17 @@ RSpec.describe GoFish::TurnResult, type: :model do
     before { results.created_book = GoFish::Book.new('J') }
     it 'returns message for current player that a book has been created' do
       expected_message = 'You created a book of Js'
-      expect(results.book_created(current)).to eq expected_message
+      expect(results.book_created(current_id)).to eq expected_message
     end
 
     it 'returns message for all players that a book has been created' do
       expected_message = 'Player1 created a book of Js'
-      expect(results.book_created(opponent)).to eq expected_message
+      expect(results.book_created(opponent_id)).to eq expected_message
     end
 
     it 'returns nil when a player did not create a book with the book' do
       results.created_book = nil
-      expect(results.book_created(current)).to be_nil
+      expect(results.book_created(current_id)).to be_nil
     end
   end
 
@@ -97,7 +104,7 @@ RSpec.describe GoFish::TurnResult, type: :model do
         },
         "opponent" => {
           "name" => 'Player2',
-          "id" => 0,
+          "id" => 1,
           "books" => [],
           "hand" => []
         },
@@ -140,15 +147,15 @@ RSpec.describe GoFish::TurnResult, type: :model do
 
   describe '#got_card_message' do
     let(:player1) { GoFish::Player.new(name: 'Player1') }
-    let(:player2) { GoFish::Player.new(name: 'Player2') }
+    let(:player2) { GoFish::Player.new(name: 'Player2', id: 1) }
     let(:card1) { GoFish::Card.new('K') }
     let(:card2) { GoFish::Card.new('J') }
     let(:expected_message1) { 'You ran out of cards, you drew a K' }
-    let(:expected_message2) { 'Player1 ran out of cards, they drew a card' }
+    let(:expected_message2) { 'Player2 ran out of cards, they drew a card' }
     before { results.add_got_card_record(player1, card1) }
     context 'when one player gets a card' do
       it 'returns an array with one message' do
-        result = results.got_card_message(player1.name)
+        result = results.got_card_message(player1.id)
         expected_size = 1
         expect(result.size).to eq expected_size
         expect(result.first).to eq expected_message1
@@ -157,12 +164,11 @@ RSpec.describe GoFish::TurnResult, type: :model do
     context 'when two players get a card' do
       before { results.add_got_card_record(player2, card2) }
       it 'returns an array with two messages' do
-        result1 = results.got_card_message(player1.name)
-        result2 = results.got_card_message(player2.name)
+        result = results.got_card_message(player1.id)
         expected_size = 2
-        expect(result1.size).to eq expected_size
-        expect(result1.first).to eq expected_message1
-        expect(result2.first).to eq expected_message2
+        expect(result.size).to eq expected_size
+        expect(result.first).to eq expected_message1
+        expect(result.last).to eq expected_message2
       end
     end
   end
