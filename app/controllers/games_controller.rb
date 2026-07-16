@@ -1,6 +1,7 @@
 class GamesController < ApplicationController
   def new
     @game = Game.new
+    render layout: "modal"
   end
 
   def index
@@ -13,7 +14,7 @@ class GamesController < ApplicationController
     if @game.save_new_game(current_user.id)
       return redirect_to game_path(@game.id)
     end
-    render :new, status: :unprocessable_content
+    render :new, status: :unprocessable_content, layout: "modal"
   end
 
   def show

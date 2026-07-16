@@ -7,7 +7,7 @@ main.op-page__main-content
         .content-header__details
           h2.content-header__title Your Games
         .content-header__aside
-          = link_to new_game_path, class: 'btn btn--primary' do
+          = link_to new_game_path, class: 'btn btn--primary', data: { turbo_frame: 'modal' } do
             i.icon.li.li-circle-plus
             p New Game
 
