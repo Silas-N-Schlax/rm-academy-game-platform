@@ -11,7 +11,9 @@
             collection: @game.valid_types.map { |item| [item.underscore.titleize, item] },
             include_blank: 'Select a Game Type'
         = f.input :game_size, as: :integer
-        = f.button :submit, "Create Game"
+        = content_for :modal_footer do
+          = f.button :submit, "Create Game", form: f.id
+
 
 = content_for :modal_header do
   p Create a New Game

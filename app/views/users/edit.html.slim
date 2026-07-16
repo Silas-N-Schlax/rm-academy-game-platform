@@ -4,8 +4,8 @@
       .simple-page__logo
         img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
 
-      .simple-page__form#signup-form
-        = simple_form_for @user, method: :patch, data: { controller: 'country', country_url_value: turbo_fetch_users_url } do |f|
+      .simple-page__form
+        = simple_form_for @user, method: :patch, html: { id: 'edit-profile-form' }, data: { controller: 'country', country_url_value: turbo_fetch_users_url } do |f|
           = f.input :name
           = f.input :email_address, input_html: { readonly: true }
 
@@ -18,8 +18,8 @@
 
           = f.input :city
           = f.input :zip_code, as: :integer
-
-          = f.button :submit, "Edit Profile", class: 'btn btn--primary'
+          = content_for :modal_footer do
+            = f.button :submit, "Edit Profile", form: f.id
 
 = content_for :modal_header do
   p Edit Your Profile
