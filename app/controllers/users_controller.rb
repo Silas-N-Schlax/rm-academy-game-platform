@@ -22,7 +22,7 @@ class UsersController < ApplicationController
     if @user.update(update_params)
       return redirect_to users_show_path
     end
-    render :edit, status: :unprocessable_content
+    render :edit, status: :unprocessable_content, layout: "modal"
   end
 
   def turbo_fetch
@@ -31,6 +31,7 @@ class UsersController < ApplicationController
 
   def edit
     @user = User.find(current_user.id)
+    render layout: "modal"
   end
 
   def show
