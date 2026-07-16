@@ -10,6 +10,9 @@ application.register("auto-play", AutoPlayController)
 import CountryController from "./country_controller"
 application.register("country", CountryController)
 
+import DialogController from "./dialog_controller"
+application.register("dialog", DialogController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
