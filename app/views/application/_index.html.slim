@@ -1,36 +1,36 @@
 - game = @game || game
-.op-page__main
-  main.op-page__main-content
-    .game-list
-      section#user-games
-        header.content-header
-          .content-header__details
-            h2.content-header__title Your Games
-          .content-header__aside
-            = link_to new_game_path, class: 'btn btn--primary' do
-              i.icon.li.li-circle-plus
-              p New Game
 
-        .game-list__cards#user_games_list
-          - if current_user.has_games?
-            - current_user.games.each do |game|
-              - if game.joined?(current_user.id) && game.finished_at.nil?
-                = render partial: 'game_card', locals: { item: game, post: false }
-          - else
-            .game-list__no-data You have no active games...
+main.op-page__main-content
+  .game-list
+    section#user-games
+      header.content-header
+        .content-header__details
+          h2.content-header__title Your Games
+        .content-header__aside
+          = link_to new_game_path, class: 'btn btn--primary' do
+            i.icon.li.li-circle-plus
+            p New Game
 
-      section#open-games
-        header.content-header
-          .content-header__details
-            h2.content-header__title Open Games
+      .game-list__cards#user_games_list
+        - if current_user.has_games?
+          - current_user.games.each do |game|
+            - if game.joined?(current_user.id) && game.finished_at.nil?
+              = render partial: 'game_card', locals: { item: game, post: false }
+        - else
+          .game-list__no-data You have no active games...
 
-        .game-list__cards#all_games_list
-          - games = game.open_games(current_user.id)
-          - if games.empty?
-            .game-list__no-data There are no open games to join...
+    section#open-games
+      header.content-header
+        .content-header__details
+          h2.content-header__title Open Games
 
-          - else
-            - games.each do |game|
-              - unless game.joined?(current_user.id)
-                = render partial: 'game_card', locals: { item: game, post: true }
+      .game-list__cards#all_games_list
+        - games = game.open_games(current_user.id)
+        - if games.empty?
+          .game-list__no-data There are no open games to join...
+
+        - else
+          - games.each do |game|
+            - unless game.joined?(current_user.id)
+              = render partial: 'game_card', locals: { item: game, post: true }
 

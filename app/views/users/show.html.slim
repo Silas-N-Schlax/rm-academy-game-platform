@@ -68,4 +68,4 @@
               .text-pair__subtitle
                 | #{@user.zip_code}
 
-          = link_to "Edit Profile", edit_user_path(@user), class: "btn btn--no-border"
+          = link_to "Edit Profile", edit_user_path(@user), class: "btn btn--no-border", data: { turbo_frame: 'modal' }
