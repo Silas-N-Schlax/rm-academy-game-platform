@@ -1,0 +1,11 @@
+import { Controller } from "@hotwired/stimulus"
+
+// Connects to data-controller="auto-play"
+export default class extends Controller {
+  static targets = ["submitButton"]
+
+  submit() {
+    console.log(this.submitButtonTarget)
+    this.submitButtonTarget.click()
+  }
+}

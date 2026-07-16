@@ -116,6 +116,55 @@ RSpec.describe 'Games', type: :system do
     end
   end
 
+  context 'when a game has started' do
+    let!(:game) { create :game }
+    before do
+      game.start!
+      sign_in_as game.users.first
+      visit game_path(game)
+    end
+    it 'has a timer that auto submits the form when expired', :js do
+      expect(page).to have_selector('.timer')
+      sleep 6
+      expect(page).to have_selector('.game-feed__question')
+    end
+
+    context 'when the player gets to go again' do
+      let!(:game) { create :game }
+      before do
+        game.start!
+        implementation = game.game_state
+        implementation.deck.cards = [ GoFish::Card.new('J') ]
+        players = implementation.players
+        players.first.hand = [ GoFish::Card.new('J') ]
+        players.last.hand = [ GoFish::Card.new('J'), GoFish::Card.new('10') ]
+        game.save
+        sign_in_as game.users.first
+      end
+      it 'resets timer', :js do
+        visit game_path(game)
+        sleep 6
+        expect(page).to have_selector('.timer')
+      end
+    end
+
+    context 'when the game is over' do
+      before do
+        implementation = game.game_state
+        implementation.deck.cards = []
+        players = implementation.players
+        players.first.hand = [ GoFish::Card.new('J'), GoFish::Card.new('J'), GoFish::Card.new('J') ]
+        players.last.hand = [ GoFish::Card.new('J') ]
+        game.save
+      end
+      it 'removes timers when game is over', :js do
+        click_on 'Ask'
+        sleep 1
+        expect(page).to_not have_selector('.timer')
+      end
+    end
+  end
+
   context 'when a user goes a game they have not joined' do
     it 'redirects them to home page' do
       sign_in_as user
