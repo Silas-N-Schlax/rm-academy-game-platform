@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["submitButton"]
 
   submit() {
-    console.log(this.submitButtonTarget)
     this.submitButtonTarget.click()
   }
 }
