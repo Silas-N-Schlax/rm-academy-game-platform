@@ -2,7 +2,6 @@ doctype html
 html
   head = render 'head'
   body.op-page
-    = render 'sidebar'
     = turbo_frame_tag 'modal' do
       = tag.dialog class:'dialog', open: response.message.start_with?('Unprocessable'), data: { controller: 'dialog' }
         .modal-wrapper.modal-wrapper--active
