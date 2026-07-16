@@ -12,12 +12,6 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
-  # validate :test
-
-  # def test
-  #   binding.irb
-  # end
-
   def has_games?
     return false if self.games.empty?
     return true unless self.games.where(finished_at: nil).empty?
