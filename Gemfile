@@ -74,3 +74,5 @@ group :test do
 end
 
 gem "good_job", "~> 4.19"
+
+gem "data_for"

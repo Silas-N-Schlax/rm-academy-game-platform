@@ -4,6 +4,11 @@ FactoryBot.define do
     sequence(:email_address) { |n| "user#{n}@example.com" }
     password { "password" }
     confirm_password { "password" }
+    # street_address { '123 example St' }
+    # country { 'US' }
+    # state { "NC" }
+    # city { "Raleigh" }
+    # zip_code { 00000 }
 
     trait :user2 do
       name { "player2" }

@@ -1,0 +1,19 @@
+= simple_form_for game.turn_class.new(game: game, user: current_user), url: game_turns_path(game), method: :post, html: { class: 'game-action', data: { controller: 'auto-play', action: 'timer:timer-over@window->auto-play#submit'} } do |f|
+    .game-action__options
+      .game-action__option
+        = f.input :player,
+          as: :select,
+          collection: f.object.players,
+          selected: f.object.players.first,
+          input_html: { class: 'form-control--small'}
+
+      .game-action__option
+        = f.input :rank,
+          as: :select,
+          collection: f.object.ranks,
+          selected: f.object.ranks.first,
+          input_html: { class: 'form-control--small'}
+    - if current_user.id == implementation.current_player.id
+      = f.button :submit, 'Ask For Cards', data: { 'auto-play_target': 'submitButton' }
+    - else
+      = f.button :submit, 'Ask For Cards', disabled: true

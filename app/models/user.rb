@@ -8,7 +8,7 @@ class User < ApplicationRecord
 
   validates :name, presence: true
   validates :email_address, presence: true, uniqueness: { case_insensitive: true }, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :password, presence: true, length: { in: 6..20 }, comparison: { equal_to: :confirm_password }
+  validates :password, presence: true, length: { in: 6..20 }, comparison: { equal_to: :confirm_password }, on: :create
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 

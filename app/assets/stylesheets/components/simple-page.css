@@ -1,8 +1,9 @@
 .simple-page {
-  height: 100dvh;
+  height: 95dvh;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: auto;
 
   &.simple-page--in-container {
     height: 65dvh

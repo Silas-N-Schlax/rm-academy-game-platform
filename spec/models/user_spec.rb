@@ -53,6 +53,13 @@ RSpec.describe User, type: :model do
       user = build :mismatching_passwords_user
       expect(user).to be_invalid
     end
+
+    it 'returns true if updating name and passwords are not present' do
+      user = create :user
+      new_name = 'New Name'
+      user.update({ name: new_name, email_address: user.email_address })
+      expect(User.find(user.id).name).to eq new_name
+    end
   end
 
   describe '#has_games?' do

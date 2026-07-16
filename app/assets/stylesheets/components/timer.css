@@ -1,0 +1,12 @@
+.timer {
+  display: flex;
+  gap: var(--op-space-medium);
+
+  .timer__title {
+    color: inherit
+  }
+
+  .timer__time {
+    color: var(--op-color-alerts-danger-on-plus-five);
+  }
+}
