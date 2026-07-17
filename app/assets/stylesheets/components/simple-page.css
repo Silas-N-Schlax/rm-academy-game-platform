@@ -3,10 +3,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-y: auto;
 
   &.simple-page--in-container {
     height: 65dvh
+  }
+
+  &.simple-page--not-centered{
+    height: 100%
   }
 
   .simple-page__body {

@@ -41,6 +41,8 @@ RSpec.describe 'Users', type: :system do
       visit users_show_path
       click_on 'Edit Profile'
       expect(current_path).to eq edit_user_path(user)
+      expected_content = 'Edit Your Profile'
+      expect(page).to have_content expected_content
     end
 
     it 'shows state when country is selected', :js do
