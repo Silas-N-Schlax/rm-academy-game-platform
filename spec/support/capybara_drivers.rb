@@ -3,6 +3,7 @@ RSpec.configure do |config|
     create_driver(app)
   end
 
+
   Capybara.register_driver :chrome do |app|
     create_driver(app, headless: false)
   end
@@ -19,8 +20,12 @@ RSpec.configure do |config|
     driven_by :playwright_headless
   end
 
+  config.before(:each, :capybara, type: :system) do
+    driven_by :selenium_chrome_headless
+  end
+
   config.before(:each, :chrome, type: :system) do
-    driven_by :chrome
+    driven_by :selenium, using: :chrome
   end
 
   config.before(:each, :firefox, type: :system) do
