@@ -1,5 +1,10 @@
 = turbo_stream_from @game
 
+.offline-banner.alert.alert--danger.alert--muted data-controller="offline" data-offline-target="offlineBanner"
+  i.li.li-globe-off.icon
+  .alert_messages
+    .alert_title Offline
+    .alert_description You are offline, reconnect to keep playing
 
 - if @game.game_state.nil?
   = render partial: "waiting_screen", locals: { game: @game }

@@ -184,6 +184,23 @@ RSpec.describe 'Games', type: :system do
     end
   end
 
+  context 'when the user goes offline on a game page', :chrome do
+    let!(:game) { create :game }
+    before do
+      sign_in_as game.users.first
+      game.start!
+      visit game_path(game)
+      wait_for_service_worker_control
+
+      emulate_worker_network(offline: true)
+    end
+    it 'displays offline banner' do
+      expect(page).to have_selector('.offline-banner')
+      emulate_worker_network(offline: false)
+      expect(page).to_not have_selector('.offline-banner')
+    end
+  end
+
   def fill_in_new_game_form(game_size, game_name)
     visit new_game_path
     fill_in 'Name', with: game_name

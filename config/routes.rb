@@ -35,5 +35,8 @@ Rails.application.routes.draw do
   get "users/show", to: "users#show"
 
 
+  resources :offline, only: [ :index ]
+
+
   root "games#index"
 end
