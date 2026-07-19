@@ -59,7 +59,7 @@
     --_gf-books-min-width: calc(var(--op-size-unit) * 50); /* 200px */
 
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 1fr 2fr;
+    grid-template-rows: 3fr 2.5fr 2fr 1fr;
 
     grid-template-areas:
     "game-board"
@@ -68,6 +68,7 @@
     "game-feed";
 
     &.gf-game--tall-feed {
+      grid-template-rows: 2fr 1fr 1.25fr 1fr;
       grid-template-areas:
         "game-board"
         "game-board"

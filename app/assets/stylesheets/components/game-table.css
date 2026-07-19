@@ -9,27 +9,57 @@
     "one two three four"
     "five pile pile six";
 
+  .game-table__piles {
+    grid-area: pile;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--op-space-x-large);
+  }
+
+  .game-table__player {
+    padding: var(--op-space-large);
+
+    .game-table__player-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: var(--op-space-small);
+      border-radius: var(--op-radius-medium);
+      box-shadow: var(--op-shadow-medium);
+      background-color: var(--op-color-neutral-plus-seven);
+      color: var(--op-color-neutral-on-plus-seven);
+    }
+  }
+}
+
+/* --op-breakpoint-medium */
+@media (width <= 1024px) {
+  .game-table {
+    overflow-y: auto;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-areas:
+      "one two"
+      "three four"
+      "five siz"
+      "pile pile";
+
     .game-table__piles {
       grid-area: pile;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: var(--op-space-x-large);
+      gap: var(--op-space-x-small);
     }
 
     .game-table__player {
-      padding: var(--op-space-large);
+      padding: var(--op-space-x-small);
 
       .game-table__player-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: var(--op-space-small);
-        border-radius: var(--op-radius-medium);
-        box-shadow: var(--op-shadow-medium);
-        background-color: var(--op-color-neutral-plus-seven);
-        color: var(--op-color-neutral-on-plus-seven);
+        padding: var(--op-space-x-small);
       }
     }
+  }
 }
