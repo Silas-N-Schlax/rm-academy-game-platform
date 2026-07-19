@@ -1,7 +1,7 @@
 doctype html
 html
   head = render 'head'
-  body.op-page
+  body.op-page data-controller="service-worker" data-service-worker-url-value=pwa_service_worker_path
     = render 'sidebar'
     .op-page__main
       = turbo_frame_tag 'modal'
