@@ -47,6 +47,7 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - **No magic numbers, strings, or regexes** — pull them into a well-named constant, or a well-named local/instance variable if scope doesn't warrant a constant. Look at existing code (e.g. `GoFish::Card::RANKS`, `CrazyEights::Game::SMALL_GAME_MAX_SIZE`) for the expected style.
 - **TDD always** — write the failing spec first.
 - **Skinny controllers, fat models** — business logic belongs in models/game engines, not controllers.
+- **CSS/Slim structure**: use BEM (`block__element--modifier`) as much as possible for class naming. Prefer `@rolemodel/optics` (already a dependency, see `package.json`/`app/assets/stylesheets/components/optics-overrides`) for values (colors, spacing, etc.) and built-in components wherever it fits, instead of hand-rolled one-off CSS.
 - `znotes/` is the project owner's personal scratch notes — ignore it as a source of project context.
 
 ## Key context
