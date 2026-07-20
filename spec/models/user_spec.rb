@@ -45,11 +45,11 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns false if no confirm password' do
-    user = build :no_confirm_password_user
+    user = build :no_password_confirmation_user
       expect(user).to be_invalid
     end
 
-    it 'returns false if password and confirm_password do not match' do
+    it 'returns false if password and password_confirmation do not match' do
       user = build :mismatching_passwords_user
       expect(user).to be_invalid
     end

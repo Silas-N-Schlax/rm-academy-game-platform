@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params.require(:user).permit(:email_address, :password, :name, :confirm_password))
+    @user = User.new(params.require(:user).permit(:email_address, :password, :name, :password_confirmation))
     if @user.save
       start_new_session_for @user
       redirect_to root_path
