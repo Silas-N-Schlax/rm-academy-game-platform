@@ -117,7 +117,7 @@ RSpec.describe 'Games', type: :system do
   end
 
   context 'when a game has started' do
-    let!(:game) { create :game }
+    let!(:game) { create :game, name: "----test-game-timer-----" }
     before do
       game.start!
       sign_in_as game.users.first
@@ -125,12 +125,11 @@ RSpec.describe 'Games', type: :system do
     end
     it 'has a timer that auto submits the form when expired', :js do
       expect(page).to have_selector('.timer')
-      sleep 6
       expect(page).to have_selector('.game-feed__question')
     end
 
     context 'when the player gets to go again' do
-      let!(:game) { create :game }
+      let!(:game) { create :game, name: "----test-game-timer-----" }
       before do
         game.start!
         implementation = game.game_state
@@ -143,8 +142,8 @@ RSpec.describe 'Games', type: :system do
       end
       it 'resets timer', :js do
         visit game_path(game)
-        sleep 6
-        expect(page).to have_selector('.timer')
+        sleep 3
+        expect(page).to have_selector('.game-feed__question', count: 2)
       end
     end
 

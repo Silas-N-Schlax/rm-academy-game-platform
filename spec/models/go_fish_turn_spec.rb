@@ -76,8 +76,8 @@ RSpec.describe GoFishTurn, type: :model do
     before { game.start! }
     it 'returns a list of ranks in the players hand' do
       turn = build(:go_fish_turn, game: game, user: game.users.first)
-      game_players = game.game_state.players
-      expect(turn.ranks).to eq game_players.first.ranks
+      implementation = game.game_state
+      expect(turn.ranks).to eq implementation.find_player(game.users.first.id).ranks
     end
   end
 end

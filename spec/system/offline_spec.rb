@@ -26,6 +26,7 @@ RSpec.describe 'Offline', type: :system do
       visit root_path
       expected_content = 'Offline'
       expect(page).to have_content expected_content
+      emulate_worker_network(offline: false)
     end
   end
 end
