@@ -44,11 +44,12 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 
 - **No method/block body over 7 lines**, not counting the signature line and `end`.
 - **No bare instance variables** outside of controllers, views (Slim templates), initializers, and lazy-init memoization (`@foo ||= ...`). Everywhere else, expose state through `attr_accessor`/`attr_reader` and call it via `self.`.
-- **No magic numbers, strings, or regexes** — pull them into a well-named constant, or a well-named local/instance variable if scope doesn't warrant a constant. Look at existing code (e.g. `GoFish::Card::RANKS`, `CrazyEights::Game::SMALL_GAME_MAX_SIZE`) for the expected style.
+- **No magic numbers, strings, or regexes** — pull them into a well-named constant, or a well-named local/instance variable if scope doesn't warrant a constant. Look at existing code (e.g. `GoFish::Card::RANKS`, `CrazyEights::Game::SMALL_GAME_MAX_SIZE`) for the expected style. This is a judgment call, not a rule to apply to every literal — only extract a constant when a literal's meaning genuinely isn't clear from its surrounding context (e.g. a bare number repeated in multiple places, or one with no obvious relation to the code around it). A literal like dividing by `3600` inside a method explicitly about formatting elapsed time doesn't need `SECONDS_PER_HOUR` pulled out just because it's a number.
 - **TDD always** — write the failing spec first.
 - **Skinny controllers, fat models** — business logic belongs in models/game engines, not controllers.
+- **Validation errors not tied to one specific attribute** (e.g. an invalid move in `GoFishTurn`/`CrazyEightsTurn`) should use `errors.add(:base, "message")`, not `errors.add("message")` — the latter treats the message string itself as the attribute name.
 - **CSS/Slim structure**: use BEM (`block__element--modifier`) as much as possible for class naming. Prefer `@rolemodel/optics` (already a dependency, see `package.json`/`app/assets/stylesheets/components/optics-overrides`) for values (colors, spacing, etc.) and built-in components wherever it fits, instead of hand-rolled one-off CSS.
-- `znotes/` is the project owner's personal scratch notes — ignore it as a source of project context.
+- `znotes/` is where the project owner stores plans and files that don't need to be committed (gitignored via a global gitignore, not this repo's `.gitignore`).
 
 ## Key context
 
