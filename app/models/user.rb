@@ -19,4 +19,9 @@ class User < ApplicationRecord
 
     false
   end
+
+  def country_flag
+    return unless self.country
+    self.country.upcase.chars.map { |char| char.ord + 127397 }.pack("U*")
+  end
 end

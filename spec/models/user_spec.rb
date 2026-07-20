@@ -77,4 +77,23 @@ RSpec.describe User, type: :model do
       expect(user.has_games?).to be false
     end
   end
+
+  describe '#country_flag' do
+    it 'returns country flag when country is present' do
+      user = create(:user, country: 'US')
+      expected_flag = '🇺🇸'
+      expect(user.country_flag).to eq expected_flag
+    end
+
+    it 'returns country flag when county is present and is not the US' do
+       user = create(:user, country: 'JP')
+      expected_flag = '🇯🇵'
+      expect(user.country_flag).to eq expected_flag
+    end
+
+    it 'returns nil when country is not present' do
+      user = create :user
+      expect(user.country_flag).to be_nil
+    end
+  end
 end

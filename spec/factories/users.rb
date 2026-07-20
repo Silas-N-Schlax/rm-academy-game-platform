@@ -5,7 +5,7 @@ FactoryBot.define do
     password { "password" }
     password_confirmation { "password" }
     # street_address { '123 example St' }
-    # country { 'US' }
+    country { nil }
     # state { "NC" }
     # city { "Raleigh" }
     # zip_code { 00000 }
