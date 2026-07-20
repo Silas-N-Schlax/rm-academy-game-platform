@@ -22,13 +22,13 @@ class Stat
   end
 
   def total_wins_by_game(user, type: "GoFishGame")
-    Player.where(user_id: user.id, winner: true).each  do |player|
+    Player.where(user_id: user.id, winner: true).select do |player|
       player.game.type == type
     end.size
   end
 
   def total_losses_by_game(user, type: "GoFishGame")
-    Player.where(user_id: user.id, winner: nil).each  do |player|
+    Player.where(user_id: user.id, winner: nil).select do |player|
       player.game.type == type
     end.size
   end
