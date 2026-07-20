@@ -65,7 +65,7 @@ gem "simple_form", "~> 5.4"
 
 group :test do
   gem "capybara", "~> 3.40"
-  gem "selenium-webdriver", "~> 4.45"
+  gem "selenium-webdriver", "~> 4.46"
   gem "capybara-playwright-driver"
   gem "factory_bot_rails"
   gem "parallel_tests"
