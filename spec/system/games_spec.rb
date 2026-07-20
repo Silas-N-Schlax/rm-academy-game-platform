@@ -117,7 +117,7 @@ RSpec.describe 'Games', type: :system do
   end
 
   context 'when a game has started' do
-    let!(:game) { create :game, name: "----test-game-timer-----" }
+    let!(:game) { create(:game, name: "----test-game-timer-----") }
     before do
       game.start!
       sign_in_as game.users.first
@@ -129,7 +129,7 @@ RSpec.describe 'Games', type: :system do
     end
 
     context 'when the player gets to go again' do
-      let!(:game) { create :game, name: "----test-game-timer-----" }
+      let!(:game) { create(:game, name: "----test-game-timer-----") }
       before do
         game.start!
         implementation = game.game_state
@@ -148,6 +148,7 @@ RSpec.describe 'Games', type: :system do
     end
 
     context 'when the game is over' do
+      let!(:game) { create :game }
       before do
         implementation = game.game_state
         implementation.deck.cards = []
@@ -157,8 +158,8 @@ RSpec.describe 'Games', type: :system do
         game.save
       end
       it 'removes timers when game is over', :js do
+        visit game_path(game)
         click_on 'Ask'
-        sleep 1
         expect(page).to_not have_selector('.timer')
       end
     end
