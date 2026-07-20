@@ -1,0 +1,24 @@
+.mobile-navbar {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--op-space-medium);
+
+  .mobile-navbar__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--op-space-x-small);
+    justify-content: center;
+    text-align: center;
+    padding-bottom: var(--op-space-x-small);
+
+    &.mobile-navbar__group--active {
+      border-bottom: solid var(--op-border-width-x-large) var(--op-color-primary-base)
+    }
+  }
+
+  .mobile-navbar__btn {
+    border-radius: var(--op-radius-large);
+    inline-size: calc(var(--op-size-unit) * 12);
+    block-size: calc(var(--op-size-unit) * 12);
+  }
+}

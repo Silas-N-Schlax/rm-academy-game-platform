@@ -6,29 +6,33 @@
 
 
   .page__content
-    table.table.table--primary.table--fixed-layout.table--default-density.table--sticky-header
-      thead
-        tr
-          th Game
-          th Winner
-          th # Players
-          th Game Played
-          th Time Elapsed
-          th Game Log
+    .dynamic-grid
+      - @games.select { |game| game.players.find { |player| player.user.id == @user.id } }.each do |game|
+        - unless game.finished_at.nil?
 
-      tbody
-        - @games.select { |game| game.players.find { |player| player.user.id == @user.id } }.each do |game|
-          - unless game.finished_at.nil?
-            tr data-testid='history-column'
-              th #{game.name}
-              - if game.winner
-                th #{game.winner.user.name}
-              - else
-                th ⚠️
+          button.card.card--padded.card--shadow-small commandfor="history-#{game.id}-dialog" command="show-modal"
+            .op-split
+              p #{game.name}
+              p #{game.started_at.strftime("%B %d, %Y")}
+          dialog.modal id="history-#{game.id}-dialog" data-testid='history-column'
+            .modal__header
+              | #{game.name}
+            .modal__body
+              .op-stack
+                .text-pair.text-pair--inline
+                  .text-pair__title Game Length:
+                  .text-pair__subtitle #{game.formatted_time}
 
-              th #{game.game_size}
-              th #{game.started_at.strftime("%B %d, %Y")}
-              th #{game.formatted_time}
-              th
-                = link_to "View Game", game_path(game), class: 'btn btn--no-outline'
+
+                .text-pair.text-pair--inline
+                  .text-pair__title Winner:
+                  .text-pair__subtitle #{game.winner.user.name} #{game.winner.user.country_flag}
+
+                .text-pair.text-pair--inline
+                  .text-pair__title Game size:
+                  .text-pair__subtitle #{game.game_size}
+            .modal__footer
+              = link_to "View Game", game_path(game), class: 'btn btn--active'
+              form method='dialog'
+                = button_tag 'Close', class: 'btn'
 

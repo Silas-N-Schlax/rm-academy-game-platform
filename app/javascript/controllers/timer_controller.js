@@ -3,11 +3,12 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="timer"
 export default class extends Controller {
   static targets = ["time"]
+  static values = { timerTime: { type: Number, default: 30 } }
 
   connect() {
     this.timerController = setInterval(() => {
       if (this.timerInterval == null) {
-        this.timeTarget.textContent = '00:00'
+        this.timeTarget.textContent = '00'
         this.startTimer()
       }
     })
@@ -18,8 +19,9 @@ export default class extends Controller {
   }
 
   startTimer() {
-    const timeLengthInSeconds = 5
-    let remainingTime = timeLengthInSeconds * 100
+    console.log(this.timerTimeValue)
+    if (this.timerTimeValue == undefined) return
+    let remainingTime = this.timerTimeValue
     this.timerInterval = null
 
     this.timerInterval = setInterval(() => {
@@ -33,14 +35,11 @@ export default class extends Controller {
           details: { autoPlay: true }
         })
       }
-    })
+    }, 1000)
   }
 
   updateScreen(remainingTime) {
-    let seconds = Math.ceil(remainingTime / 100)
-    const milliseconds = remainingTime
-    const formattedSeconds = String(seconds).padStart(2, '0');
-    const formattedMilliseconds = String(milliseconds).padStart(2, '0');
-    this.timeTarget.textContent = `${formattedSeconds}:${formattedMilliseconds}`
+    const formattedSeconds = String(remainingTime).padStart(2, '0');
+    this.timeTarget.textContent = formattedSeconds
   }
 }

@@ -7,9 +7,10 @@ RSpec.describe Stat, type: :model do
   let!(:game3) { create(:finished_game) }
   let!(:game4) { create(:finished_game) }
   let!(:game5) { create(:finished_game) }
+  let!(:game6) { create(:game, type: 'CrazyEightsGame') }
   let(:stat) { described_class.new }
   before do
-    [ game1, game2, game3 ].each do |game|
+    [ game1, game2, game3, game6 ].each do |game|
       create(:player_as_winner, user: user1, game:)
       create(:player, user: user2, game:)
     end
@@ -18,14 +19,14 @@ RSpec.describe Stat, type: :model do
   end
   describe '#total_games' do
     it 'returns the correct number' do
-      expected_output = 4
+      expected_output = 5
       expect(stat.total_games(user1)).to eq expected_output
     end
   end
 
   describe '#total_wins' do
      it 'returns the correct number' do
-      expected_output = 3
+      expected_output = 4
       expect(stat.total_wins(user1)).to eq expected_output
     end
   end
@@ -39,7 +40,7 @@ RSpec.describe Stat, type: :model do
 
   describe '#total_average' do
      it 'returns the correct number' do
-      expected_output = 75
+      expected_output = 80.0
       expect(stat.total_average(user1)).to eq expected_output
     end
   end

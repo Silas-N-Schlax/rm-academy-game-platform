@@ -1,7 +1,7 @@
 details.accordion
   summary.accordion__header
     i.icon.li.li-chevron-right.accordion__marker
-    span.accordion__label #{player.name}
+    span.accordion__label #{player.name} #{User.find(player.id).country_flag}
 
     .accordion__content
       .text-pair.text-pair--inline

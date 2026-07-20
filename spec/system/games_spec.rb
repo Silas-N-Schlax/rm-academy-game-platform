@@ -117,7 +117,7 @@ RSpec.describe 'Games', type: :system do
   end
 
   context 'when a game has started' do
-    let!(:game) { create :game }
+    let!(:game) { create(:game, name: "----test-game-timer-----") }
     before do
       game.start!
       sign_in_as game.users.first
@@ -125,12 +125,11 @@ RSpec.describe 'Games', type: :system do
     end
     it 'has a timer that auto submits the form when expired', :js do
       expect(page).to have_selector('.timer')
-      sleep 6
       expect(page).to have_selector('.game-feed__question')
     end
 
     context 'when the player gets to go again' do
-      let!(:game) { create :game }
+      let!(:game) { create(:game, name: "----test-game-timer-----") }
       before do
         game.start!
         implementation = game.game_state
@@ -143,12 +142,13 @@ RSpec.describe 'Games', type: :system do
       end
       it 'resets timer', :js do
         visit game_path(game)
-        sleep 6
-        expect(page).to have_selector('.timer')
+        sleep 3
+        expect(page).to have_selector('.game-feed__question', count: 2)
       end
     end
 
     context 'when the game is over' do
+      let!(:game) { create :game }
       before do
         implementation = game.game_state
         implementation.deck.cards = []
@@ -158,8 +158,8 @@ RSpec.describe 'Games', type: :system do
         game.save
       end
       it 'removes timers when game is over', :js do
+        visit game_path(game)
         click_on 'Ask'
-        sleep 1
         expect(page).to_not have_selector('.timer')
       end
     end
@@ -181,6 +181,23 @@ RSpec.describe 'Games', type: :system do
       fill_in_new_game_form(7, game_name)
       expect(page).to have_selector '#new-game-form'
       expect(page).to have_content 'is too short'
+    end
+  end
+
+  context 'when the user goes offline on a game page', :chrome do
+    let!(:game) { create :game }
+    before do
+      sign_in_as game.users.first
+      game.start!
+      visit game_path(game)
+      wait_for_service_worker_control
+
+      emulate_worker_network(offline: true)
+    end
+    it 'displays offline banner' do
+      expect(page).to have_selector('.offline-banner')
+      emulate_worker_network(offline: false)
+      expect(page).to_not have_selector('.offline-banner')
     end
   end
 

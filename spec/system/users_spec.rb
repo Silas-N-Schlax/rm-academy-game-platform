@@ -72,8 +72,8 @@ RSpec.describe 'Users', type: :system do
   def fill_in_signup_form
     fill_in "Name", with: 'Player1'
     fill_in "Email address", with: 'example@example.com'
-    fill_in "Password", with: 'password'
-    fill_in 'Confirm password', with: 'password'
+    fill_in "Password", with: 'password', match: :first
+    fill_in 'Password confirmation', with: 'password'
     click_on 'Sign Up'
   end
 end

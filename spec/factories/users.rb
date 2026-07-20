@@ -3,9 +3,9 @@ FactoryBot.define do
     sequence(:name) { |n| "User#{n}" }
     sequence(:email_address) { |n| "user#{n}@example.com" }
     password { "password" }
-    confirm_password { "password" }
+    password_confirmation { "password" }
     # street_address { '123 example St' }
-    # country { 'US' }
+    country { nil }
     # state { "NC" }
     # city { "Raleigh" }
     # zip_code { 00000 }
@@ -14,7 +14,7 @@ FactoryBot.define do
       name { "player2" }
       email_address { "user2@example.com" }
       password { "password2" }
-      confirm_password { "password2" }
+      password_confirmation { "password2" }
     end
 
     trait :no_name do
@@ -41,13 +41,13 @@ FactoryBot.define do
       password { 'ThisIsASuperLongPasswordItIsSoSafe' }
     end
 
-    trait :no_confirm_password do
-      confirm_password { nil }
+    trait :no_password_confirmation do
+      password_confirmation { nil }
     end
 
     trait :mismatching_passwords do
       password { 'password' }
-      confirm_password { 'confirm' }
+      password_confirmation { 'confirm' }
     end
 
     factory :user2, traits: [ :user2 ]
@@ -57,7 +57,7 @@ FactoryBot.define do
     factory :no_password_user, traits: [ :no_password ]
     factory :short_password_user, traits: [ :short_password ]
     factory :long_password_user, traits: [ :long_password ]
-    factory :no_confirm_password_user, traits: [ :no_confirm_password ]
+    factory :no_password_confirmation_user, traits: [ :no_password_confirmation ]
     factory :mismatching_passwords_user, traits: [ :mismatching_passwords ]
   end
 end

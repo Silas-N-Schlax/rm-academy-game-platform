@@ -1,0 +1,12 @@
+.dynamic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--op-space-small)
+}
+
+/* --op-breakpoint-small */
+@media (width <= 768px) {
+  .dynamic-grid {
+    grid-template-columns:  1fr;
+  }
+}

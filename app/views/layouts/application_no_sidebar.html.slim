@@ -1,6 +1,6 @@
 doctype html
 html
   head = render 'head'
-  body
+  body data-controller="service-worker" data-service-worker-url-value=pwa_service_worker_path
     = yield
   script src='/js/card-spacing.js' type="text/javascript"

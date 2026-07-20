@@ -3,9 +3,12 @@ title Game Platform
 = csrf_meta_tags
 = csp_meta_tag
 
-meta name="viewport" content="width=device-width, initial-scale=1"
+meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+
 meta name="turbo-refresh-method" content="morph"
 meta name="turbo-refresh-scroll" content="preserve"
+
+= tag.link rel: "manifest", href: pwa_manifest_path(format: :json), crossorigin: "use-credentials"
 
 = stylesheet_link_tag "https://cdn.jsdelivr.net/npm/@rolemodel/optics@2.4.0/dist/css/optics+lucide_icons.min.css"
 = stylesheet_link_tag :app, "data-turbo-track": "reload"

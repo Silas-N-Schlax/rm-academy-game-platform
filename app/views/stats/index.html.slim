@@ -4,52 +4,74 @@
       h1 Stats
     .divider.divider--medium
 
-  .op-stack
+  / .op-stack
+    / .card.card--padded.card--shadow-large
+    /   .op-split
+    /     .op-stack.text-center
+    /       img.avatar.avatar--5x-large src="/logo.png" alt="Avatar"/
+    /       p @player-name
+
+    /     .op-stack
+    /       table.table.table--auto-layout
+    /         tbody
+    /           tr
+    /             th Games Played:
+    /             th #{@stat.total_games(@user)}
+    /           tr
+    /             th Games Won:
+    /             th #{@stat.total_wins(@user)}
+    /           tr
+    /             th Games Lost:
+    /             th #{@stat.total_losses(@user)}
+    /           tr
+    /             th W/L Ratio:
+    /             th #{@stat.total_average(@user)}%
+
+  .dynamic-grid
     .card.card--padded.card--shadow-large
-      .op-split
-        .op-stack.text-center
-          img.avatar.avatar--5x-large src="/logo.png" alt="Avatar"/
-          p @player-name
+        .op-split
+          .op-stack.text-center
+            img.avatar.avatar--5x-large src="/logo.png" alt="Avatar"/
+            p @#{current_user.name}
 
-        .op-stack
-          table.table.table--auto-layout
-            tbody
-              tr
-                th Games Played:
-                th #{@stat.total_games(@user)}
-              tr
-                th Games Won:
-                th #{@stat.total_wins(@user)}
-              tr
-                th Games Lost:
-                th #{@stat.total_losses(@user)}
-              tr
-                th W/L Ratio:
-                th #{@stat.total_average(@user)}%
+          .op-stack
+            table.table.table--auto-layout
+              thead
+                th User Stats
+              tbody
+                tr
+                  th Games Played:
+                  th #{@stat.total_games(@user)}
+                tr
+                  th Games Won:
+                  th #{@stat.total_wins(@user)}
+                tr
+                  th Games Lost:
+                  th #{@stat.total_losses(@user)}
+                tr
+                  th W/L Ratio:
+                  th #{@stat.total_average(@user)}%
+    - ["GoFishGame", 'CrazyEightsGame'].each do |type|
+      .card.card--padded.card--shadow-large
+        .op-split
+          .op-stack.text-center
+            img.avatar.avatar.avatar--5x-large src="/#{type.underscore.downcase}_logo.png" alt="Avatar"/
+            p #{type.underscore.titleize.sub('Game', '')}
 
-    .op-grid.op-grid--2-column
-      - ["GoFishGame", 'CrazyEightsGame'].each do |type|
-        .card.card--padded.card--shadow-large
-          .op-split
-            .op-stack.text-center
-              img.avatar.avatar-x-large src="/logo.png" alt="Avatar"/
-              p #{type.underscore.titleize.sub('Game', '')}
-
-            .op-stack
-              table.table.table--auto-layout
-                tbody
-                  tr
-                    th Games Played:
-                    th #{@stat.total_games_by_game(@user, type:)}
-                  tr
-                    th Games Won:
-                    th #{@stat.total_wins_by_game(@user, type:)}
-                  tr
-                    th Games Won:
-                    th #{@stat.total_losses_by_game(@user, type:)}
-                  tr
-                    th W/L Ratio:
-                    th #{@stat.total_average_by_game(@user, type:)}%
-
-      .op-split
-        / Make dynamic for multiple types of games later
+          .op-stack
+            table.table.table--auto-layout
+              thead
+                th #{type.underscore.titleize.sub('Game', '')} Stats
+              tbody
+                tr
+                  th Games Played:
+                  th #{@stat.total_games_by_game(@user, type:).round(2)}
+                tr
+                  th Games Won:
+                  th #{@stat.total_wins_by_game(@user, type:).round(2)}
+                tr
+                  th Games Lost:
+                  th #{@stat.total_losses_by_game(@user, type:).round(2)}
+                tr
+                  th W/L Ratio:
+                  th #{@stat.total_average_by_game(@user, type:).round(2)}%

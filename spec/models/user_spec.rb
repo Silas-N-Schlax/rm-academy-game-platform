@@ -45,11 +45,11 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns false if no confirm password' do
-    user = build :no_confirm_password_user
+    user = build :no_password_confirmation_user
       expect(user).to be_invalid
     end
 
-    it 'returns false if password and confirm_password do not match' do
+    it 'returns false if password and password_confirmation do not match' do
       user = build :mismatching_passwords_user
       expect(user).to be_invalid
     end
@@ -75,6 +75,25 @@ RSpec.describe User, type: :model do
     it 'returns false if there are no games' do
       user = create :user
       expect(user.has_games?).to be false
+    end
+  end
+
+  describe '#country_flag' do
+    it 'returns country flag when country is present' do
+      user = create(:user, country: 'US')
+      expected_flag = '🇺🇸'
+      expect(user.country_flag).to eq expected_flag
+    end
+
+    it 'returns country flag when county is present and is not the US' do
+       user = create(:user, country: 'JP')
+      expected_flag = '🇯🇵'
+      expect(user.country_flag).to eq expected_flag
+    end
+
+    it 'returns nil when country is not present' do
+      user = create :user
+      expect(user.country_flag).to be_nil
     end
   end
 end

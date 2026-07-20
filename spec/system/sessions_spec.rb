@@ -1,6 +1,6 @@
 require 'rails_helper'
 RSpec.describe 'Games', type: :system do
-  let!(:user) { create(:user, password: '1234567', confirm_password: '1234567') }
+  let!(:user) { create(:user, password: '1234567', password_confirmation: '1234567') }
   let(:sidebar_selector) { '.op-page__sidebar' }
 
   it 'shows the sign-up page with no sidebar' do

@@ -16,5 +16,11 @@ application.register("dialog", DialogController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import OfflineController from "./offline_controller"
+application.register("offline", OfflineController)
+
+import ServiceWorkerController from "./service_worker_controller"
+application.register("service-worker", ServiceWorkerController)
+
 import TimerController from "./timer_controller"
 application.register("timer", TimerController)

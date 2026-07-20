@@ -4,11 +4,12 @@ class User < ApplicationRecord
   has_many :players
   has_many :games, through: :players
 
-  attribute :confirm_password
+  attribute :password_confirmation
 
   validates :name, presence: true
   validates :email_address, presence: true, uniqueness: { case_insensitive: true }, format: { with: URI::MailTo::EMAIL_REGEXP }, on: :create
-  validates :password, presence: true, length: { in: 6..20 }, comparison: { equal_to: :confirm_password }, on: :create
+  validates :password, presence: true, length: { in: 6..20 }, on: :create
+  validates :password_confirmation, presence: true, unless: -> { password.nil? }
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -17,5 +18,10 @@ class User < ApplicationRecord
     return true unless self.games.where(finished_at: nil).empty?
 
     false
+  end
+
+  def country_flag
+    return unless self.country
+    self.country.upcase.chars.map { |char| char.ord + 127397 }.pack("U*")
   end
 end

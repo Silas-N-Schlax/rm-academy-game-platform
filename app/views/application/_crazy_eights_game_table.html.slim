@@ -5,7 +5,7 @@
       .game-table__player
         .game-table__player-content
           i.li.li-circle-user-round.icon.icon--large
-          p #{player.name}
+          p #{player.name} #{User.find(player.id).country_flag}
           .card-collection.card-collection--2x-small
             - player.hand_size.times do |i|
               - if i < max_player_cards

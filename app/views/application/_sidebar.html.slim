@@ -3,7 +3,7 @@
     img.sidebar__brand src="/logo.png" alt="Go Fish Logo"/
     .sidebar__content.sidebar__content--start
       a.btn.btn--no-border.btn--sidebar href=root_path class=class_names('btn--active' => request.path == root_path)
-        i.li.li-fish.icon
+        i.li.li-joystick.icon
         p Games
 
       a.btn.btn--no-border.btn--sidebar href=games_history_path class=class_names('btn--active' => request.path.include?('games/history'))
@@ -21,3 +21,30 @@
       .divider.divider--medium
       = button_to 'Profile', users_show_path, method: :get, class: 'btn btn--no-border'
       = button_to 'Log Out', session_path, method: :delete, class: 'btn btn--no-border'
+
+.op-page__sidebar.op-page-sidebar--mobile
+  .mobile-navbar
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/stats'))
+        = link_to stats_path, class: 'btn btn--icon mobile-navbar__btn' do
+          i.li.li-chart-column-big.icon.icon--x-large
+        p Stats
+
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/pages/rules'))
+        = link_to pages_rules_path, class: 'btn btn--icon mobile-navbar__btn' do
+          i.li.li-list-check.icon.icon--x-large
+        p Rules
+
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path == root_path)
+        = link_to root_path, class: 'btn btn--primary btn--icon mobile-navbar__btn' do
+          i.li.li-joystick.icon.icon--x-large
+        p Games
+
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/games/history'))
+        = link_to games_history_path, class: 'btn btn--icon mobile-navbar__btn' do
+          i.li.li-clock.icon.icon--x-large
+        p History
+
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/users/show'))
+        = link_to users_show_path, class: 'btn btn--icon mobile-navbar__btn' do
+          i.li.li-circle-user-round.icon.icon--x-large
+        p Profile
