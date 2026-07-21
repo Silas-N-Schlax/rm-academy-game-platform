@@ -66,11 +66,11 @@ rather than duplicating when revisiting a topic.
   from this same audit were BRAVE-broken-down into five cards. **Card 1 (server-authoritative
   turn timer) and Card 3 (whose-turn check unified into a shared `Turn` base class) are done** —
   see `znotes/completed_plans/card-1-timer-server-authoritative-brave.md` and
-  `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`. **Card 4a is now partially
-  done (2026-07-21):** Part 1 (`CardGame::Card`/`Pile`/`Deck` extraction) shipped; Part 2
-  (`CardGame::Engine` + the `start!` hoist — where the real behavioral risk lives) is still open
-  and needs its own planning pass — see the Status section at the top of
-  `znotes/plans/card-4a-extract-shared-card-engine-brave.md`. `card-2-remove-debug-logs-brave.md`
-  and `card-4b-normalize-engine-contracts-brave.md` remain untouched in `znotes/plans/` (4a/4b
-  together supersede the older `znotes/plans/engine-refactor-plan.md`, which is now annotated as
-  such). Revisit full unification once those land.
+  `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`. **Card 4a is now done (2026-07-21):** both Part 1 (`CardGame::Card`/`Pile`/`Deck` extraction) and
+  Part 2 (`CardGame::Engine`, plus the `start!` hoist to the `Game` AR base via a new `engine_class`
+  hook) have shipped — see `znotes/completed_plans/card-4a-extract-shared-card-engine-brave.md`.
+  `card-4b-normalize-engine-contracts-brave.md` (signature normalization + `NotImplementedError`
+  contracts) now has its prerequisite in place and is ready to pick up; `card-2-remove-debug-logs-
+  brave.md` remains untouched in `znotes/plans/` (4a/4b together supersede the older
+  `znotes/plans/engine-refactor-plan.md`, which is now annotated as such). Revisit full
+  unification once 4b lands.
