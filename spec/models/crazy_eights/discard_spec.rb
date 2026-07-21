@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe CrazyEights::Discard, type: :model do
+  let(:card_class) { CrazyEights::Card }
+
+  it_behaves_like "a CardGame::Pile"
+
   describe '#add_card' do
     let(:discard_pile) { described_class.new(cards: [ CrazyEights::Card.new("J") ]) }
     it 'adds card to top of discard pile' do

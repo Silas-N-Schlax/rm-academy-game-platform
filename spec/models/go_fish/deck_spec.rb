@@ -1,80 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe GoFish::Deck, type: :model do
-  it 'should have 52 cards when created' do
-    deck = described_class.new
-    expected_deck_size = 52
-    expect(deck.cards_left).to eq expected_deck_size
-  end
-  describe '#take_top_card' do
-    let(:deck) { described_class.new }
-    it 'takes the top card and removes from deck' do
-      take_top_card = deck.cards.first
-      expected_deck_size = 51
-      expect(deck.take_top_card).to eq take_top_card
-      expect(deck.cards_left).to eq expected_deck_size
-    end
-    context 'when the deck is empty' do
-      before { deck.cards = [] }
-      it 'returns nil' do
-        expect(deck.take_top_card).to be_nil
-      end
-    end
-  end
-  describe '#shuffle_deck' do
-    it 'shuffles the deck' do
-      deck1 = described_class.new
-      deck2 = described_class.new
-      deck1.shuffle_deck
+  let(:card_class) { GoFish::Card }
 
-      expect(deck1.cards).to_not eq deck2.cards
-    end
-  end
-  describe '#cards_left' do
-    let(:deck) { described_class.new }
-    it 'returns number of cards left' do
-      expected_deck_size = 48
-      deck.cards.shift(4)
-      expect(deck.cards_left).to eq expected_deck_size
-    end
-  end
-  describe '#empty?' do
-    let(:deck) { described_class.new }
-    it 'returns false if deck is full' do
-      expect(deck.empty?).to be false
-    end
-    it 'returns true if deck is empty' do
-      deck.cards = []
-      expect(deck.empty?).to be true
-    end
-  end
-
-  describe '#as_json' do
-    let(:deck) { described_class.new(cards: [ GoFish::Card.new('J'), GoFish::Card.new('K') ]) }
-    let(:expected_hash) do
-      [
-        {
-          "rank" => 'J',
-          "suit" => "Spades"
-        },
-        {
-          "rank" => 'K',
-          "suit" => "Spades"
-        }
-      ]
-    end
-    it 'returns expected hash' do
-      expect(deck.as_json).to eq expected_hash
-    end
-  end
-
-  describe '.from_json' do
-    let(:deck) { described_class.new(cards: [ GoFish::Card.new('J'), GoFish::Card.new('K') ]) }
-    it 'restores current state of the card' do
-      json = deck.as_json
-      expect(GoFish::Deck.from_json(json)).to have_attributes(
-        cards: deck.cards
-      )
-    end
-  end
+  it_behaves_like "a CardGame::Deck"
+  it_behaves_like "a CardGame::Pile"
 end
