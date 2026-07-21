@@ -13,9 +13,17 @@ rather than duplicating when revisiting a topic.
   Capybara `wait:`, then an explicit `navigator.onLine` poll with an extended timeout) both failed
   to eliminate it and were reverted. Next step: investigate applying the network emulation to the
   page target instead of (or in addition to) the service worker target.
-- **`spec/models/go_fish_turn_spec.rb:55`** and **`spec/models/crazy_eights_turn_spec.rb:90`**
+- **`spec/models/go_fish_turn_spec.rb`** and **`spec/models/crazy_eights_turn_spec.rb`**
   (both "`#save` returns true if turn was valid") — intermittent failures under full-suite load,
-  pass reliably in isolation. Root cause not yet investigated.
+  pass reliably in isolation. **Likely fixed 2026-07-21** (previously: root cause not yet
+  investigated): root cause was `Game has_many :players` having no explicit order, so
+  `GoFish::Game.create`/`CrazyEights::Game.create`'s `players.map` could seat players in a
+  different order than `.first` (Rails' implicit id-order) — exactly the assumption these specs'
+  setup depends on (`implementation.players.first.hand = ...`). Fixed via `players.sort_by(&:id)`
+  in both `.create` methods, with a reproduction spec in each engine's `game_spec.rb`
+  (`.create` "when the players are not passed in join order"). Confirmed via ~8 clean full-suite
+  runs post-fix; not provably resolved (couldn't force the original failure on demand either) —
+  reopen this entry if it resurfaces.
 - **`TurnsController#create` has no explicit controller-level authorization** — correctness
   currently rests entirely on the turn form objects (`GoFishTurn`/`CrazyEightsTurn`) validating
   that the submitting user is a valid player. Deferred from the bugs-security batch (see
@@ -30,6 +38,15 @@ rather than duplicating when revisiting a topic.
   the gap for both games' play *and* Crazy Eights' request/draw path. The broader
   controller-level-authorization question above is still open; this only closed the concrete
   Go Fish model-layer gap.
+
+## Known latent bugs (not yet fixed, 2026-07-21)
+
+- **`app/views/application/_go_fish_form.html.slim:6-7`** has the same players-ordering gap
+  described in `docs/architecture.md` (`has_many :players` has no explicit `order`): `collection:
+  f.object.players` (unordered) is paired with `selected: f.object.players.first`
+  (Rails-implicit id-order), so the pre-selected dropdown option could disagree with the
+  displayed collection order under DB load. Found while investigating the `.create`
+  player-seating bug above; not fixed — out of scope for that fix.
 
 ## Known coverage gaps (deliberately deprioritized, 2026-07-21)
 
@@ -49,8 +66,11 @@ rather than duplicating when revisiting a topic.
   from this same audit were BRAVE-broken-down into five cards. **Card 1 (server-authoritative
   turn timer) and Card 3 (whose-turn check unified into a shared `Turn` base class) are done** —
   see `znotes/completed_plans/card-1-timer-server-authoritative-brave.md` and
-  `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`. Three remain open in
-  `znotes/plans/`: `card-2-remove-debug-logs-brave.md`, `card-4a-extract-shared-card-engine-brave.md`,
-  and `card-4b-normalize-engine-contracts-brave.md` (4a/4b together supersede the older
-  `znotes/plans/engine-refactor-plan.md`, which is now annotated as such). Revisit full unification
-  once those land.
+  `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`. **Card 4a is now partially
+  done (2026-07-21):** Part 1 (`CardGame::Card`/`Pile`/`Deck` extraction) shipped; Part 2
+  (`CardGame::Engine` + the `start!` hoist — where the real behavioral risk lives) is still open
+  and needs its own planning pass — see the Status section at the top of
+  `znotes/plans/card-4a-extract-shared-card-engine-brave.md`. `card-2-remove-debug-logs-brave.md`
+  and `card-4b-normalize-engine-contracts-brave.md` remain untouched in `znotes/plans/` (4a/4b
+  together supersede the older `znotes/plans/engine-refactor-plan.md`, which is now annotated as
+  such). Revisit full unification once those land.

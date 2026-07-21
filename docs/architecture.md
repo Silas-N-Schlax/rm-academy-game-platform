@@ -11,6 +11,7 @@ Game (STI base, type: "GoFishGame" | "CrazyEightsGame")
 ```
 
 - `Game` is an STI base class (`type` column). `GoFishGame` and `CrazyEightsGame` are the only subclasses today; adding a new game means adding a new subclass plus a new engine namespace (see below), not touching the base class's schema.
+- `has_many :players`/`has_many :users` have no explicit `order`. Rails implicitly orders `.first`/`.last` by `id`, but `.map`/`.each`/`.to_a` do not — those can return rows in a different order under DB load. `GoFish::Game.create`/`CrazyEights::Game.create` learned this the hard way (players could get seated in the wrong turn order) and now `sort_by(&:id)` explicitly before mapping. `app/views/application/_go_fish_form.html.slim`'s player-select dropdown has the same latent gap and is not yet fixed — see `docs/roadmap.md`.
 - `Player` is the join model between `User` and `Game` — one row per seat, holding `winner` (boolean/nil: `true` = won, `nil` = lost or unfinished, since ties aren't possible in either game).
 - `Session`/`Current` follow the standard Rails 8 authentication-generator pattern: a signed cookie holds a `session_id`, `Current.session` is set per-request in `Authentication` (a controller concern), and `Current.user` delegates to it.
 - `Stat` is a plain (non-AR) query object that computes win/loss/average stats per user, optionally filtered by game `type` string.
@@ -34,6 +35,12 @@ end
 Why this shape: it lets each game's rules live entirely in plain Ruby (easy to unit test, no AR overhead, no complex joins for "whose turn is it"), while still getting persistence, `jsonb` querying, and Rails' normal record lifecycle for free on the outer `Game` row.
 
 `Game#implementation` memoizes `game_state` for the lifetime of the in-memory `Game` instance — be aware that mutating the engine object and not reassigning it back to `self.game_state` won't get picked up by ActiveRecord's dirty tracking (see how `GoFishGame#play` and `CrazyEightsGame#play` explicitly do `implementation = self.game_state; ...; self.game_state = implementation` before `save!`).
+
+## Shared `CardGame::` base classes
+
+`GoFish::Card`/`CrazyEights::Card` inherit from `CardGame::Card` (`app/models/card_game/card.rb`); `GoFish::Deck`/`CrazyEights::Deck` inherit from `CardGame::Deck < CardGame::Pile`, and `CrazyEights::Discard` inherits directly from `CardGame::Pile`. Each concrete subclass declares its own `def self.card_class` (e.g. `GoFish::Deck.card_class = GoFish::Card`) so the shared `generate_deck`/`from_json` code builds the right namespace's `Card` — deliberately explicit rather than derived from the module name, per the no-magic convention. Note `CardGame::Card#==` only compares `rank`/`suit`, not class — a round-trip spec using `eq`/`have_attributes(cards: ...)` won't catch a `card_class` misconfiguration that builds the wrong subclass; assert `be_an_instance_of(card_class)` explicitly if you touch this code (see `spec/support/shared_examples/card_game_pile_examples.rb`/`card_game_deck_examples.rb`).
+
+The turn-engine POROs (`GoFish::Game`/`CrazyEights::Game`) do **not** yet share a base class — that extraction (`CardGame::Engine`) is still open, see `docs/roadmap.md`.
 
 ## Turn form objects
 
