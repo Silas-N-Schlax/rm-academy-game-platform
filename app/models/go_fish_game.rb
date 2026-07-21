@@ -20,6 +20,11 @@ class GoFishGame < Game
     save!
   end
 
+  def remaining_turn_seconds(total)
+    elapsed = Time.current - updated_at
+    (total - elapsed).clamp(0, total)
+  end
+
   def valid_move?(player, rank)
     implementation.valid_player?(player) && implementation.valid_rank?(rank)
   end

@@ -94,6 +94,32 @@ RSpec.describe GoFishGame, type: :model do
     end
   end
 
+  describe '#remaining_turn_seconds' do
+    let!(:game) { create :started_game }
+    let(:total) { 30 }
+
+    it 'returns the full total at the instant the turn starts' do
+      expect(game.remaining_turn_seconds(total)).to be_within(1).of(total)
+    end
+
+    it 'subtracts elapsed time since the turn started' do
+      travel 20.seconds do
+        expect(game.remaining_turn_seconds(total)).to be_within(1).of(10)
+      end
+    end
+
+    it 'clamps to 0 once the total time has elapsed' do
+      travel 45.seconds do
+        expect(game.remaining_turn_seconds(total)).to eq 0
+      end
+    end
+
+    it 'never exceeds the total, even with a future updated_at' do
+      game.update_column(:updated_at, 5.seconds.from_now)
+      expect(game.remaining_turn_seconds(total)).to eq total
+    end
+  end
+
   describe '#turn_class' do
     let!(:game) { create :started_game }
     it 'sends valid a GoFish turn class' do
