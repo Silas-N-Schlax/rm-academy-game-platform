@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe GoFishGame, type: :model do
+  describe '#engine_class' do
+    it 'returns the GoFish engine' do
+      expect(described_class.new.engine_class).to eq GoFish::Game
+    end
+  end
+
   describe '#start!' do
     let!(:game) { create :game }
     context 'when a game has not already been started' do

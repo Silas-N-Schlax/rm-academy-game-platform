@@ -23,7 +23,17 @@ class Game < ApplicationRecord
     self.save
   end
 
-  def start! = raise NotImplementedError, "#{self.class} must implement #required_method"
+  def start!
+    return self.game_state unless self.game_state.nil?
+    return nil unless can_start?
+
+    self.started_at = Time.current
+    self.game_state = engine_class.create(self.players)
+    save!
+    self.game_state
+  end
+
+  def engine_class = raise NotImplementedError, "#{self.class} must implement #required_method"
   def play = raise NotImplementedError, "#{self.class} must implement #required_method"
   def turn_class = raise NotImplementedError, "#{self.class} must implement #required_method"
 

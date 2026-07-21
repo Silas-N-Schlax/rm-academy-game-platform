@@ -1,15 +1,7 @@
 class GoFishGame < Game
   serialize :game_state, coder: GoFish::Game
 
-  def start!
-    return self.game_state unless self.game_state.nil?
-    return nil unless can_start?
-
-    self.started_at = Time.current
-    self.game_state = GoFish::Game.create(self.players)
-    save!
-    self.game_state
-  end
+  def engine_class = GoFish::Game
 
   def play(player, rank, user_id)
     implementation = self.game_state

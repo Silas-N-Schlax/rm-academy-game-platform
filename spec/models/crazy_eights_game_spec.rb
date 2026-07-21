@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe CrazyEightsGame, type: :model do
+  describe '#engine_class' do
+    it 'returns the CrazyEights engine' do
+      expect(described_class.new.engine_class).to eq CrazyEights::Game
+    end
+  end
+
   describe '#start!' do
     let!(:game) { create :game, type: 'CrazyEightsGame' }
     context 'when a game has not already been started' do
