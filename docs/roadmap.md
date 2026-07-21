@@ -21,12 +21,15 @@ rather than duplicating when revisiting a topic.
   that the submitting user is a valid player. Deferred from the bugs-security batch (see
   `znotes/completed_plans/bugs-security-plan.md` §5); decide whether a lightweight `before_action`
   guard is worth adding, or whether a regression test pinning the current form-object guarantee is
-  sufficient. **Concrete instance found (2026-07-21):** Go Fish has **zero** whose-turn enforcement
-  at any layer today — unlike `CrazyEightsTurn#is_players_turn?`, nothing checks that the
-  submitting user is the current player before a move is applied. A crafted POST could play a move
-  on another player's behalf; unexploited only because the UI hides the form for non-active
-  players. Planned fix: `znotes/plans/card-3-whose-turn-into-engines-brave.md` (move the check into
-  both game engines).
+  sufficient. **Model-layer gap closed (2026-07-21):** Go Fish previously had **zero** whose-turn
+  enforcement at any layer — unlike `CrazyEightsTurn#is_players_turn?`, nothing checked that the
+  submitting user was the current player before a move was applied. Fixed via
+  `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`: both `GoFishTurn` and
+  `CrazyEightsTurn` now inherit from a shared `Turn` base class whose unconditional
+  `validate :players_turn` calls a new `Game#players_turn?(user_id)` on the AR superclass — closing
+  the gap for both games' play *and* Crazy Eights' request/draw path. The broader
+  controller-level-authorization question above is still open; this only closed the concrete
+  Go Fish model-layer gap.
 
 ## Known coverage gaps (deliberately deprioritized, 2026-07-21)
 
@@ -44,9 +47,10 @@ rather than duplicating when revisiting a topic.
   `number_of_cards_to_deal`, etc.). A full unification/refactor of the two game engines is real
   technical debt but is a larger effort than fits in a 1-2hr card — smaller, scoped extractions
   from this same audit were BRAVE-broken-down into five cards. **Card 1 (server-authoritative
-  turn timer) is done** — see `znotes/completed_plans/card-1-timer-server-authoritative-brave.md`.
-  Four remain open in `znotes/plans/`: `card-2-remove-debug-logs-brave.md`,
-  `card-3-whose-turn-into-engines-brave.md`, `card-4a-extract-shared-card-engine-brave.md`, and
-  `card-4b-normalize-engine-contracts-brave.md` (4a/4b together supersede the older
+  turn timer) and Card 3 (whose-turn check unified into a shared `Turn` base class) are done** —
+  see `znotes/completed_plans/card-1-timer-server-authoritative-brave.md` and
+  `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`. Three remain open in
+  `znotes/plans/`: `card-2-remove-debug-logs-brave.md`, `card-4a-extract-shared-card-engine-brave.md`,
+  and `card-4b-normalize-engine-contracts-brave.md` (4a/4b together supersede the older
   `znotes/plans/engine-refactor-plan.md`, which is now annotated as such). Revisit full unification
   once those land.
