@@ -131,6 +131,15 @@ RSpec.describe 'Games', type: :system do
       expect(page).to have_selector('.game-feed__question')
     end
 
+    it 'does not reset the countdown when the page is reloaded', :js do
+      remaining_before_reload = find('.timer')['data-timer-seconds-value'].to_f
+      travel 20.seconds do
+        visit game_path(game)
+        remaining_after_reload = find('.timer')['data-timer-seconds-value'].to_f
+        expect(remaining_after_reload).to be_within(1).of(remaining_before_reload - 20)
+      end
+    end
+
     context 'when the player gets to go again' do
       let!(:game) { create :game }
       before do
