@@ -170,6 +170,19 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  describe '#players_turn?' do
+    let!(:game) { create :started_game }
+    before { game.start! }
+
+    it 'returns true for the current player' do
+      expect(game.players_turn?(game.users.first.id)).to be true
+    end
+
+    it 'returns false for a player who is not current' do
+      expect(game.players_turn?(game.users.last.id)).to be false
+    end
+  end
+
   describe '#open_games' do
     let!(:game1) { create(:game, player_count: 1) }
     let!(:game2) { create :finished_game }

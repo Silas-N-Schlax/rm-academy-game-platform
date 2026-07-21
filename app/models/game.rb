@@ -65,6 +65,10 @@ class Game < ApplicationRecord
     self.players.find_by(winner: true)
   end
 
+  def players_turn?(user_id)
+    implementation.current_player.id == user_id
+  end
+
   def status(message: false)
     response = nil
     response = "waiting" if self.started_at.nil?
