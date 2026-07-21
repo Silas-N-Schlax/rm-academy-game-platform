@@ -43,7 +43,9 @@ Moves are **not** stored as their own database rows. Instead, `GoFishTurn` / `Cr
 2. Validate the move (presence, whose turn it is, whether the move is legal given current game state) using each game's own validation rules.
 3. On `save`, if valid, call `game.play(...)` with the right arguments for that game type, which mutates and re-persists `game_state`.
 
-This exists specifically so each game type can define its own validation logic (Go Fish validates `player`/`rank`; Crazy Eights validates `rank`/`suit`/`wild_suit`/`request` and whose turn it is) while `TurnsController` stays a single, game-agnostic controller — it just calls `@game.turn_class.new(turn_params)`. This is also why `Game` requires subclasses to implement `turn_class`.
+This exists specifically so each game type can define its own validation logic (Go Fish validates `player`/`rank`; Crazy Eights validates `rank`/`suit`/`wild_suit`/`request`) while `TurnsController` stays a single, game-agnostic controller — it just calls `@game.turn_class.new(turn_params)`. This is also why `Game` requires subclasses to implement `turn_class`.
+
+Both `GoFishTurn` and `CrazyEightsTurn` inherit from a shared `Turn` base class (`app/models/turn.rb`), which owns the `game`/`user` presence+inclusion validation and an *unconditional* `validate :players_turn` — it calls `Game#players_turn?(user_id)` on the AR superclass, which checks `implementation.current_player.id == user_id`. This check is deliberately unconditional (not folded into `valid_move?`) because Crazy Eights' `valid_move` validation early-returns on card *requests* (draws) — a whose-turn check living only inside `valid_move?` would silently stop guarding the request path. Putting it in the base class instead guards play and request/draw moves the same way for both games.
 
 ## Real-time updates
 
