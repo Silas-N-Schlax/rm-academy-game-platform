@@ -200,6 +200,25 @@ RSpec.describe 'Games', type: :system do
     end
   end
 
+  context 'when a go fish game has ended' do
+    let!(:game) { create :game }
+    before do
+      sign_in_as game.users.first
+      game.start!
+      state = game.game_state
+      state.deck = []
+      state.players.each { |player| player.hand = [] }
+      state.players.first.books = [ GoFish::Book.new('K') ]
+      game.game_state = state
+      game.save!
+      visit game_path(game)
+    end
+    it 'shows the winner banner' do
+      expect(page).to have_content 'Game Over'
+      expect(page).to have_content "#{game.game_state.players.first.name} won the game!"
+    end
+  end
+
   context 'when the user goes offline on a game page', :chrome do
     let!(:game) { create :game }
     before do

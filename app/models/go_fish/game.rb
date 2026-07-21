@@ -10,22 +10,30 @@ module GoFish
     end
 
     def run_turn(player_id, rank)
-      return if winner || find_player(player_id).nil?
+      return if winner? || find_player(player_id).nil?
 
       handle_turn(player_id, rank)
 
       handle_players_without_cards(player_id)
       next_player_turn if last_current_player.empty_hand?
-      skip_turn_if_needed if turn_skipped? && !winner
+      skip_turn_if_needed if turn_skipped? && !winner?
     end
 
     def turn_skipped?
       deck.empty? && current_player.empty_hand?
     end
 
+    def winner?
+      deck.empty? && players.all?(&:empty_hand?)
+    end
 
-    def winner
-      winning_player if deck.empty? && players.all?(&:empty_hand?)
+    def winning_player
+      return unless winner?
+
+      highest_value = players.map(&:books_size).max
+      ties = players.select { |player| player.books_size == highest_value }
+      return ties.first if ties.size == 1
+      ties.max_by { |player| player.highest_book.value }
     end
 
     def list_of_ranks(id)
@@ -112,13 +120,6 @@ module GoFish
 
     def last_current_player
       latest_result.current_player
-    end
-
-    def winning_player
-      highest_value = players.map(&:books_size).max
-      ties = players.select { |player| player.books_size == highest_value }
-      return ties.first if ties.size == 1
-      ties.max_by { |player| player.highest_book.value }
     end
 
     def generate_turn_result(opponent, rank, cards, card_picked_up, current_player, created_book)

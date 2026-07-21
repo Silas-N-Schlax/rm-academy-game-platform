@@ -265,11 +265,24 @@ RSpec.describe GoFish::Game, type: :model do
     end
   end
 
-  describe '#winner' do
+  describe '#winner?' do
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    it 'returns false when there is no winner' do
+      expect(game.winner?).to be false
+    end
+
+    it 'returns true when the deck is empty and all player hands are empty' do
+      game.deck = []
+      game.players.each { |player| player.hand = [] }
+      expect(game.winner?).to be true
+    end
+  end
+
+  describe '#winning_player' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
     context 'when there is no winner' do
       it 'returns' do
-        expect(game.winner).to be_nil
+        expect(game.winning_player).to be_nil
       end
       context 'when the deck is empty and all player hands are empty' do
         let!(:game_player1) { game.players.first }
@@ -282,12 +295,12 @@ RSpec.describe GoFish::Game, type: :model do
           game_player2.books = [ GoFish::Book.new('J') ]
         end
         it 'returns the player with the most books' do
-          expect(game.winner.name).to be game_player1.name
+          expect(game.winning_player.name).to be game_player1.name
         end
         context 'when there is a tie for most books' do
           it 'returns the player with the highest book' do
             game_player1.books.pop
-            expect(game.winner).to be game_player1
+            expect(game.winning_player).to be game_player1
           end
         end
 
@@ -306,7 +319,7 @@ RSpec.describe GoFish::Game, type: :model do
           game_player3.books = [ GoFish::Book.new('A') ]
           end
           it 'returns the winner' do
-            expect(game.winner).to eq game_player3
+            expect(game.winning_player).to eq game_player3
           end
         end
       end
@@ -322,7 +335,7 @@ RSpec.describe GoFish::Game, type: :model do
           game_player2.books = [ GoFish::Book.new('J'), GoFish::Book.new('10') ]
         end
         it 'returns the player with the highest book' do
-          expect(game.winner.name).to be game_player1.name
+          expect(game.winning_player.name).to be game_player1.name
         end
       end
     end
