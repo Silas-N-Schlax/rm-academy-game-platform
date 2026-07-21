@@ -92,7 +92,7 @@ module GoFish
 
     def self.create(players)
       game = Game.new(
-        players: players.map { |player| GoFish::Player.new(name: player.user.name, id: player.user_id) },
+        players: players.sort_by(&:id).map { |player| GoFish::Player.new(name: player.user.name, id: player.user_id) },
       )
       game.start
       game

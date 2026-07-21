@@ -17,6 +17,16 @@ RSpec.describe GoFish::Game, type: :model do
         expect(result.deck.cards_left).to eq expected_deck_size
       end
     end
+
+    context 'when the players are not passed in join order' do
+      let!(:game) { create :started_game }
+      it 'still seats the first-joined player as the current player' do
+        first_joined_player = game.players.first
+        out_of_order_players = game.players.to_a.reverse
+        result = described_class.create(out_of_order_players)
+        expect(result.current_player.id).to eq first_joined_player.user_id
+      end
+    end
   end
 
   describe '.load' do

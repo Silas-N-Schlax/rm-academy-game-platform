@@ -91,7 +91,7 @@ module CrazyEights
 
     def self.create(players)
       game = Game.new(
-        players: players.map { |player| Player.new(name: player.user.name, id: player.user_id) },
+        players: players.sort_by(&:id).map { |player| Player.new(name: player.user.name, id: player.user_id) },
       )
       game.start
       game
