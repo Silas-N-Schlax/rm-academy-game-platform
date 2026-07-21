@@ -6,7 +6,6 @@ export default class extends Controller {
 
   connect() {
     if ('serviceWorker' in navigator) {
-      console.log('hello')
       navigator.serviceWorker.register(this.urlValue)
     }
   }
