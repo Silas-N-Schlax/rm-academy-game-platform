@@ -31,7 +31,7 @@ class GoFishTurn
     return if game.nil?
 
     unless game.valid_move?(player, rank)
-      errors.add("Invalid player or rank!")
+      errors.add(:base, "Invalid player or rank!")
     end
   end
 

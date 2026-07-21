@@ -1,4 +1,7 @@
 class GamesController < ApplicationController
+  before_action :set_game, only: %i[show join]
+  before_action :require_membership, only: :show
+
   def new
     @game = Game.new
     render layout: "modal"
@@ -18,15 +21,12 @@ class GamesController < ApplicationController
   end
 
   def show
-    @game = Game.find(params[:id])
     @game.start!
-    return redirect_to root_path unless @game.joined?(current_user.id)
     render layout: "application_no_sidebar"
   end
 
   def join
-    @game = Game.find(params[:id])
-    if @game.open_spots? && @game.players.create(user_id: current_user.id)
+    if @game.can_join?(current_user.id) && @game.players.create(user_id: current_user.id)
       redirect_to game_path(@game.id)
     else
       redirect_to root_path
@@ -42,5 +42,13 @@ class GamesController < ApplicationController
 
   def game_params
     params.require(:game).permit(:name, :type, :game_size)
+  end
+
+  def set_game
+    @game = Game.find(params[:id])
+  end
+
+  def require_membership
+    redirect_to root_path unless @game.joined?(current_user.id)
   end
 end

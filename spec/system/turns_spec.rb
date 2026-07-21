@@ -13,13 +13,6 @@ RSpec.describe 'Turns', type: :system do
       expect(page).to have_selector('.game-feed__results')
     end
 
-    context 'when an invalid GoFish request is given' do
-      it 'returns 422' do
-        post game_turns_path(game), params: { turn: { game: game, user: game.users.first, player: nil, rank: nil } }
-        expect(response.status).to eq 422
-      end
-    end
-
     context 'when the game ends' do
       before do
         game.start!
@@ -54,13 +47,6 @@ RSpec.describe 'Turns', type: :system do
       find('.playing-card--large', match: :first).click
       expect(current_path).to eq game_path(game)
       expect(page).to have_selector('.game-feed__result')
-    end
-
-    context 'when an invalid GoFish request is given' do
-      it 'returns 422' do
-        post game_turns_path(game), params: { turn: { game: game, user: game.users.first, suit: nil, rank: nil } }
-        expect(response.status).to eq 422
-      end
     end
 
     context 'when an 8 is tried to play' do

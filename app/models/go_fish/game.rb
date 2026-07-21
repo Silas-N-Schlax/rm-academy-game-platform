@@ -174,8 +174,7 @@ module GoFish
       highest_value = players.map(&:books_size).max
       ties = players.select { |player| player.books_size == highest_value }
       return ties.first if ties.size == 1
-      # binding.irb
-      ties[0].highest_book.value > ties[1].highest_book.value ? ties[0] : ties[1]
+      ties.max_by { |player| player.highest_book.value }
     end
 
     def generate_turn_result(opponent, rank, cards, card_picked_up, current_player, created_book)

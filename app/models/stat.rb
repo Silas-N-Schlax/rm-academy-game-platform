@@ -1,6 +1,6 @@
 class Stat
   def total_games(user)
-    User.find_by(id: user.id).games.size
+    user.games.size
   end
 
   def total_wins(user)
@@ -18,19 +18,15 @@ class Stat
   end
 
   def total_games_by_game(user, type: "GoFishGame")
-    User.find_by(id: user.id).games.where(type: type).size
+    user.games.where(type: type).size
   end
 
   def total_wins_by_game(user, type: "GoFishGame")
-    Player.where(user_id: user.id, winner: true).select do |player|
-      player.game.type == type
-    end.size
+    Player.joins(:game).where(user_id: user.id, winner: true, games: { type: type }).size
   end
 
   def total_losses_by_game(user, type: "GoFishGame")
-    Player.where(user_id: user.id, winner: nil).select do |player|
-      player.game.type == type
-    end.size
+    Player.joins(:game).where(user_id: user.id, winner: nil, games: { type: type }).size
   end
 
   def total_average_by_game(user, type: "GoFishGame")

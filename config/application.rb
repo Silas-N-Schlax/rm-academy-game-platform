@@ -39,5 +39,9 @@ module GamePlatform
     # Don't generate system test files.
     config.generators.system_tests = nil
     config.active_job.queue_adapter = :good_job
+
+    # Go Fish turn timer duration, in seconds. Overridden to a much shorter
+    # value in specs tagged :fast_timer (see spec/rails_helper.rb).
+    config.x.turn_timer_seconds = 30
   end
 end

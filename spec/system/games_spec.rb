@@ -21,10 +21,13 @@ RSpec.describe 'Games', type: :system do
     end
 
     context 'when a user clicks on a game they joined', :js do
-      it 'shows them the waiting game' do
+      before do
         sign_in_as game.users.first
+        visit games_path
+      end
+      it 'shows them the waiting game' do
         expected_content = 'Waiting for the game to start...'
-        click_on 'Join'
+        click_on 'Play'
         expect(page).to have_content expected_content
       end
     end
@@ -116,20 +119,20 @@ RSpec.describe 'Games', type: :system do
     end
   end
 
-  context 'when a game has started' do
-    let!(:game) { create(:game, name: "----test-game-timer-----") }
+   context 'when a game has started' do
+    let!(:game) { create :game }
     before do
       game.start!
       sign_in_as game.users.first
       visit game_path(game)
     end
-    it 'has a timer that auto submits the form when expired', :js do
+    it 'has a timer that auto submits the form when expired', :js, :fast_timer do
       expect(page).to have_selector('.timer')
       expect(page).to have_selector('.game-feed__question')
     end
 
     context 'when the player gets to go again' do
-      let!(:game) { create(:game, name: "----test-game-timer-----") }
+      let!(:game) { create :game }
       before do
         game.start!
         implementation = game.game_state
@@ -140,7 +143,7 @@ RSpec.describe 'Games', type: :system do
         game.save
         sign_in_as game.users.first
       end
-      it 'resets timer', :js do
+      it 'resets timer', :js, :fast_timer do
         visit game_path(game)
         sleep 3
         expect(page).to have_selector('.game-feed__question', count: 2)

@@ -33,7 +33,7 @@ class CrazyEightsTurn
   def is_players_turn?
     return if game.nil? || user.nil?
     unless implementation.current_player.id == user.id
-      errors.add("Its not your turn!")
+      errors.add(:base, "Its not your turn!")
     end
   end
 
@@ -41,7 +41,7 @@ class CrazyEightsTurn
     return if game.nil? || request?
 
     unless game.valid_move?(rank, suit)
-      errors.add("Invalid player or rank!")
+      errors.add(:base, "Invalid player or rank!")
     end
   end
 

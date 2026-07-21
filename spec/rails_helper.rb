@@ -46,6 +46,13 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  config.around(:each, :fast_timer) do |example|
+    previous = Rails.application.config.x.turn_timer_seconds
+    Rails.application.config.x.turn_timer_seconds = 0.1
+    example.run
+    Rails.application.config.x.turn_timer_seconds = previous
+  end
+
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
   # `post` in specs under `spec/controllers`.

@@ -291,6 +291,25 @@ RSpec.describe GoFish::Game, type: :model do
             expect(game.winner).to be game_player1
           end
         end
+
+        context 'when there is a three way tie' do
+          let!(:game) { described_class.new(players: [ player1, player2, player3 ]) }
+          let!(:game_player1) { game.players.first }
+          let!(:game_player2) { game.players[1] }
+          let!(:game_player3) { game.players[2] }
+          before do
+          game.deck = []
+          game.players.each do |player|
+            player.hand = []
+          end
+          game_player1.books = [ GoFish::Book.new('K') ]
+          game_player2.books = [ GoFish::Book.new('J') ]
+          game_player3.books = [ GoFish::Book.new('A') ]
+          end
+          it 'returns the winner' do
+            expect(game.winner).to eq game_player3
+          end
+        end
       end
 
       context 'when there is a tie' do
