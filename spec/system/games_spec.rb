@@ -207,13 +207,12 @@ RSpec.describe 'Games', type: :system do
       game.start!
       visit game_path(game)
       wait_for_service_worker_control
-
       emulate_worker_network(offline: true)
     end
     it 'displays offline banner' do
-      expect(page).to have_selector('.offline-banner')
+      expect(page).to have_selector('.offline-banner--active')
       emulate_worker_network(offline: false)
-      expect(page).to_not have_selector('.offline-banner')
+      expect(page).to have_no_selector('.offline-banner--active')
     end
   end
 
