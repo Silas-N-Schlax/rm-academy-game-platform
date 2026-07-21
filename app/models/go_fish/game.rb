@@ -1,26 +1,12 @@
 module GoFish
-  class Game
-    attr_accessor :deck, :current_player_idx, :results, :players
-
-    SMALL_HAND = 5
-    LARGE_HAND = 7
+  class Game < CardGame::Engine
     SMALL_GAME_MAX_SIZE = 2
-    LARGE_GAME_MAX_SIZE = 6
-    DECK_SIZE = 52
 
     def initialize(players:, deck: GoFish::Deck.new, current_player_idx: 0, results: [])
       @players = players
       @deck = deck
       @current_player_idx = current_player_idx
       @results = results
-    end
-
-    def start
-      # deck.cards = [GoFish::Card.new('J')]
-      # players.first.hand = [GoFish::Card.new('J'), GoFish::Card.new('J')]
-      # players.last.hand = [GoFish::Card.new('J'),]
-      deck.shuffle_deck
-      deal
     end
 
     def run_turn(player_id, rank)
@@ -42,21 +28,6 @@ module GoFish
       winning_player if deck.empty? && players.all?(&:empty_hand?)
     end
 
-    def next_player_turn
-      new_index = current_player_idx + 1
-      first_player_idx = 0
-      self.current_player_idx = new_index > players.size - 1 ? first_player_idx : new_index
-      nil
-    end
-
-    def current_player
-      players[current_player_idx]
-    end
-
-    def find_player(id)
-      players.find { |player| player.id == id }
-    end
-
     def list_of_ranks(id)
       find_player(id).ranks
     end
@@ -67,10 +38,6 @@ module GoFish
         all_players << player unless player.id == current_id
       end
       all_players
-    end
-
-    def latest_result
-      results.last
     end
 
     def valid_player?(player_id)
@@ -90,13 +57,7 @@ module GoFish
       }
     end
 
-    def self.create(players)
-      game = Game.new(
-        players: players.sort_by(&:id).map { |player| GoFish::Player.new(name: player.user.name, id: player.user_id) },
-      )
-      game.start
-      game
-    end
+    def self.player_class = GoFish::Player
 
     def self.from_json(json)
       Game.new(
@@ -105,15 +66,6 @@ module GoFish
         current_player_idx: json["current_player_idx"],
         results: json["results"].map { |result| GoFish::TurnResult.from_json(result) }
       )
-    end
-
-    def self.load(json)
-      return nil if json.blank?
-      self.from_json(json)
-    end
-
-    def self.dump(game)
-      game.as_json
     end
 
     private_class_method :from_json
@@ -162,14 +114,6 @@ module GoFish
       latest_result.current_player
     end
 
-    def deal
-      number_of_cards_to_deal.times do
-        players.each do |player|
-          player.add_cards([ deck.take_top_card ])
-        end
-      end
-    end
-
     def winning_player
       highest_value = players.map(&:books_size).max
       ties = players.select { |player| player.books_size == highest_value }
@@ -184,12 +128,6 @@ module GoFish
         card_picked_up: card_picked_up, goes_again: current_player.name == self.current_player.name,
         created_book: created_book
       )
-    end
-
-    def number_of_cards_to_deal
-      return LARGE_HAND if players.size <= SMALL_GAME_MAX_SIZE
-
-      SMALL_HAND if players.size > SMALL_GAME_MAX_SIZE
     end
   end
 end

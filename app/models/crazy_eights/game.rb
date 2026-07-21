@@ -1,13 +1,8 @@
 module CrazyEights
-  class Game
-    attr_accessor :players, :deck, :discard, :current_player_idx,
-                  :results, :current_result, :wild_suit
+  class Game < CardGame::Engine
+    attr_accessor :discard, :current_result, :wild_suit
 
-    SMALL_HAND = 5
-    LARGE_HAND = 7
     SMALL_GAME_MAX_SIZE = 3
-    LARGE_GAME_MAX_SIZE = 7
-    DECK_SIZE = 52
 
     def current_result
       @current_result ||= TurnResult.new(current_player: current_player)
@@ -20,11 +15,6 @@ module CrazyEights
       @current_player_idx = current_player_idx
       @results = results
       @wild_suit
-    end
-
-    def start
-      deck.shuffle_deck
-      deal
     end
 
     def play_card(rank:, suit:, wild_suit: nil)
@@ -55,19 +45,6 @@ module CrazyEights
       players.find(&:empty_hand?)
     end
 
-    def current_player
-      players[current_player_idx]
-    end
-
-    def latest_result
-      results.last
-    end
-
-    def find_player(id)
-      players.find { |player| player.id == id }
-    end
-
-
     def valid_card?(rank, suit)
       return false unless Card.valid_rank?(rank) && Card.valid_suit?(suit)
       top_card = discard.top_card
@@ -89,13 +66,7 @@ module CrazyEights
       }
     end
 
-    def self.create(players)
-      game = Game.new(
-        players: players.sort_by(&:id).map { |player| Player.new(name: player.user.name, id: player.user_id) },
-      )
-      game.start
-      game
-    end
+    def self.player_class = CrazyEights::Player
 
     def self.from_json(json)
       game = Game.new(
@@ -108,15 +79,6 @@ module CrazyEights
       game.wild_suit = json["wild_suit"]
       game.current_result = TurnResult.from_json(json["current_result"])
       game
-    end
-
-    def self.load(json)
-      return nil if json.blank?
-      self.from_json(json)
-    end
-
-    def self.dump(game)
-      game.as_json
     end
 
     private_class_method :from_json
@@ -147,24 +109,13 @@ module CrazyEights
       give_cards_to_player unless current_player.can_play?(top_card.rank, current_suit(top_card.suit))
     end
 
-    def next_player_turn
-      new_index = current_player_idx + 1
-      first_player_idx = 0
-      self.current_player_idx = new_index > players.size - 1 ? first_player_idx : new_index
-    end
-
     def set_wild_suit(wild_suit)
       self.wild_suit = wild_suit if wild_suit
       self.wild_suit = nil if wild_suit.nil?
       current_result.wild_suit = wild_suit
     end
 
-    def deal
-      number_of_cards_to_deal.times do
-        players.each do |player|
-          player.add_cards([ deck.take_top_card ])
-        end
-      end
+    def after_deal
       deal_card_to_discard
     end
 
@@ -172,12 +123,6 @@ module CrazyEights
       top_card = deck.top_card
       deck.shuffle_deck && deal_card_to_discard if top_card.rank == Card::WILD_RANK
       discard.cards = [ deck.take_top_card ] unless top_card.rank == Card::WILD_RANK
-    end
-
-    def number_of_cards_to_deal
-      return LARGE_HAND if players.size <= SMALL_GAME_MAX_SIZE
-
-      SMALL_HAND if players.size > SMALL_GAME_MAX_SIZE
     end
   end
 end

@@ -5,6 +5,8 @@ RSpec.describe GoFish::Game, type: :model do
   let(:player2) { GoFish::Player.new(name: 'player2', id: 2) }
   let(:player3) { GoFish::Player.new(name: 'player3', id: 3) }
 
+  it_behaves_like "a CardGame::Engine"
+
   describe '.create' do
     context 'when a game has not already been created' do
       let!(:game) { create :started_game }
@@ -15,16 +17,6 @@ RSpec.describe GoFish::Game, type: :model do
         expect(result.current_player_idx).to be_zero
         expect(result.results).to be_empty
         expect(result.deck.cards_left).to eq expected_deck_size
-      end
-    end
-
-    context 'when the players are not passed in join order' do
-      let!(:game) { create :started_game }
-      it 'still seats the first-joined player as the current player' do
-        first_joined_player = game.players.first
-        out_of_order_players = game.players.to_a.reverse
-        result = described_class.create(out_of_order_players)
-        expect(result.current_player.id).to eq first_joined_player.user_id
       end
     end
   end
@@ -41,9 +33,6 @@ RSpec.describe GoFish::Game, type: :model do
       expect(loaded_game.current_player_idx).to be_zero
       expect(loaded_game.results).to be_empty
       expect(loaded_game.deck.cards_left).to eq expected_deck_size
-    end
-    it 'returns nil if the state is empty' do
-      expect(described_class.load({})).to be nil
     end
   end
 
@@ -339,36 +328,6 @@ RSpec.describe GoFish::Game, type: :model do
     end
   end
 
-  describe '#latest_result' do
-    let(:game) { described_class.new(players: [ player1 ]) }
-    let(:result) do
-      GoFish::TurnResult.new(
-        current_player: nil, opponent: nil,
-        rank_asked_for: 'K', cards_taken: nil,
-        card_picked_up: nil, goes_again: nil, created_book: nil
-      )
-    end
-    before do
-      game.results << result
-    end
-    it 'returns last result' do
-      expect(game.latest_result).to eq result
-    end
-  end
-
-  describe '#next_player_turn' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    it 'sets current player turn to player2' do
-      game.next_player_turn
-      expect(game.current_player).to eq player2
-    end
-    it 'can loop back around to player1' do
-      game.next_player_turn
-      game.next_player_turn
-      expect(game.current_player).to eq player1
-    end
-  end
-
   describe '#turn_skipped?' do
     let(:game) { described_class.new(players: [ player1, player2 ]) }
     let(:player) { game.current_player }
@@ -383,31 +342,6 @@ RSpec.describe GoFish::Game, type: :model do
         game.deck = []
         player.hand = []
         expect(game.turn_skipped?).to be true
-      end
-    end
-  end
-
-   describe '#current_player' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    it 'returns the current player' do
-      expect(game.current_player).to eq player1
-    end
-  end
-
-  describe '#find_player' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    context 'when provided with id for player1' do
-      it 'returns player1' do
-        result = game.find_player(player1.id)
-        expect(result.name).to eq player1.name
-      end
-    end
-
-    context 'when provided with an id for a non-existent player' do
-      it 'returns nil' do
-        player3_id = 3
-        result = game.find_player(player3_id)
-        expect(result).to be_nil
       end
     end
   end

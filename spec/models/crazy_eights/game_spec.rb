@@ -6,6 +6,8 @@ RSpec.describe CrazyEights::Game, type: :model do
   let(:player3) { CrazyEights::Player.new(name: 'player3', id: 3) }
   let(:player4) { CrazyEights::Player.new(name: 'player3', id: 4) }
 
+  it_behaves_like "a CardGame::Engine"
+
   describe '#start' do
     context 'when a game is started with 2 players' do
       let!(:game) { described_class.new(players: [ player1, player2 ]) }
@@ -280,30 +282,6 @@ RSpec.describe CrazyEights::Game, type: :model do
     end
   end
 
-  describe 'current_player' do
-    let!(:game) { described_class.new(players: [ player1, player2 ]) }
-    it 'returns the current player' do
-      expect(game.current_player).to eq player1
-    end
-  end
-
-  describe '#latest_result' do
-    let(:game) { described_class.new(players: [ player1 ]) }
-    let(:result) do
-      CrazyEights::TurnResult.new(
-        current_player: game.current_player,
-        card_played: CrazyEights::Card.new('J'),
-        cards_drawn: [ CrazyEights::Card.new('J') ]
-      )
-    end
-    before do
-      game.results << result
-    end
-    it 'returns last result' do
-      expect(game.latest_result).to eq result
-    end
-  end
-
   describe '#valid_card?' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
     let!(:player1_data) { game.players.first }
@@ -335,24 +313,6 @@ RSpec.describe CrazyEights::Game, type: :model do
     end
   end
 
-  describe '#find_player' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    context 'when provided with id for player1' do
-      it 'returns player1' do
-        result = game.find_player(player1.id)
-        expect(result.name).to eq player1.name
-      end
-    end
-
-    context 'when provided with an id for a non-existent player' do
-      it 'returns nil' do
-        player3_id = 3
-        result = game.find_player(player3_id)
-        expect(result).to be_nil
-      end
-    end
-  end
-
   describe '#as_json' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
     let(:card) { CrazyEights::Card.new('J') }
@@ -378,16 +338,6 @@ RSpec.describe CrazyEights::Game, type: :model do
         expect(result.results).to be_empty
         expect(result.deck.cards_left).to eq expected_deck_size
         expect(result.discard.cards_left).to eq expected_discard_pile_size
-      end
-    end
-
-    context 'when the players are not passed in join order' do
-      let!(:game) { create :started_game }
-      it 'still seats the first-joined player as the current player' do
-        first_joined_player = game.players.first
-        out_of_order_players = game.players.to_a.reverse
-        result = described_class.create(out_of_order_players)
-        expect(result.current_player.id).to eq first_joined_player.user_id
       end
     end
   end
