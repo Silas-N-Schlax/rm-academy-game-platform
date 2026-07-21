@@ -14,3 +14,10 @@ RSpec.shared_context "authentication helpers" do
 end
 
 RSpec.configure { |config| config.include_context "authentication helpers" }
+
+RSpec.configure do |config|
+  config.after do
+    Rails.application.env_config.delete("action_dispatch.cookies")
+    Rails.application.env_config.delete("rack.request.cookie_hash")
+  end
+end
