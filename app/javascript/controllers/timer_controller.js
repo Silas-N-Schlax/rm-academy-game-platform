@@ -3,43 +3,41 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="timer"
 export default class extends Controller {
   static targets = ["time"]
-  static values = { timerTime: { type: Number, default: 30 } }
+  static values = { seconds: Number, anchor: Number }
 
-  connect() {
-    this.timerController = setInterval(() => {
-      if (this.timerInterval == null) {
-        this.timeTarget.textContent = '00'
-        this.startTimer()
-      }
-    })
+  anchorValueChanged() {
+    this.restart()
   }
 
   disconnect() {
-    clearInterval(this.timerController)
+    clearInterval(this.timerInterval)
   }
 
-  startTimer() {
-    console.log(this.timerTimeValue)
-    if (this.timerTimeValue == undefined) return
-    let remainingTime = this.timerTimeValue
-    this.timerInterval = null
+  restart() {
+    clearInterval(this.timerInterval)
+    this.startTime = Date.now()
+    this.initialRemaining = this.secondsValue
+    this.fired = false
+    this.updateScreen(this.initialRemaining)
+    this.timerInterval = setInterval(() => this.tick(), 1000)
+  }
 
-    this.timerInterval = setInterval(() => {
-      if (remainingTime > 0) {
-        remainingTime--
-        this.updateScreen(remainingTime)
-      } else {
-        clearInterval(this.timerInterval)
-        this.timerInterval = null
-        this.dispatch('timer-over', {
-          details: { autoPlay: true }
-        })
-      }
-    }, 1000)
+  tick() {
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000)
+    const remaining = Math.max(this.initialRemaining - elapsed, 0)
+    this.updateScreen(remaining)
+    if (remaining <= 0) this.fireTimerOver()
+  }
+
+  fireTimerOver() {
+    clearInterval(this.timerInterval)
+    if (this.fired) return
+    this.fired = true
+    this.dispatch('timer-over', { detail: { autoPlay: true } })
   }
 
   updateScreen(remainingTime) {
-    const formattedSeconds = String(remainingTime).padStart(2, '0');
+    const formattedSeconds = String(Math.ceil(remainingTime)).padStart(2, '0');
     this.timeTarget.textContent = formattedSeconds
   }
 }

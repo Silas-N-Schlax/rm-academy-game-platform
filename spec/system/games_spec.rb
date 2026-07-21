@@ -131,6 +131,10 @@ RSpec.describe 'Games', type: :system do
       expect(page).to have_selector('.game-feed__question')
     end
 
+    it 'displays the countdown as a whole number', :js do
+      expect(find('.timer__time').text).to match(/\A\d+\z/)
+    end
+
     it 'does not reset the countdown when the page is reloaded', :js do
       remaining_before_reload = find('.timer')['data-timer-seconds-value'].to_f
       travel 20.seconds do
