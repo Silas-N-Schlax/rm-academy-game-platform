@@ -22,3 +22,10 @@ rather than duplicating when revisiting a topic.
   `znotes/completed_plans/bugs-security-plan.md` §5); decide whether a lightweight `before_action`
   guard is worth adding, or whether a regression test pinning the current form-object guarantee is
   sufficient.
+
+## Known coverage gaps (deliberately deprioritized, 2026-07-21)
+
+- **`app/inputs/*.rb`, `app/mailers/*.rb`, `app/icon_builders/*.rb` are at 0% test coverage** per a
+  `/rails-audit` SimpleCov run. This is intentional, not an oversight: these are unimplemented-
+  feature/generator-boilerplate code, not currently in active use outside of Rails-generator
+  scaffolding. Do not re-flag this as a High-severity gap in a future audit without checking
