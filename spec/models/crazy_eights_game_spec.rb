@@ -116,15 +116,15 @@ RSpec.describe CrazyEightsGame, type: :model do
       implementation.discard.cards = [ CrazyEights::Card.new('2') ]
     end
     it 'returns true if rank and suit is true' do
-      expect(game.valid_move?('J', 'Spades')).to be true
+      expect(game.valid_move?(rank: 'J', suit: 'Spades')).to be true
     end
 
     it 'returns false if rank is invalid' do
-      expect(game.valid_move?('K', 'Spades')).to be false
+      expect(game.valid_move?(rank: 'K', suit: 'Spades')).to be false
     end
 
     it 'returns false if suit is invalid' do
-      expect(game.valid_move?('J', 'Obi')).to be false
+      expect(game.valid_move?(rank: 'J', suit: 'Obi')).to be false
     end
   end
 

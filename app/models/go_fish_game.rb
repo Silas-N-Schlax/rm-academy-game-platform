@@ -3,12 +3,11 @@ class GoFishGame < Game
 
   def engine_class = GoFish::Game
 
-  def play(player, rank, user_id)
+  def play(player:, rank:)
     implementation = self.game_state
     implementation.run_turn(player.to_i, rank)
     self.game_state = implementation
-    winner = implementation.winner
-    end_game(winner.id) if winner
+    end_game(implementation.winning_player.id) if implementation.winner?
     save!
   end
 
@@ -17,7 +16,7 @@ class GoFishGame < Game
     (total - elapsed).clamp(0, total)
   end
 
-  def valid_move?(player, rank)
+  def valid_move?(player:, rank:)
     implementation.valid_player?(player) && implementation.valid_rank?(rank)
   end
 

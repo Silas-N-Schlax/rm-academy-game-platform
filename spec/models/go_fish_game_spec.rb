@@ -50,7 +50,7 @@ RSpec.describe GoFishGame, type: :model do
       before { game.start! }
       it 'saves updated game to the database' do
         before_timestamp = db_game.updated_at
-        db_game.play(user2.id, 'A', user.id)
+        db_game.play(player: user2.id, rank: 'A')
         updated_game = Game.find_by(id: game.id)
         original_player = db_game.game_state.players.first
         player = updated_game.game_state.players.first
@@ -70,7 +70,7 @@ RSpec.describe GoFishGame, type: :model do
         game.save!
       end
       it 'saves the finished at timestamp' do
-        db_game.play(user2.id, 'A', user.id)
+        db_game.play(player: user2.id, rank: 'A')
         updated_game = Game.find_by(id: game.id)
         expect(updated_game.finished_at).to_not be_nil
         expect(updated_game.players.first.winner).to be true
@@ -88,15 +88,15 @@ RSpec.describe GoFishGame, type: :model do
       players.first.hand = [ GoFish::Card.new('J') ]
     end
     it 'returns true if player and rank is true' do
-      expect(game.valid_move?(player2.id, 'J')).to be true
+      expect(game.valid_move?(player: player2.id, rank: 'J')).to be true
     end
 
     it 'returns false if rank is invalid' do
-      expect(game.valid_move?(player2.id, 'K')).to be false
+      expect(game.valid_move?(player: player2.id, rank: 'K')).to be false
     end
 
     it 'returns false if player is invalid' do
-      expect(game.valid_move?(player1.id, 'J')).to be false
+      expect(game.valid_move?(player: player1.id, rank: 'J')).to be false
     end
   end
 

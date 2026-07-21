@@ -9,7 +9,7 @@ class GoFishTurn < Turn
 
   def save
     if self.valid?
-      game.play(player, rank, user.id)
+      game.play(player:, rank:)
       return true
     end
     false
@@ -18,7 +18,7 @@ class GoFishTurn < Turn
   def valid_move
     return if game.nil?
 
-    unless game.valid_move?(player, rank)
+    unless game.valid_move?(player:, rank:)
       errors.add(:base, "Invalid player or rank!")
     end
   end

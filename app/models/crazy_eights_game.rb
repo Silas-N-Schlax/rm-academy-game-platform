@@ -17,7 +17,7 @@ class CrazyEightsGame < Game
     CrazyEightsTurn
   end
 
-  def valid_move?(rank, suit)
+  def valid_move?(rank:, suit:)
     implementation.valid_card?(rank, suit)
   end
 end

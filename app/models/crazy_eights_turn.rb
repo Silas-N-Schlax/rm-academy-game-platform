@@ -19,7 +19,7 @@ class CrazyEightsTurn < Turn
   def valid_move
     return if game.nil? || request?
 
-    unless game.valid_move?(rank, suit)
+    unless game.valid_move?(rank:, suit:)
       errors.add(:base, "Invalid player or rank!")
     end
   end

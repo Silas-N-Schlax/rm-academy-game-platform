@@ -33,9 +33,10 @@ class Game < ApplicationRecord
     self.game_state
   end
 
-  def engine_class = raise NotImplementedError, "#{self.class} must implement #required_method"
-  def play = raise NotImplementedError, "#{self.class} must implement #required_method"
-  def turn_class = raise NotImplementedError, "#{self.class} must implement #required_method"
+  def engine_class = raise NotImplementedError, "#{self.class} must implement #engine_class"
+  def turn_class = raise NotImplementedError, "#{self.class} must implement #turn_class"
+  def play(**) = raise NotImplementedError, "#{self.class} must implement #play"
+  def valid_move?(**) = raise NotImplementedError, "#{self.class} must implement #valid_move?"
 
   def valid_types
     game_details_hash.keys
