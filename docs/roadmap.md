@@ -69,8 +69,12 @@ rather than duplicating when revisiting a topic.
   `znotes/completed_plans/card-3-whose-turn-into-engines-brave.md`. **Card 4a is now done (2026-07-21):** both Part 1 (`CardGame::Card`/`Pile`/`Deck` extraction) and
   Part 2 (`CardGame::Engine`, plus the `start!` hoist to the `Game` AR base via a new `engine_class`
   hook) have shipped — see `znotes/completed_plans/card-4a-extract-shared-card-engine-brave.md`.
-  `card-4b-normalize-engine-contracts-brave.md` (signature normalization + `NotImplementedError`
-  contracts) now has its prerequisite in place and is ready to pick up; `card-2-remove-debug-logs-
-  brave.md` remains untouched in `znotes/plans/` (4a/4b together supersede the older
-  `znotes/plans/engine-refactor-plan.md`, which is now annotated as such). Revisit full
-  unification once 4b lands.
+  **Card 4b is now done (2026-07-21):** `play`/`valid_move?` are normalized to keyword args across
+  both games, the `Game` base declares `play`/`valid_move?`/`engine_class`/`turn_class` as a
+  uniform `NotImplementedError` contract, and Go Fish's engine-level `winner`/`winning_player` were
+  unified with Crazy Eights' `winner?`/`winning_player` shape — see
+  `znotes/completed_plans/card-4b-normalize-engine-contracts-brave.md`. Of the five scoped cards,
+  only `card-2-remove-debug-logs-brave.md` remains untouched in `znotes/plans/` (4a/4b together
+  supersede the older `znotes/plans/engine-refactor-plan.md`, which is now annotated as such).
+  Revisit whether full engine unification is still worth pursuing now that 4a/4b have landed, or
+  whether the incremental cards already captured most of the value.
