@@ -29,3 +29,14 @@ rather than duplicating when revisiting a topic.
   `/rails-audit` SimpleCov run. This is intentional, not an oversight: these are unimplemented-
   feature/generator-boilerplate code, not currently in active use outside of Rails-generator
   scaffolding. Do not re-flag this as a High-severity gap in a future audit without checking
+  whether that's changed.
+
+## Architecture debt (2026-07-21)
+
+- **`GoFish::Game` and `CrazyEights::Game` are the most complex and duplicated files in the app.**
+  RubyCritic rates `CrazyEights::Game` D (complexity 208.76); Flay found 12 duplicate-code
+  occurrences between the two engines (shared `Card` fields/methods, `next_player_turn`,
+  `number_of_cards_to_deal`, etc.). A full unification/refactor of the two game engines is real
+  technical debt but is a larger effort than fits in a 1-2hr card — four smaller, scoped
+  extractions from this same audit are tracked in
+  `znotes/plans/audit-improvement-cards-2026-07-21.md`. Revisit full unification once those land.
