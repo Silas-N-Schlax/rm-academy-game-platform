@@ -1,32 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe GoFish::Card, type: :model do
-it 'has a rank, suit, and value' do
-    card = described_class.new('A', 'Spades')
-    expect(card.rank).to eq 'A'
-    expect(card.suit).to eq 'Spades'
-  end
+  it_behaves_like "a CardGame::Card"
 
-  it 'cards of the same rank and suit are equal' do
-    card1 = described_class.new('A', 'Spades')
-    card2 = described_class.new('K', 'Spades')
-    card3 = described_class.new('A', 'Spades')
-
-    expect(card1).not_to eq card2
-    expect(card1).to eq card3
-  end
-
-  it 'should allow valid ranks' do
-    expect {
-      described_class.new('15', 'Spades')
-    }.to raise_error GoFish::Card::InvalidRank
-  end
-
-  it 'should allow valid suits' do
-    expect {
-      described_class.new('3', 'Bulkogi')
-    }.to raise_error GoFish::Card::InvalidSuit
-  end
   describe '#to_s' do
     it 'returns card as formatted string' do
       card = described_class.new('A')
@@ -39,50 +15,11 @@ it 'has a rank, suit, and value' do
       expect(card.to_s).to eq expected_output
     end
   end
-  describe '.valid_rank?' do
-    it 'returns false if invalid rank' do
-      rank = 'L'
-      expect(described_class.valid_rank?(rank)).to be false
-    end
-    it 'returns true if valid rank' do
-      rank = 'K'
-      expect(described_class.valid_rank?(rank)).to be true
-    end
-
-    it 'returns false if rank is nil' do
-      expect(described_class.valid_rank?(nil)).to be false
-    end
-  end
-  describe '.value' do
-    context 'when provided with an index' do
-      it 'returns the index of the rank' do
-        rank = 'K'
-        expect(described_class.value(rank)).to be 11
-      end
-    end
-  end
-
-  describe '#as_json' do
-    let(:card) { described_class.new('J') }
-    let(:expected_hash) do
-      {
-        "rank" => 'J',
-        "suit" => 'Spades'
-      }
-    end
-    it 'returns expected hash' do
-      expect(card.as_json).to eq expected_hash
-    end
-  end
-
   describe '.from_json' do
-    let(:card) { described_class.new('J') }
-    it 'restores current state of the card' do
-      json = card.as_json
-      expect(GoFish::Card.from_json(json)).to have_attributes(
-        rank: card.rank,
-        suit: card.suit
-      )
+    context 'when the json is blank' do
+      it 'returns an empty array' do
+        expect(GoFish::Card.from_json(nil)).to eq []
+      end
     end
   end
 end
