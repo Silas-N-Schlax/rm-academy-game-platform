@@ -21,10 +21,13 @@ RSpec.describe 'Games', type: :system do
     end
 
     context 'when a user clicks on a game they joined', :js do
-      it 'shows them the waiting game' do
+      before do
         sign_in_as game.users.first
+        visit games_path
+      end
+      it 'shows them the waiting game' do
         expected_content = 'Waiting for the game to start...'
-        click_on 'Join'
+        click_on 'Play'
         expect(page).to have_content expected_content
       end
     end
