@@ -53,6 +53,10 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
 - `Player` also broadcasts to `"games"` on create/update so the lobby list picks up seat changes.
 - `app/views/games/show.html.slim` subscribes with `turbo_stream_from @game` and re-renders via `render @game`, which uses Rails' polymorphic partial lookup — `GoFishGame` renders `go_fish_games/_go_fish_game`, `CrazyEightsGame` renders `crazy_eights_games/_crazy_eights_game`.
 
+## Testing gotchas
+
+- `sign_in_as` (`spec/support/authentication_helpers.rb`) only swaps the session cookie — it does **not** reload the current page. In a system spec, calling it mid-test without a following `visit` means any subsequent interaction (clicking a link/button) still acts on markup rendered for the *previous* signed-in user. This has previously masked a real bug: a spec that switched users after the page had already rendered clicked a stale "Join" button meant for someone else, silently exercising a double-join code path instead of the scenario the test claimed to cover.
+
 ## Background jobs and other supporting pieces
 
 - **GoodJob** (Postgres-backed, no Redis) runs `ArchiveGameJob`, which marks any `Game` untouched for 2+ days as `archived_at` — there's no scheduled/cron wiring visible in this codebase, so check how/whether this job is currently enqueued before assuming it runs automatically.
