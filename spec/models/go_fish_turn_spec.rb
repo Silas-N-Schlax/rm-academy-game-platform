@@ -25,7 +25,7 @@ RSpec.describe GoFishTurn, type: :model do
 
     it 'returns false if user is not in that game' do
       user3 = create(:user, email_address: 's@s.com')
-      result = build(:go_fish_turn, player: user2.id, game: game, user: user3.id)
+      result = build(:go_fish_turn, player: user2.id, game: game, user: user3)
       expect(result).to be_invalid
     end
 
@@ -46,6 +46,23 @@ RSpec.describe GoFishTurn, type: :model do
     context 'when it is not the players turn' do
       it 'returns false' do
         result = build(:go_fish_turn, player: user.id, game: game, user: user2)
+        expect(result).to be_invalid
+      end
+    end
+
+    context 'when a non-current player spoofs an otherwise-valid move' do
+      let!(:game) { create :started_game, game_size: 3, player_count: 3 }
+      let(:player3) { game.players.third }
+      let!(:user3) { player3.user }
+      before do
+        game.start!
+        game.game_state.players.first.hand = [ GoFish::Card.new('A') ]
+        game.game_state = game.game_state
+        game.save!
+      end
+
+      it 'returns false even though the target and rank are valid for the current player' do
+        result = build(:go_fish_turn, player: user3.id, rank: 'A', game: game, user: user2)
         expect(result).to be_invalid
       end
     end
