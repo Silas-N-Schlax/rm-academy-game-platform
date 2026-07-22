@@ -70,6 +70,17 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
 - `sign_in_as` (`spec/support/authentication_helpers.rb`) only swaps the session cookie — it does **not** reload the current page. In a system spec, calling it mid-test without a following `visit` means any subsequent interaction (clicking a link/button) still acts on markup rendered for the *previous* signed-in user. This has previously masked a real bug: a spec that switched users after the page had already rendered clicked a stale "Join" button meant for someone else, silently exercising a double-join code path instead of the scenario the test claimed to cover.
 - Tag a system spec `:js` whenever the element under test is backed by a Stimulus controller, even if the spec only reads a server-rendered `data-*` attribute rather than anything the JS writes — it still proves the controller connects without erroring. That said, you don't need a `sleep`/wait for that kind of assertion: reading the attribute directly (`find('.timer')['data-timer-seconds-value']`) is instant, since it's server-rendered markup, not something JS has to compute first.
 
+## Asset pipeline (Propshaft)
+
+There is no `app/assets/stylesheets/app.css` and no `@import` chain tying the ~40 component
+stylesheets under `app/assets/stylesheets/components/**` together — that's not a gap. `_head.html.slim`
+calls `stylesheet_link_tag :app`, and `:app` is a built-in Propshaft symbol (not a literal asset name)
+that bulk-includes every CSS file found under `app/assets/**/*.css`, each rendered as its own
+individually fingerprinted `<link>` tag. Confirm this by inspecting a rendered `<head>` rather than
+calling `stylesheet_path(:app)` directly — that singular helper does **not** carry the `:app`
+special-casing (only `stylesheet_link_tag` does), so it raises `Propshaft::MissingAssetError` even
+though the real page renders every component stylesheet correctly.
+
 ## Background jobs and other supporting pieces
 
 - **GoodJob** (Postgres-backed, no Redis) runs `ArchiveGameJob`, which marks any `Game` untouched for 2+ days as `archived_at` — there's no scheduled/cron wiring visible in this codebase, so check how/whether this job is currently enqueued before assuming it runs automatically.
