@@ -46,6 +46,10 @@ class Game < ApplicationRecord
     game_details_hash[type]
   end
 
+  def join(user_id)
+    can_join?(user_id) && players.create(user_id:)
+  end
+
   def can_join?(user_id)
     return false if self.started_at
     return true if open_spots? && !joined?(user_id)

@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
-  before_action :set_game, only: %i[show join]
+  before_action :set_game, only: :show
   before_action :require_membership, only: :show
 
   def new
@@ -23,14 +23,6 @@ class GamesController < ApplicationController
   def show
     @game.start!
     render layout: "application_no_sidebar"
-  end
-
-  def join
-    if @game.can_join?(current_user.id) && @game.players.create(user_id: current_user.id)
-      redirect_to game_path(@game.id)
-    else
-      redirect_to root_path
-    end
   end
 
   def history

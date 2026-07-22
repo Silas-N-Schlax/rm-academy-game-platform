@@ -18,12 +18,11 @@ Rails.application.routes.draw do
   mount GoodJob::Engine => "good_job"
 
 
-  resources :games, only: [ :index, :new, :create ] do
+  resources :games, only: [ :index, :new, :create, :show ] do
     resources :turns, only: [ :create ]
+    resources :players, only: [ :create ]
+    collection { get :history }
   end
-  get "games/history", to: "games#history"
-  get "games/:id", to: "games#show", as: "game"
-  post "games/join/:id", to: "games#join", as: "join"
 
   resources :pages, only: [ :index ]
   get "pages/rules", to: "pages#rules"

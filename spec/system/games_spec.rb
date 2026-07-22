@@ -84,7 +84,7 @@ RSpec.describe 'Games', type: :system do
     let!(:player) { create(:player_as_winner, user:, game: game1) }
     before do
       sign_in_as user
-      visit games_history_path
+      visit history_games_path
     end
     it 'shows history of games' do
       expect(page).to have_content 'History'
