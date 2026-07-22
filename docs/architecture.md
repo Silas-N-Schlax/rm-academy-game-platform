@@ -86,6 +86,17 @@ calling `stylesheet_path(:app)` directly — that singular helper does **not** c
 special-casing (only `stylesheet_link_tag` does), so it raises `Propshaft::MissingAssetError` even
 though the real page renders every component stylesheet correctly.
 
+Optics' CSS bundle is pinned to a specific version on **jsdelivr** (`_head.html.slim`), but its
+Lucide icon font (the `.li-*` classes) is a **separate webfont hosted on unpkg**, not bundled into
+that CSS — confirmed by inspecting the CSS's `@font-face` rule. Precaching the whole font just to
+get one icon working offline would pull down every icon in the set for nothing; `lucide-static`
+publishes each icon as its own standalone SVG on unpkg instead (e.g.
+`unpkg.com/lucide-static@<version>/icons/<name>.svg`), which is what the offline page precaches.
+Also: an SVG's `stroke="currentColor"` does **not** resolve when the SVG is embedded via `<img>` —
+`<img>` renders the SVG in an isolated document context, so `currentColor` falls back to the UA
+default (effectively black) regardless of the page's theme. Theming such an icon for dark mode needs
+CSS `filter: invert(1)` under `@media (prefers-color-scheme: dark)`, not `currentColor`.
+
 ## Background jobs and other supporting pieces
 
 - **GoodJob** (Postgres-backed, no Redis) runs `ArchiveGameJob`, which marks any `Game` untouched for 2+ days as `archived_at` — there's no scheduled/cron wiring visible in this codebase, so check how/whether this job is currently enqueued before assuming it runs automatically.
