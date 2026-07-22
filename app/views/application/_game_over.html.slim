@@ -1,0 +1,19 @@
+- winner = game.game_state.winning_player
+.container.container--xs
+  .simple-page.simple-page--in-container
+    .simple-page__form#new-game-form.game-over
+      h2.game-over__title Game Over
+      h3.game-over__winner #{winner.name} won the game! #{User.find(winner.id).country_flag}
+      .game-over__meta
+        .text-pair.text-pair--inline
+          span.text-pair__subtitle.text-pair__subtitle--small Duration
+          span.text-pair__title.text-pair__title--small #{game.formatted_time}
+        .text-pair.text-pair--inline
+          span.text-pair__subtitle.text-pair__subtitle--small Players
+          span.text-pair__title.text-pair__title--small #{game.game_size}
+        - unless game.finished_at.nil?
+          .text-pair.text-pair--inline
+            span.text-pair__subtitle.text-pair__subtitle--small Finished
+            span.text-pair__title.text-pair__title--small #{game.finished_at.strftime('%b %-d, %Y')}
+      = link_to root_path, class: 'btn btn--primary'
+        p My Games
