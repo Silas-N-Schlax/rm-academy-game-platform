@@ -1,0 +1,16 @@
+.page
+  header.content-header
+    .content-header__details
+      h1 Rules
+    .divider.divider--medium
+
+  .dynamic-grid
+    - @games.each do |game|
+      .card.card--padded.card--shadow-large
+        .game-catalog-card
+          img.game-catalog-card__image src=game.logo alt="#{game.name} logo"/
+          .game-catalog-card__body
+            h2.game-catalog-card__title #{game.name}
+            p.game-catalog-card__description #{game.description}
+            = render 'badges', game: game
+            = link_to "View rules", rule_path(game), class: 'btn btn--primary'

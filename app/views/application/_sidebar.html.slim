@@ -10,7 +10,7 @@
         i.li.li-history.icon
         p History
 
-      a.btn.btn--no-border.btn--sidebar href=pages_rules_path class=class_names('btn--active' => request.path.include?('pages/rules'))
+      a.btn.btn--no-border.btn--sidebar href=rules_path class=class_names('btn--active' => request.path.include?('rules'))
         i.li.li-list-check.icon
         p Rules
       a.btn.btn--no-border.btn--sidebar href=stats_path class=class_names('btn--active' => request.path.include?('/stats'))
@@ -29,8 +29,8 @@
           i.li.li-chart-column-big.icon.icon--x-large
         p Stats
 
-      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/pages/rules'))
-        = link_to pages_rules_path, class: 'btn btn--icon mobile-navbar__btn' do
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/rules'))
+        = link_to rules_path, class: 'btn btn--icon mobile-navbar__btn' do
           i.li.li-list-check.icon.icon--x-large
         p Rules
 

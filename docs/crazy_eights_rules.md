@@ -1,6 +1,6 @@
 # Crazy Eights Rules (as implemented)
 
-There's no in-app rules page for Crazy Eights yet (unlike Go Fish) — this doc is the source of truth until one exists. Rules are deliberately adapted from the traditional in-person game to work online; see `app/models/crazy_eights/game.rb` for the engine.
+Both games now have an in-app rules page (`/rules`, content-driven from `config/games.yml` via the `GameCatalog` model) mirroring this doc. Rules are deliberately adapted from the traditional in-person game to work online; see `app/models/crazy_eights/game.rb` for the engine.
 
 - **Players:** 2–7. **Pack:** standard 52-card deck. **8s are wild** (`CrazyEights::Card::WILD_RANK`).
 - **The deal:** 2–3 players → 7 cards each; 4–7 players → 5 cards each, dealt starting with the first player. The next card becomes the starting discard-pile card.

@@ -1,0 +1,44 @@
+---
+shared:
+  - id: go-fish
+    name: Go Fish
+    description: A classic card-matching game where you ask for ranks to build books of four.
+    min_players: 2
+    max_players: 6
+    duration: 15-30 mins
+    game_type: Card Game
+    logo: /go_fish_game_logo.png
+    sections:
+      - title: The Pack
+        body: The standard 52-card pack is used. Some cards will be dealt and the rest will form the stock pile.
+      - title: Object of the Game
+        body: The goal is to win the most "books" of cards. A book is any four of a kind, such as four kings, four aces, and so on.
+      - title: Rank of Cards
+        body: The cards rank from ace (high) to two (low). The suits are not important, only the card numbers are relevant, such as two 3s, two 10s, and so on.
+      - title: The Deal
+        body: The dealer deals the cards clockwise one at a time, face down, beginning with the first player. If two people are playing each player is dealt 7 cards, if 3-6 players are playing each player is dealt 5 cards.
+      - title: The Play
+        body: The first player asks any opponent for any card they have in their hand. For example, "Player2, do you have any Kings?" If your opponent has 1 or more of the card you asked for you get all of them and get to go again (repeating the same steps). If they do not have the card, take the top card in the deck. If you fish for what you asked for you get to go again. If you did not, your turn is over, and play continues clockwise. If the deck is empty when you have to go fishing your turn is over. If you have no cards and the deck is empty your turn is skipped. If you run out of cards during your turn or someone asks for your last card(s) you get the top card in the deck. If the deck is empty, nothing happens. Remember if at any point you have 4 of the same card you have created a book!
+      - title: Ending the Game
+        body: The game ends when the deck is empty and all players have no cards left. To determine the winner, first count the number of books each player has. Whichever player has the most books wins! If there is a tie, check to see who has the highest book value out of the tied players (e.g. Ace is highest, 2 is lowest).
+  - id: crazy-eights
+    name: Crazy Eights
+    description: A fast-paced matching game where wild eights keep everyone on their toes.
+    min_players: 2
+    max_players: 7
+    duration: 15-30 mins
+    game_type: Card Game
+    logo: /crazy_eights_game_logo.png
+    sections:
+      - title: The Pack
+        body: The standard 52-card pack is used. Eights are wild and can be played on any card.
+      - title: Object of the Game
+        body: The goal is to be the first player to get rid of every card in your hand.
+      - title: Rank of Cards
+        body: Both suit and rank matter here — you play by matching the top card of the discard pile in rank or suit, except eights, which are wild and can be played on anything, anytime.
+      - title: The Deal
+        body: The dealer deals cards one at a time, beginning with the first player. If 2-3 people are playing each player is dealt 7 cards, if 4-7 players are playing each player is dealt 5 cards. The next card is turned face-up to start the discard pile. If that card is an eight, it's shuffled back into the deck and a new starting card is drawn instead — an eight can never start the discard pile.
+      - title: The Play
+        body: On your turn, play a card that matches the top card of the discard pile in rank or suit, or play an eight. Playing an eight lets you choose a new suit for play to continue on. If you don't have a playable card, draw from the stock pile until you draw one you can play — unlike the traditional game, you can't stop after drawing just one card, and you can't choose to draw if you already have a playable card. If the stock pile runs out, the discard pile (all but the top card) is reshuffled into a new stock pile. If there's truly nothing left to draw, your turn is skipped.
+      - title: Ending the Game
+        body: The moment a player plays their last card, the game ends immediately. There's always exactly one winner in Crazy Eights — no ties.

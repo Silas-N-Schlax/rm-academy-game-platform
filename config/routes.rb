@@ -24,8 +24,7 @@ Rails.application.routes.draw do
     collection { get :history }
   end
 
-  resources :pages, only: [ :index ]
-  get "pages/rules", to: "pages#rules"
+  resources :rules, only: [ :index, :show ]
 
   resources :stats, only: [ :index ]
   get "stats", to: "stats#index"

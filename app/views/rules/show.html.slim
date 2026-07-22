@@ -1,0 +1,18 @@
+.page
+  header.content-header
+    img.avatar.avatar--x-large src=@game.logo alt="#{@game.name} logo"/
+    .content-header__details
+      h1 #{@game.name} Rules
+      = render 'badges', game: @game
+    .content-header__aside
+      = link_to rules_path, class: 'btn btn--icon', data: { testid: 'back-to-rules' } do
+        i.li.li-move-left.icon.icon--large
+    .divider.divider--medium
+
+  .page__content
+    - @game.sections.each do |section|
+      .page__section
+        .page__subtitle
+          | #{section[:title]}
+        .page__paragraph
+          | #{section[:body]}
