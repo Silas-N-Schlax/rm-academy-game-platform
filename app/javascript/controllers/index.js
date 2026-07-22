@@ -16,6 +16,9 @@ application.register("country", CountryController)
 import DialogController from "./dialog_controller"
 application.register("dialog", DialogController)
 
+import GameBoardController from "./game_board_controller"
+application.register("game-board", GameBoardController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
