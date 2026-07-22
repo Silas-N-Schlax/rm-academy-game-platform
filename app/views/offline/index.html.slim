@@ -1,15 +1,41 @@
-.container.container--xs
-  .simple-page
-    .simple-page__body
-      .simple-page__logo
-        img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
+style
+  |
+    .offline-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--op-space-medium);
+      min-height: 100dvh;
+      padding: var(--op-space-large);
+      text-align: center;
+      background-color: var(--op-color-neutral-plus-max);
+      color: var(--op-color-neutral-on-plus-max);
+    }
+    .offline-page__logo {
+      height: calc(var(--op-size-unit) * 40);
+      box-shadow: var(--op-shadow-medium);
+    }
+    .offline-page__icon {
+      width: calc(var(--op-size-unit) * 12);
+      height: calc(var(--op-size-unit) * 12);
+    }
+    .offline-page__hint {
+      font-size: var(--op-font-small);
+    }
+    @media (prefers-color-scheme: dark) {
+      .offline-page__icon {
+        filter: invert(1);
+      }
+    }
 
-      h1
-        span
-          | You are offline
-          i.li.li-cloud-off.icon.icon--x-large
-      p Please reconnect to the internet then reload.
+.offline-page
+  img.offline-page__logo alt='Game Platform logo' src='/logo.png'
+  img.offline-page__icon alt='' src='https://unpkg.com/lucide-static@1.21.0/icons/cloud-off.svg'
+  h1 You're offline
+  p Please reconnect to the internet, then try again.
+  button.btn.btn--primary type='button' onclick='window.location.reload()' Try again
+  p.offline-page__hint This page will automatically reload once you're back online.
 
-
-
-
+script
+  | window.addEventListener('online', () => window.location.reload());

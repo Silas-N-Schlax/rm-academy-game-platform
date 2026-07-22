@@ -71,6 +71,11 @@ RSpec.describe CrazyEightsTurn, type: :model do
       expect(result).to be_invalid
     end
 
+    it 'returns false when a request is submitted and it is not the players turn' do
+      result = build(:crazy_eights_turn, rank: nil, suit: nil, request: true, game: game, user: user2)
+      expect(result).to be_invalid
+    end
+
     it 'returns false when the card is an eight and there is no wild suit' do
       result = build(:crazy_eights_turn, rank: '8', game: game, user: user)
       expect(result).to be_invalid

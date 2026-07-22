@@ -48,11 +48,11 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - **TDD always** — write the failing spec first.
 - **Skinny controllers, fat models** — business logic belongs in models/game engines, not controllers.
 - **Validation errors not tied to one specific attribute** (e.g. an invalid move in `GoFishTurn`/`CrazyEightsTurn`) should use `errors.add(:base, "message")`, not `errors.add("message")` — the latter treats the message string itself as the attribute name.
-- **CSS/Slim structure**: use BEM (`block__element--modifier`) as much as possible for class naming. Prefer `@rolemodel/optics` (already a dependency, see `package.json`/`app/assets/stylesheets/components/optics-overrides`) for values (colors, spacing, etc.) and built-in components wherever it fits, instead of hand-rolled one-off CSS.
+- **CSS/Slim structure**: use BEM (`block__element--modifier`) as much as possible for class naming. Prefer `@rolemodel/optics` (already a dependency, see `package.json`/`app/assets/stylesheets/components/optics-overrides`) for values (colors, spacing, etc.) and built-in components wherever it fits, instead of hand-rolled one-off CSS. For a custom size with no matching spacing token, use `calc(var(--op-size-unit) * n)` rather than a hard-coded px value (see `panel.css`).
 - `znotes/` is where the project owner stores plans and files that don't need to be committed (gitignored via a global gitignore, not this repo's `.gitignore`).
 
 ## Key context
 
 - [docs/architecture.md](docs/architecture.md) — model relationships, the serialized game-state pattern, Turn form objects, real-time updates, auth/session model
 - [docs/go_fish_rules.md](docs/go_fish_rules.md) — Go Fish rules as implemented here (matches the in-app rules page)
-- [docs/crazy_eights_rules.md](docs/crazy_eights_rules.md) — Crazy Eights rules as implemented here, including online-specific rule changes and edge cases (no in-app rules page exists yet)
+- [docs/crazy_eights_rules.md](docs/crazy_eights_rules.md) — Crazy Eights rules as implemented here, including online-specific rule changes and edge cases

@@ -1,7 +1,5 @@
-require 'rails_helper'
-
-RSpec.describe CrazyEights::Pile, type: :model do
-  let(:pile) { described_class.new(cards: [ CrazyEights::Card.new("J"), CrazyEights::Card.new("J"), CrazyEights::Card.new("J") ]) }
+RSpec.shared_examples "a CardGame::Pile" do
+  let(:pile) { described_class.new(cards: [ card_class.new('J'), card_class.new('J'), card_class.new('J') ]) }
 
   describe '#top_card' do
     it 'shows the top card and does not remove from the pile' do
@@ -11,7 +9,7 @@ RSpec.describe CrazyEights::Pile, type: :model do
       expect(pile.cards_left).to eq expected_pile_size
     end
 
-    context 'when the discard pile is empty' do
+    context 'when the pile is empty' do
       before { pile.cards = [] }
       it 'returns nil' do
         expect(pile.top_card).to be_nil
@@ -37,7 +35,7 @@ RSpec.describe CrazyEights::Pile, type: :model do
   end
 
   describe '#as_json' do
-    let(:pile) { described_class.new(cards: [ GoFish::Card.new('J'), GoFish::Card.new('K') ]) }
+    let(:pile) { described_class.new(cards: [ card_class.new('J'), card_class.new('K') ]) }
     let(:expected_hash) do
       [
         {
@@ -56,12 +54,17 @@ RSpec.describe CrazyEights::Pile, type: :model do
   end
 
   describe '.from_json' do
-    let(:pile) { described_class.new(cards: [ GoFish::Card.new('J'), GoFish::Card.new('K') ]) }
-    it 'restores current state of the card' do
+    let(:pile) { described_class.new(cards: [ card_class.new('J'), card_class.new('K') ]) }
+    it 'restores current state of the pile' do
       json = pile.as_json
-      expect(CrazyEights::Pile.from_json(json)).to have_attributes(
+      expect(described_class.from_json(json)).to have_attributes(
         cards: pile.cards
       )
+    end
+
+    it 'restores cards as the correct Card subclass' do
+      json = pile.as_json
+      expect(described_class.from_json(json).cards).to all(be_an_instance_of(card_class))
     end
   end
 end

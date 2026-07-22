@@ -66,6 +66,22 @@ RSpec.describe 'Users', type: :system do
        expected_content = 'Country'
        expect(page).to_not have_content expected_content
     end
+
+    it 'groups profile content into Identity, Account, and Address cards' do
+      user.update!(street_address: '123 Example St', city: 'Raleigh', zip_code: '27601')
+
+      visit users_show_path(user)
+
+      expect(page).to have_content 'Identity'
+      expect(page).to have_content 'Account'
+      expect(page).to have_content 'Address'
+    end
+
+    it 'hides the Address card entirely when there is no address data' do
+      visit users_show_path(user)
+
+      expect(page).to_not have_content 'Address'
+    end
   end
 
 

@@ -1,0 +1,20 @@
+.game-over {
+  display: flex;
+  flex-direction: column;
+  gap: var(--op-space-small);
+
+  .game-over__title {
+    margin: 0;
+  }
+
+  .game-over__winner {
+    margin: 0;
+  }
+
+  .game-over__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--op-space-2x-small);
+    align-items: center;
+  }
+}

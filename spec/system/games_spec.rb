@@ -84,7 +84,7 @@ RSpec.describe 'Games', type: :system do
     let!(:player) { create(:player_as_winner, user:, game: game1) }
     before do
       sign_in_as user
-      visit games_history_path
+      visit history_games_path
     end
     it 'shows history of games' do
       expect(page).to have_content 'History'
@@ -129,6 +129,19 @@ RSpec.describe 'Games', type: :system do
     it 'has a timer that auto submits the form when expired', :js, :fast_timer do
       expect(page).to have_selector('.timer')
       expect(page).to have_selector('.game-feed__question')
+    end
+
+    it 'displays the countdown as a whole number', :js do
+      expect(find('.timer__time').text).to match(/\A\d+\z/)
+    end
+
+    it 'does not reset the countdown when the page is reloaded', :js do
+      remaining_before_reload = find('.timer')['data-timer-seconds-value'].to_f
+      travel 20.seconds do
+        visit game_path(game)
+        remaining_after_reload = find('.timer')['data-timer-seconds-value'].to_f
+        expect(remaining_after_reload).to be_within(1).of(remaining_before_reload - 20)
+      end
     end
 
     context 'when the player gets to go again' do
@@ -187,6 +200,25 @@ RSpec.describe 'Games', type: :system do
     end
   end
 
+  context 'when a go fish game has ended' do
+    let!(:game) { create :game }
+    before do
+      sign_in_as game.users.first
+      game.start!
+      state = game.game_state
+      state.deck = []
+      state.players.each { |player| player.hand = [] }
+      state.players.first.books = [ GoFish::Book.new('K') ]
+      game.game_state = state
+      game.save!
+      visit game_path(game)
+    end
+    it 'shows the winner banner' do
+      expect(page).to have_content 'Game Over'
+      expect(page).to have_content "#{game.game_state.players.first.name} won the game!"
+    end
+  end
+
   context 'when the user goes offline on a game page', :chrome do
     let!(:game) { create :game }
     before do
@@ -194,13 +226,12 @@ RSpec.describe 'Games', type: :system do
       game.start!
       visit game_path(game)
       wait_for_service_worker_control
-
       emulate_worker_network(offline: true)
     end
     it 'displays offline banner' do
-      expect(page).to have_selector('.offline-banner')
+      expect(page).to have_selector('.offline-banner--active')
       emulate_worker_network(offline: false)
-      expect(page).to_not have_selector('.offline-banner')
+      expect(page).to have_no_selector('.offline-banner--active')
     end
   end
 

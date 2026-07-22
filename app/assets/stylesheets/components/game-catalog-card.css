@@ -1,0 +1,30 @@
+.game-catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--op-space-small);
+  height: 100%;
+
+  .game-catalog-card__image {
+    width: 100%;
+    height: calc(var(--op-size-unit) * 40); /* 160px */
+    object-fit: contain;
+  }
+
+  .game-catalog-card__body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--op-space-small);
+  }
+
+  .game-catalog-card__title {
+    margin: 0;
+    font-size: var(--op-font-large);
+    font-weight: var(--op-font-weight-semi-bold);
+  }
+
+  .game-catalog-card__description {
+    flex-grow: 1;
+    font-size: var(--op-font-medium);
+  }
+}

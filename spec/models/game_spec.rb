@@ -1,6 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do
+  describe 'abstract subclass contract' do
+    let(:game) { described_class.new }
+
+    it 'requires #engine_class to be overridden' do
+      expect { game.engine_class }.to raise_error(NotImplementedError, /engine_class/)
+    end
+
+    it 'requires #turn_class to be overridden' do
+      expect { game.turn_class }.to raise_error(NotImplementedError, /turn_class/)
+    end
+
+    it 'requires #play to be overridden' do
+      expect { game.play }.to raise_error(NotImplementedError, /play/)
+    end
+
+    it 'requires #valid_move? to be overridden' do
+      expect { game.valid_move? }.to raise_error(NotImplementedError, /valid_move\?/)
+    end
+  end
+
   describe 'validations' do
     it 'returns true if given valid input' do
       game = build :game
@@ -167,6 +187,19 @@ RSpec.describe Game, type: :model do
     let!(:player) { create(:player_as_winner, user:, game:) }
     it 'returns the winner' do
       expect(game.winner).to eq player
+    end
+  end
+
+  describe '#players_turn?' do
+    let!(:game) { create :started_game }
+    before { game.start! }
+
+    it 'returns true for the current player' do
+      expect(game.players_turn?(game.users.first.id)).to be true
+    end
+
+    it 'returns false for a player who is not current' do
+      expect(game.players_turn?(game.users.last.id)).to be false
     end
   end
 

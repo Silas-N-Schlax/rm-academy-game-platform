@@ -7,65 +7,62 @@
 
 
   .page__content
-    .op-stack
-    .card.card--padded.card--shadow-large
-      .op-split
-        .op-stack.text-center
-          img.avatar.avatar--5x-large#profile-avatar src="/default_avatar.png" alt="Avatar"/
-          p @#{@user.name}
+    .dynamic-grid
+      .card.card--padded.card--shadow-large
+        .op-split
+          .op-stack.text-center
+            img.avatar.avatar--5x-large#profile-avatar src="/default_avatar.png" alt="Avatar"/
+            p @#{@user.name}
 
+          .op-stack
+            h3 Identity
+            .text-pair.text-pair--inline
+              .text-pair__title Name:
+              .text-pair__subtitle #{@user.name} #{@user.country_flag}
+
+      .card.card--padded.card--shadow-large
         .op-stack
+          h3 Account
           .text-pair.text-pair--inline
-            .text-pair__title
-             | Email:
-            .text-pair__subtitle
-              | #{@user.email_address}
-
-          .text-pair.text-pair--inline
-            .text-pair__title
-              | Password:
-            .text-pair__subtitle
-              | ••••••••••••
+            .text-pair__title Email:
+            .text-pair__subtitle #{@user.email_address}
 
           .text-pair.text-pair--inline
-            .text-pair.text-pair__title
-              | Account Created:
-            .text-pair.text-pair__subtitle
-             | #{@user.created_at.strftime("%B %d, %Y")}
+            .text-pair__title Password:
+            .text-pair__subtitle ••••••••••••
 
-          - unless @user.street_address.nil?
-            .text-pair.text-pair--inline
-              .text-pair__title
-                | Street Address:
-              .text-pair__subtitle
-                | #{@user.street_address}
+          .text-pair.text-pair--inline
+            .text-pair__title Account Created:
+            .text-pair__subtitle #{@user.created_at.strftime("%B %d, %Y")}
 
-          - unless @user.country.nil?
-            .text-pair.text-pair--inline
-              .text-pair__title
-                | Country:
-              .text-pair__subtitle
-                | #{@user.country}
+      - if @user.street_address || @user.country || @user.state || @user.city || @user.zip_code
+        .card.card--padded.card--shadow-large
+          .op-stack
+            h3 Address
 
-          - unless @user.state.nil?
-            .text-pair.text-pair--inline
-              .text-pair__title
-                | State:
-              .text-pair__subtitle
-                | #{@user.state}
+            - unless @user.street_address.nil?
+              .text-pair.text-pair--inline
+                .text-pair__title Street Address:
+                .text-pair__subtitle #{@user.street_address}
 
-          - unless @user.city.nil?
-            .text-pair.text-pair--inline
-              .text-pair__title
-                | City:
-              .text-pair__subtitle
-                | #{@user.city}
+            - unless @user.country.nil?
+              .text-pair.text-pair--inline
+                .text-pair__title Country:
+                .text-pair__subtitle #{@user.country}
 
-          - unless @user.zip_code.nil?
-            .text-pair.text-pair--inline
-              .text-pair__title
-                | Zip Code:
-              .text-pair__subtitle
-                | #{@user.zip_code}
+            - unless @user.state.nil?
+              .text-pair.text-pair--inline
+                .text-pair__title State:
+                .text-pair__subtitle #{@user.state}
 
-          = link_to "Edit Profile", edit_user_path(@user), class: "btn btn--no-border", data: { turbo_frame: 'modal' }
+            - unless @user.city.nil?
+              .text-pair.text-pair--inline
+                .text-pair__title City:
+                .text-pair__subtitle #{@user.city}
+
+            - unless @user.zip_code.nil?
+              .text-pair.text-pair--inline
+                .text-pair__title Zip Code:
+                .text-pair__subtitle #{@user.zip_code}
+
+    = link_to "Edit Profile", edit_user_path(@user), class: "btn btn--no-border", data: { turbo_frame: 'modal' }

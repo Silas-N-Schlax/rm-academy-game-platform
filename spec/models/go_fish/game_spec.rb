@@ -5,6 +5,8 @@ RSpec.describe GoFish::Game, type: :model do
   let(:player2) { GoFish::Player.new(name: 'player2', id: 2) }
   let(:player3) { GoFish::Player.new(name: 'player3', id: 3) }
 
+  it_behaves_like "a CardGame::Engine"
+
   describe '.create' do
     context 'when a game has not already been created' do
       let!(:game) { create :started_game }
@@ -31,9 +33,6 @@ RSpec.describe GoFish::Game, type: :model do
       expect(loaded_game.current_player_idx).to be_zero
       expect(loaded_game.results).to be_empty
       expect(loaded_game.deck.cards_left).to eq expected_deck_size
-    end
-    it 'returns nil if the state is empty' do
-      expect(described_class.load({})).to be nil
     end
   end
 
@@ -266,11 +265,24 @@ RSpec.describe GoFish::Game, type: :model do
     end
   end
 
-  describe '#winner' do
+  describe '#winner?' do
+    let!(:game) { described_class.new(players: [ player1, player2 ]) }
+    it 'returns false when there is no winner' do
+      expect(game.winner?).to be false
+    end
+
+    it 'returns true when the deck is empty and all player hands are empty' do
+      game.deck = []
+      game.players.each { |player| player.hand = [] }
+      expect(game.winner?).to be true
+    end
+  end
+
+  describe '#winning_player' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
     context 'when there is no winner' do
       it 'returns' do
-        expect(game.winner).to be_nil
+        expect(game.winning_player).to be_nil
       end
       context 'when the deck is empty and all player hands are empty' do
         let!(:game_player1) { game.players.first }
@@ -283,12 +295,12 @@ RSpec.describe GoFish::Game, type: :model do
           game_player2.books = [ GoFish::Book.new('J') ]
         end
         it 'returns the player with the most books' do
-          expect(game.winner.name).to be game_player1.name
+          expect(game.winning_player.name).to be game_player1.name
         end
         context 'when there is a tie for most books' do
           it 'returns the player with the highest book' do
             game_player1.books.pop
-            expect(game.winner).to be game_player1
+            expect(game.winning_player).to be game_player1
           end
         end
 
@@ -307,7 +319,7 @@ RSpec.describe GoFish::Game, type: :model do
           game_player3.books = [ GoFish::Book.new('A') ]
           end
           it 'returns the winner' do
-            expect(game.winner).to eq game_player3
+            expect(game.winning_player).to eq game_player3
           end
         end
       end
@@ -323,39 +335,9 @@ RSpec.describe GoFish::Game, type: :model do
           game_player2.books = [ GoFish::Book.new('J'), GoFish::Book.new('10') ]
         end
         it 'returns the player with the highest book' do
-          expect(game.winner.name).to be game_player1.name
+          expect(game.winning_player.name).to be game_player1.name
         end
       end
-    end
-  end
-
-  describe '#latest_result' do
-    let(:game) { described_class.new(players: [ player1 ]) }
-    let(:result) do
-      GoFish::TurnResult.new(
-        current_player: nil, opponent: nil,
-        rank_asked_for: 'K', cards_taken: nil,
-        card_picked_up: nil, goes_again: nil, created_book: nil
-      )
-    end
-    before do
-      game.results << result
-    end
-    it 'returns last result' do
-      expect(game.latest_result).to eq result
-    end
-  end
-
-  describe '#next_player_turn' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    it 'sets current player turn to player2' do
-      game.next_player_turn
-      expect(game.current_player).to eq player2
-    end
-    it 'can loop back around to player1' do
-      game.next_player_turn
-      game.next_player_turn
-      expect(game.current_player).to eq player1
     end
   end
 
@@ -373,31 +355,6 @@ RSpec.describe GoFish::Game, type: :model do
         game.deck = []
         player.hand = []
         expect(game.turn_skipped?).to be true
-      end
-    end
-  end
-
-   describe '#current_player' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    it 'returns the current player' do
-      expect(game.current_player).to eq player1
-    end
-  end
-
-  describe '#find_player' do
-    let(:game) { described_class.new(players: [ player1, player2 ]) }
-    context 'when provided with id for player1' do
-      it 'returns player1' do
-        result = game.find_player(player1.id)
-        expect(result.name).to eq player1.name
-      end
-    end
-
-    context 'when provided with an id for a non-existent player' do
-      it 'returns nil' do
-        player3_id = 3
-        result = game.find_player(player3_id)
-        expect(result).to be_nil
       end
     end
   end

@@ -9,14 +9,8 @@
         span #{game.name}
 
       .panel__content
-        - if implementation.winner
-          .container.container--xs
-            .simple-page.simple-page--in-container
-              .simple-page__form#new-game-form
-                h2 Game Over
-                h3 #{implementation.winner.name} won the game!
-                = link_to root_path, class: 'btn btn--primary'
-                  p My Games
+        - if implementation.winner?
+          = render partial: 'game_over', locals: { game: game }
 
         - else
           .players
@@ -42,7 +36,7 @@
                 = render partial: "go_fish_feed", locals: { result: result, current_player: current_user.id }
 
         - if game.finished_at.nil? && current_user.id == implementation.current_player.id
-          .timer data-controller="timer" data-timer-timer-time-value=turn_timer_seconds
+          .timer data-controller="timer" data-timer-seconds-value=game.remaining_turn_seconds(turn_timer_seconds) data-timer-anchor-value=game.updated_at.to_f
             .timer__title Turn Time
             .timer__time data-timer-target="time" 00:00
           = render partial: "go_fish_form", locals: { implementation:, game: }

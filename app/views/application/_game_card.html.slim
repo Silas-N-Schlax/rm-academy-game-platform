@@ -7,6 +7,6 @@
   .game-row__action
     .game-row__player-count #{item.status(message:true)}
     - if post
-      = button_to "Join", join_path(item), class: 'btn game-row__btn'
+      = button_to "Join", game_players_path(item), class: 'btn game-row__btn'
     - else
       = link_to "Play", game_path(item), class: 'btn game-row__btn'

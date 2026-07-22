@@ -23,9 +23,20 @@ class Game < ApplicationRecord
     self.save
   end
 
-  def start! = raise NotImplementedError, "#{self.class} must implement #required_method"
-  def play = raise NotImplementedError, "#{self.class} must implement #required_method"
-  def turn_class = raise NotImplementedError, "#{self.class} must implement #required_method"
+  def start!
+    return self.game_state unless self.game_state.nil?
+    return nil unless can_start?
+
+    self.started_at = Time.current
+    self.game_state = engine_class.create(self.players)
+    save!
+    self.game_state
+  end
+
+  def engine_class = raise NotImplementedError, "#{self.class} must implement #engine_class"
+  def turn_class = raise NotImplementedError, "#{self.class} must implement #turn_class"
+  def play(**) = raise NotImplementedError, "#{self.class} must implement #play"
+  def valid_move?(**) = raise NotImplementedError, "#{self.class} must implement #valid_move?"
 
   def valid_types
     game_details_hash.keys
@@ -33,6 +44,10 @@ class Game < ApplicationRecord
 
   def game_size_by_type(type)
     game_details_hash[type]
+  end
+
+  def join(user_id)
+    can_join?(user_id) && players.create(user_id:)
   end
 
   def can_join?(user_id)
@@ -63,6 +78,10 @@ class Game < ApplicationRecord
 
   def winner
     self.players.find_by(winner: true)
+  end
+
+  def players_turn?(user_id)
+    implementation.current_player.id == user_id
   end
 
   def status(message: false)

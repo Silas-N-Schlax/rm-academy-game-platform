@@ -9,13 +9,7 @@
 
       .panel__content
         - if implementation.winner?
-          .container.container--xs
-            .simple-page.simple-page--in-container
-              .simple-page__form#new-game-form
-                h2 Game Over
-                h3 #{implementation.winning_player.name} won the game!
-                = link_to root_path, class: 'btn btn--primary'
-                  p My Games
+          = render partial: 'game_over', locals: { game: @game }
 
         - else
           = render partial: 'crazy_eights_game_table'

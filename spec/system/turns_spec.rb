@@ -26,8 +26,11 @@ RSpec.describe 'Turns', type: :system do
         expected_content = 'Game Over'
         visit game_path(game)
         click_on 'Ask'
+        game.reload
         expect(page).to have_content expected_content
         expect(page).to have_content game.users.first.name
+        expect(page).to have_content game.formatted_time
+        expect(page).to have_content game.game_size
       end
     end
   end
@@ -109,8 +112,11 @@ RSpec.describe 'Turns', type: :system do
         expected_content = 'Game Over'
         visit game_path(game)
         find('.playing-card--large', match: :first).click
+        game.reload
         expect(page).to have_content expected_content
         expect(page).to have_content game.users.first.name
+        expect(page).to have_content game.formatted_time
+        expect(page).to have_content game.game_size
       end
     end
   end
