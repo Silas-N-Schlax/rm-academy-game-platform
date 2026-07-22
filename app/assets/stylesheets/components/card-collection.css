@@ -52,6 +52,18 @@
   &.card-collection--x-large {
     margin-left: calc(var(--_gf-x-large-card-margin));
   }
+
+  &.game-board__meld-card {
+    margin-left: calc(var(--op-size-unit) * 10); /* 40px */
+  }
+
+  &.game-board__mini-card {
+    margin-left: calc(var(--op-size-unit) * 3); /* 12px */
+  }
+
+  &.game-board__pile-card {
+    margin-left: 0;
+  }
 }
 
 /* --op-breakpoint-small */

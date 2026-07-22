@@ -1,0 +1,13 @@
+dialog.modal.game-over#game-over-modal closedby="any"
+  .game-over__body
+    div.game-over__trophy
+      i.li.li-trophy.icon.icon--x-large
+    p.game-over__winner = "#{board[:winner_name]} wins!"
+    p.game-over__subtitle Ranked by pip total left in hand, lowest first
+    ul.game-over__ranking
+      - board[:ranking].each do |entry|
+        li
+          span = "#{entry[:place]}. #{entry[:name]} #{entry[:flag]}"
+          span = "#{entry[:pips]} pips"
+    button.btn.btn--primary.game-over__close type="button" commandfor="game-over-modal" command="close"
+      | Close

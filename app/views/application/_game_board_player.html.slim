@@ -1,0 +1,10 @@
+.game-board__player
+  = render "truncated_text", text: player[:name], position: "right", additional_class: "game-board__player-name"
+  - if player[:melded]
+    span.game-board__player-melded title="Has melded"
+      i.li.li-check.icon.icon--small
+  .game-board__mini-fan
+    = render "card_collection", hand: player[:mini_hand], modifier: " game-board__mini-card", back: true
+    - if player[:overflow].to_i > 0
+      span.game-board__mini-fan-count = "+#{player[:overflow]}"
+  p.game-board__player-count = player[:hand_size]
