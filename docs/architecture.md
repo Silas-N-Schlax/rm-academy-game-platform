@@ -56,6 +56,8 @@ This exists specifically so each game type can define its own validation logic (
 
 Both `GoFishTurn` and `CrazyEightsTurn` inherit from a shared `Turn` base class (`app/models/turn.rb`), which owns the `game`/`user` presence+inclusion validation and an *unconditional* `validate :players_turn` — it calls `Game#players_turn?(user_id)` on the AR superclass, which checks `implementation.current_player.id == user_id`. This check is deliberately unconditional (not folded into `valid_move?`) because Crazy Eights' `valid_move` validation early-returns on card *requests* (draws) — a whose-turn check living only inside `valid_move?` would silently stop guarding the request path. Putting it in the base class instead guards play and request/draw moves the same way for both games.
 
+Simple Form's `f.button :submit` renders an `<input type="submit">`, not a `<button>` tag — `.textContent` is a no-op on an input, so a Stimulus controller updating its visible label (e.g. the Go Fish "Ask" button) must set `.value` instead.
+
 ## Real-time updates
 
 There's no bespoke `ActionCable` channel for gameplay. Instead:
@@ -69,6 +71,8 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
 
 - `sign_in_as` (`spec/support/authentication_helpers.rb`) only swaps the session cookie — it does **not** reload the current page. In a system spec, calling it mid-test without a following `visit` means any subsequent interaction (clicking a link/button) still acts on markup rendered for the *previous* signed-in user. This has previously masked a real bug: a spec that switched users after the page had already rendered clicked a stale "Join" button meant for someone else, silently exercising a double-join code path instead of the scenario the test claimed to cover.
 - Tag a system spec `:js` whenever the element under test is backed by a Stimulus controller, even if the spec only reads a server-rendered `data-*` attribute rather than anything the JS writes — it still proves the controller connects without erroring. That said, you don't need a `sleep`/wait for that kind of assertion: reading the attribute directly (`find('.timer')['data-timer-seconds-value']`) is instant, since it's server-rendered markup, not something JS has to compute first.
+- This app aliases Capybara's `select` to a custom `smart_select` (`spec/support/helpers/select_helper.rb`) that resolves `from:` by **label text**, not element id/name — `select 'X', from: 'some_field_id'` fails with a confusing "unable to find label" error instead of selecting by id.
+- `Game#can_start?` requires `players.size == game_size` **exactly**. A factory built with a `player_count:` transient but a mismatched (or default) `game_size:` makes `start!` **silently return `nil`** rather than raise — `game_state` stays nil with no obvious error pointing at the mismatch.
 
 ## Asset pipeline (Propshaft)
 

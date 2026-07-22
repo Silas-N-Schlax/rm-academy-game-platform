@@ -28,7 +28,7 @@ class GoFishTurn < Turn
   end
 
   def ranks
-    implementation.list_of_ranks(user.id)
+    implementation.list_of_ranks(user.id).map { |rank| [ GoFish::Card::SPELLED_RANKS[rank], rank ] }
   end
 
   private

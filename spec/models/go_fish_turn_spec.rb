@@ -91,10 +91,13 @@ RSpec.describe GoFishTurn, type: :model do
   describe '#ranks' do
     let!(:game) { create(:game, game_size: 4, player_count: 4) }
     before { game.start! }
-    it 'returns a list of ranks in the players hand' do
+
+    it 'returns spelled label/raw value pairs for each rank in the players hand' do
+      game.game_state.players.first.hand = [ GoFish::Card.new('7'), GoFish::Card.new('J') ]
+      game.save!
       turn = build(:go_fish_turn, game: game, user: game.users.first)
-      implementation = game.game_state
-      expect(turn.ranks).to eq implementation.find_player(game.users.first.id).ranks
+
+      expect(turn.ranks).to contain_exactly([ '7', '7' ], [ 'Jack', 'J' ])
     end
   end
 end

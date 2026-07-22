@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AskButtonController from "./ask_button_controller"
+application.register("ask-button", AskButtonController)
+
 import AutoPlayController from "./auto_play_controller"
 application.register("auto-play", AutoPlayController)
 
