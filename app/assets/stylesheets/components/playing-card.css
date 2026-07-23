@@ -61,6 +61,19 @@
   }
 
   &.game-board__pile-card {
-    width: calc(var(--op-size-unit) * 34); /* 136px */
+    width: calc(var(--op-size-unit) * 20); /* 80px */
+    margin-left: 0;
+  }
+}
+
+/* --op-breakpoint-small */
+@media (width <= 768px) {
+  .playing-card.game-board__mini-card {
+    width: calc(var(--op-size-unit) * 7); /* 28px */
+    margin-left: calc(var(--op-size-unit) * -4); /* -16px */
+  }
+
+  .playing-card.game-board__pile-card {
+    width: calc(var(--op-size-unit) * 14); /* 56px */
   }
 }

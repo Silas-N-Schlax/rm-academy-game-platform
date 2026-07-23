@@ -2,7 +2,14 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="game-board"
 export default class extends Controller {
-  static targets = ["tab", "panel", "feedDrawer", "feedScrim"]
+  static targets = ["tab", "panel", "feedDrawer", "feedScrim", "meld"]
+
+  selectMeld(event) {
+    const meld = event.currentTarget
+    const alreadySelected = meld.classList.contains("game-board__meld--selected")
+    this.meldTargets.forEach((m) => m.classList.remove("game-board__meld--selected"))
+    meld.classList.toggle("game-board__meld--selected", !alreadySelected)
+  }
 
   switchTab(event) {
     const tab = event.currentTarget.dataset.tab

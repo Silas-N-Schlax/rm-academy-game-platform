@@ -91,6 +91,10 @@
     --_gf-x-large-card-margin: calc(var(--op-size-unit) * 18); /* 72px */
     --_gf-x-large-card-hover: calc(var(--op-size-unit) * 0);
   }
+
+  .card-collection.game-board__mini-card {
+    margin-left: calc(var(--op-size-unit) * 4); /* 16px */
+  }
 }
 
 /* --op-breakpoint-large */

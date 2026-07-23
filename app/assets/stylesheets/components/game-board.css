@@ -50,12 +50,14 @@
 .game-board__board {
   position: relative;
   display: grid;
-  grid-template-columns: calc(var(--op-size-unit) * 46) 1fr; /* 184px */
+  grid-template-columns: calc(var(--op-size-unit) * 62) 1fr; /* 248px */
   gap: var(--op-space-medium);
   padding: var(--op-space-medium);
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--op-color-neutral-plus-seven);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .game-board__left-col {
@@ -166,35 +168,52 @@
 
 .game-board__board-main {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--op-space-medium);
-}
-
-.game-board__melds-heading {
-  margin: 0;
-  font-size: var(--op-font-x-small);
-  font-weight: var(--op-font-weight-semi-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--op-color-neutral-on-plus-eight);
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .game-board__melds {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  align-items: center;
-  gap: var(--op-space-small);
+  display: block;
+}
+
+.game-board__meld {
+  display: inline-flex;
+  vertical-align: top;
+  margin: 0 var(--op-space-small) var(--op-space-small) 0;
+  padding: var(--op-space-2x-small);
+  border: solid calc(var(--op-border-width) * 2) transparent;
+  border-radius: var(--op-radius-medium);
+  background: none;
+  cursor: pointer;
+  transition: var(--op-transition-modal);
+}
+
+.game-board__meld:hover {
+  background-color: var(--op-color-neutral-plus-six);
+}
+
+.game-board__meld:focus-visible {
+  outline: solid calc(var(--op-size-unit) * 1) var(--op-color-primary-base); /* 4px */
+  outline-offset: calc(var(--op-size-unit) * 1); /* 4px */
+}
+
+.game-board__meld--selected {
+  border-color: var(--op-color-primary-base);
+  background-color: var(--op-color-neutral-plus-six);
 }
 
 .game-board__piles {
+  float: right;
   display: flex;
   align-items: center;
-  gap: var(--op-space-medium);
-  padding-block: var(--op-space-small);
-  margin-left: auto;
+  gap: var(--op-space-small);
+  padding: var(--op-space-x-small);
+  margin: 0 0 var(--op-space-medium) var(--op-space-medium);
+  background-color: var(--op-color-neutral-plus-max);
+  border: solid var(--op-border-width) var(--op-color-border);
+  border-radius: var(--op-radius-medium);
 }
 
 .game-board__pile {
@@ -403,11 +422,16 @@
   }
 
   .game-board__panel {
+    grid-row: 2;
+    grid-column: 1;
     display: none;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .game-board__panel--active {
     display: flex;
+    flex-direction: column;
   }
 
   .game-board__left-col {
@@ -420,6 +444,32 @@
 
   .game-board__players {
     flex: 1;
+  }
+
+  .game-board__board-main {
+    height: 100%;
+  }
+
+  .game-board__melds {
+    order: 1;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: var(--op-space-small);
+  }
+
+  .game-board__meld {
+    margin: 0;
+  }
+
+  .game-board__piles {
+    order: 2;
+    flex: 0 0 auto;
+    float: none;
+    justify-content: center;
+    margin: var(--op-space-medium) 0 0;
   }
 
   .game-board__hand {
