@@ -32,5 +32,11 @@ RSpec.describe Turn, type: :model do
       result = described_class.new(game: game, user: user2)
       expect(result).to be_invalid
     end
+
+    it 'returns false if the game has already finished' do
+      game.update!(finished_at: Time.current)
+      result = described_class.new(game: game, user: user)
+      expect(result).to be_invalid
+    end
   end
 end

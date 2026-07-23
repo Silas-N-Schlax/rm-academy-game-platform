@@ -229,9 +229,9 @@ RSpec.describe 'Games', type: :system do
       emulate_worker_network(offline: true)
     end
     it 'displays offline banner' do
-      expect(page).to have_selector('.offline-banner--active')
+      expect(page).to have_selector('.alert-banner--active')
       emulate_worker_network(offline: false)
-      expect(page).to have_no_selector('.offline-banner--active')
+      expect(page).to have_no_selector('.alert-banner--active')
     end
   end
 

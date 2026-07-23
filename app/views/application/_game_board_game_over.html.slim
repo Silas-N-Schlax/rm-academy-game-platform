@@ -1,4 +1,4 @@
-dialog.modal.game-board-over#game-over-modal closedby="any"
+dialog.modal.game-board-over#game-over-modal closedby="any" data-controller=("dialog" if board[:winner_name].present?)
   .game-board-over__body
     div.game-board-over__trophy
       i.li.li-trophy.icon.icon--x-large

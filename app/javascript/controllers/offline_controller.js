@@ -20,10 +20,10 @@ export default class extends Controller {
 
   updateStatus() {
     if (navigator.onLine) {
-      this.offlineBannerTarget.classList.remove('offline-banner--active')
+      this.offlineBannerTarget.classList.remove('alert-banner--active')
 
     } else {
-      this.offlineBannerTarget.classList.add('offline-banner--active')
+      this.offlineBannerTarget.classList.add('alert-banner--active')
     }
   }
 }

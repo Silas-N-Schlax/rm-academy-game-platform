@@ -28,7 +28,9 @@ lay-off, discard, going out, ranking) is designed in
   - **Draw one card** — either the top of the stock **or** the top of the discard pile (only the
     top discard card is visible/available). You may always take the top discard card, including
     when it's the last one (leaving the discard pile empty). **Rule:** if you took the top discard
-    card, you may not discard that same card on this turn. **Rule:** if both the stock and the
+    card, you may not discard that same card on this turn — **unless** it is the only card left in
+    your hand, in which case discarding it is allowed and immediately wins the game (you're going
+    out). **Rule:** if both the stock and the
     discard pile are empty when it's your turn to draw, you cannot draw — skip the draw and play
     your turn as normal (optionally meld/lay off), then discard as usual.
   - **Lay down melds (optional):** put down any number of new melds from your hand.
@@ -54,7 +56,7 @@ lay-off, discard, going out, ranking) is designed in
 | Scenario | Behavior |
 |---|---|
 | First player's very first turn | Normal turn rules apply — they may take the starting upcard or draw from stock. |
-| Player took the top discard card, tries to re-discard it same turn | Not allowed — rejected before the move is applied. |
+| Player took the top discard card, tries to re-discard it same turn | Not allowed — rejected before the move is applied — **unless** it's the only card left in hand, in which case it's allowed and wins the game. |
 | Player tries to lay off before laying down any meld of their own | Not allowed — the must-meld-first gate rejects it. |
 | Invalid meld (fewer than 3 cards, mixed suits in a run, non-consecutive run, wrong-rank set) | Rejected by `RummyTurn` validations before it reaches the engine. |
 | Lay-off doesn't fit the target meld (wrong rank for a set, doesn't extend a run in-suit/in-sequence) | Rejected by validation. |

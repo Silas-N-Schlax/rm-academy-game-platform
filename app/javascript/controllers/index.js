@@ -19,6 +19,9 @@ application.register("dialog", DialogController)
 import GameBoardController from "./game_board_controller"
 application.register("game-board", GameBoardController)
 
+import GameBoardToastController from "./game_board_toast_controller"
+application.register("game-board-toast", GameBoardToastController)
+
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 

@@ -14,11 +14,16 @@ class Turn
   validates :game, presence: true
   validates :user, presence: true, inclusion: { in: ->(turn) { turn.game ? turn.game.users : [] } }
   validate :players_turn
+  validate :game_not_finished
 
   private
 
   def players_turn
     return if game.nil? || user.nil?
     errors.add(:base, "Its not your turn!") unless game.players_turn?(user.id)
+  end
+
+  def game_not_finished
+    errors.add(:base, "This game has already ended.") if game&.finished_at.present?
   end
 end

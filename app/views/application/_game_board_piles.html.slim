@@ -1,7 +1,17 @@
 .game-board__piles
   .game-board__pile
     span.game-board__pile-label Stock
-    = render "card_collection", hand: [nil], modifier: " game-board__pile-card", back: true
+    = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
+      = f.input :action, as: :hidden, input_html: { value: 'draw' }
+      = f.input :source, as: :hidden, input_html: { value: 'stock' }
+      = image_submit_tag "cards/back.svg", class: "playing-card playing-card game-board__pile-card", alt: "Draw from stock"
   .game-board__pile
     span.game-board__pile-label Discard
-    = render "card_collection", hand: [board[:discard_top]], modifier: " game-board__pile-card", back: false
+    - if board[:discard_top]
+      = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post do |f|
+        = f.input :action, as: :hidden, input_html: { value: 'draw' }
+        = f.input :source, as: :hidden, input_html: { value: 'discard' }
+        = image_submit_tag "cards/#{board[:discard_top]}.svg", class: "playing-card playing-card game-board__pile-card", alt: "Draw from discard"
+    - else
+      .game-board__pile-card.game-board__pile-card--empty
+        | Empty
