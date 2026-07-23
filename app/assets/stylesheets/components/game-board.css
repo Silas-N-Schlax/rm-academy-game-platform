@@ -405,8 +405,18 @@
     padding-block: var(--op-space-x-small);
   }
 
+  .game-board__topbar-right {
+    margin-left: auto;
+  }
+
   .game-board__name {
     font-size: var(--op-font-medium);
+  }
+
+  .game-board__stock-count {
+    padding: var(--op-space-3x-small, 2px) var(--op-space-x-small);
+    border-radius: var(--op-radius-large);
+    background-color: var(--op-color-neutral-plus-six);
   }
 
   .game-board__board {
