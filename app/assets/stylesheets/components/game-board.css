@@ -5,6 +5,7 @@
   width: 100%;
   background-color: var(--op-color-neutral-plus-max);
   overflow: hidden;
+  overflow: clip;
 }
 
 .game-board__topbar {
@@ -206,6 +207,7 @@
   padding: var(--op-space-medium);
   border-top: solid var(--op-border-width) var(--op-color-border);
   background-color: var(--op-color-neutral-plus-max);
+  overflow: hidden;
 }
 
 .game-board__hand-main {
