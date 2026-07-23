@@ -58,15 +58,31 @@ Both `GoFishTurn` and `CrazyEightsTurn` inherit from a shared `Turn` base class 
 
 Simple Form's `f.button :submit` renders an `<input type="submit">`, not a `<button>` tag — `.textContent` is a no-op on an input, so a Stimulus controller updating its visible label (e.g. the Go Fish "Ask" button) must set `.value` instead.
 
+When a failed turn's validation errors need to reach the view (e.g. Rummy's error toast), `TurnsController#create` re-renders `"games/show"` on `turn.save` failure — but per the one-instance-variable-per-controller-action convention (see AGENTS.md), that non-persisted `turn` is passed as `locals: { turn: turn }`, not a second instance variable. Locals don't auto-propagate into nested `render partial:` calls, so it has to be re-threaded by hand at each hop: `games/show.html.slim` forwards it into `render partial: @game, locals: { turn: local_assigns[:turn], ... }`, and the game-type partial (e.g. `_rummy_game.html.slim`) reads it back out via `local_assigns[:turn]` (`nil` on the normal `GamesController#show` render path, where no `turn` local is passed at all).
+
+The shared `Turn` base class also runs an unconditional `validate :game_not_finished` (`errors.add(:base, ...)` if `game.finished_at` is present). This closed a real bug found during a Rummy Phase 2 manual review (2026-07-23): nothing previously stopped further turns once a game ended — `finished_at`/the winning `Player#winner` flag were set correctly by `end_game`, but since the winner's `current_player_idx` never advances past them, `Game#players_turn?` kept returning true for that player, so they could keep drawing/discarding indefinitely and silently "un-win" by drawing new cards back into what should have stayed an empty, game-over hand. Fixed at the shared base class rather than per-game, so it protects Go Fish and Crazy Eights the same way.
+
 ## Real-time updates
 
 There's no bespoke `ActionCable` channel for gameplay. Instead:
 
 - `Game` broadcasts via Turbo Streams: `after_create_commit`/`after_update_commit` call `broadcast_refresh_later_to "games"` (for lobby/list views) and `broadcast_refresh_later_to self` (for the individual game page).
 - `Player` also broadcasts to `"games"` on create/update so the lobby list picks up seat changes.
-- `app/views/games/show.html.slim` subscribes with `turbo_stream_from @game` and re-renders via `render @game`, which uses Rails' polymorphic partial lookup — `GoFishGame` renders `go_fish_games/_go_fish_game`, `CrazyEightsGame` renders `crazy_eights_games/_crazy_eights_game`.
+- `app/views/games/show.html.slim` subscribes with `turbo_stream_from @game` and re-renders via `render @game`, which uses Rails' polymorphic partial lookup — `GoFishGame` renders `go_fish_games/_go_fish_game`, `CrazyEightsGame` renders `crazy_eights_games/_crazy_eights_game`. Per-game "view-model" data for shared display partials (e.g. the `board` hash Rummy passes to the shared `_game_board` partial) is built directly in each game's own view from `implementation`, not via a separate presenter/view-model class — matching how Go Fish and Crazy Eights already inline this in their own partials. This is deliberate, not an oversight: the shared partial's generic hash parameter invites reaching for a presenter, but the project's convention is to stay consistent with the existing direct-`implementation`-call style instead.
 - The Go Fish turn timer (`timer_controller.js`) is a good example of a Turbo-morph gotcha: the countdown restarts from a dedicated Stimulus `anchor` value (`game.updated_at.to_f`), not from the remaining-seconds value itself. Morph only fires a Stimulus `valueChanged` callback when the attribute **string** actually changes on re-render — on a go-again turn the recomputed remaining-seconds can coincidentally match the prior render's value, which would silently fail to reset the countdown if that value were the restart trigger. `GoFishGame#remaining_turn_seconds` also assumes `updated_at` marks turn-start (true today because only `start!`/`play`/`end_game` write the `games` row mid-game) — a future `touch:` association or incidental `game.update` elsewhere would silently desync the timer.
+- A related but distinct morph gotcha: Idiomorph (the library behind `turbo-refresh-method: morph`, enabled in `_head.html.slim`) matches old/new DOM nodes **by `id`** and, when it finds a match on a form element, preserves that element's *live* value/checked state rather than overwriting it with the freshly-rendered HTML. This means in-progress client-side state (e.g. a checked-but-unsubmitted checkbox) can survive an unrelated `broadcast_refresh_later_to` refresh — but only if the element has a stable, unique `id` for Idiomorph to match against. Any interactive multi-select UI built on top of the broadcast-refresh loop needs stable ids on its inputs, or a background refresh can silently reset a player's in-progress selection. Because morph preserves the underlying input state but doesn't re-fire a `change` event, code that derives visual state (CSS classes, button enablement) from those inputs should re-sync on the `turbo:morph` document event, not rely solely on `change` listeners.
 - `finished_at` is only set as a **side effect of `Game#play`/`end_game`**, not automatically whenever `winner?` becomes true. Code (including specs) that mutates `game_state` directly into a winning state without going through `play` will have `finished_at` still `nil` — anything reading it (e.g. the game-over display) must not assume it's set just because `winner?` is true.
+- **A same-page form-submit redirect is also a morph, and it's asynchronous.** When a Turbo-intercepted form POST redirects back to the page it was submitted from (e.g. `TurnsController#create`'s `redirect_to game_path(@game)`), Turbo Drive treats the resulting GET as a same-page visit and applies `turbo-refresh-method: morph` — it does **not** behave like a synchronous full reload. A system spec that immediately follows one form interaction with another (check a box, then click a button) can race ahead of the morph settling, silently losing form state (e.g. `card_ids` missing from the next POST) with no error raised — found while building Rummy's lay-off/meld system specs, several of which were intermittently flaky until each `:js` spec asserted on the settled post-morph state (e.g. an updated hand card count) before its next interaction. This is a distinct gotcha from the stable-id/Idiomorph one above — that one is about *what* gets preserved across a morph; this one is about *timing* between a morph-triggering navigation and whatever the test does next.
+- **Two feed-rendering patterns coexist.** Go Fish and Crazy Eights render turn-by-turn history via
+  their own per-game partials (`_go_fish_feed.html.slim`, `_crazy_eights_feed.html.slim`), which
+  take a `result`/`current_player` local and branch on viewer identity **inside the template**
+  (`result.messages_for_current` vs. `result.messages_for_all`). Rummy — and any future new game —
+  instead renders through the shared `_game_board_feed.html.slim`, which takes a flat
+  `board[:feed]` array of already-resolved `{time:, text:}` hashes with no viewer branching in the
+  view at all. This means for any game built on `_game_board_feed`, the per-viewer wording (e.g.
+  hiding which card was drawn from the stock from everyone but the drawer) must be resolved inside
+  the `TurnResult` object itself before it reaches the view — copying the Go Fish/Crazy Eights
+  template-side-branching pattern would not work against the newer partial's contract.
 
 ## Testing gotchas
 
@@ -74,6 +90,7 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
 - Tag a system spec `:js` whenever the element under test is backed by a Stimulus controller, even if the spec only reads a server-rendered `data-*` attribute rather than anything the JS writes — it still proves the controller connects without erroring. That said, you don't need a `sleep`/wait for that kind of assertion: reading the attribute directly (`find('.timer')['data-timer-seconds-value']`) is instant, since it's server-rendered markup, not something JS has to compute first.
 - This app aliases Capybara's `select` to a custom `smart_select` (`spec/support/helpers/select_helper.rb`) that resolves `from:` by **label text**, not element id/name — `select 'X', from: 'some_field_id'` fails with a confusing "unable to find label" error instead of selecting by id.
 - `Game#can_start?` requires `players.size == game_size` **exactly**. A factory built with a `player_count:` transient but a mismatched (or default) `game_size:` makes `start!` **silently return `nil`** rather than raise — `game_state` stays nil with no obvious error pointing at the mismatch.
+- Clicking a specific card in Rummy's overlapping fanned hand (`rummy_gameplay_spec.rb`) needs a `label.click()` JS dispatch (see the `check_hand_card` helper — `page.execute_script("...label[for='...'].click()")`), not a coordinate-based Capybara click. Chromium/Playwright's synthetic-mouse hit-testing intermittently reports a false "blocked by a different card" even when the real DOM geometry is correct (independently verified via `elementFromPoint`) — likely a hover-path quirk, not an actual visual-overlap bug. A `label.click()` still exercises real DOM click-activation semantics (toggles the checkbox, fires `change`), just without simulated mouse coordinates.
 
 ## Asset pipeline (Propshaft)
 
@@ -107,6 +124,24 @@ the User-Agent stylesheet regardless of specificity, so that `display: flex` sil
 browser's built-in `dialog:not([open]) { display: none }`, making the Rummy game-over dialog
 permanently visible and breaking the whole board's layout/width. Fixed by renaming the block to
 `game-board-over`. Grep a candidate class name across `components/**` before naming a new BEM block.
+
+Every game's card-fan/overlap effect (`playing-card.css`/`card-collection.css`'s negative-margin
+technique) depends on each card `<img>` being a **direct flex child** of `.card-collection` —
+matching the shared `_card_collection.html.slim` partial's plain, unwrapped rendering. Rummy's hand
+wraps each card in a `<label>` (for its selection checkbox), which silently broke the overlap (found
+during a manual review, 2026-07-23): the negative margin landed on the `<img>` inside a normal
+`display: inline-block` wrapper instead of on a flex-item sibling, shrinking and un-overlapping every
+card. Fixed via `display: contents` on the wrapping `<label>` so its child `<img>` participates in
+the flex layout directly, as if the label weren't there. Any future checkbox/label-wrapped card UI
+needs the same treatment to keep this shared technique working.
+
+`app/javascript/controllers/index.js` is **auto-generated** (per its own header comment) and does not
+pick up a new controller file just by existing — a new `data-controller="foo"` in a view is silently
+inert (no error, the controller simply never connects) until `bin/rails stimulus:manifest:update` is
+run to add its `import`/`application.register(...)` lines. Hand-editing this file works too, but the
+generator is the intended path and won't leave it out of sync. Forgetting this step looks exactly
+like a morph/timing bug (attributes update, JS-driven behavior doesn't) — check that the controller
+is actually registered before chasing a timing explanation.
 
 ## Background jobs and other supporting pieces
 

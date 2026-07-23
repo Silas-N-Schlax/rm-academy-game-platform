@@ -1,9 +1,13 @@
 # Rummy Rules (as implemented)
 
 This mirrors the in-app rules page (planned: `/rules`, content-driven from `config/games.yml` via
-the `GameCatalog` model) and the planned `Rummy::Game` engine. Rules are deliberately adapted from
-the traditional in-person game to work online — when the engine is built, keep this doc, the rules
-page, and the engine in sync.
+the `GameCatalog` model). Rules are deliberately adapted from the traditional in-person game to
+work online — keep this doc, the rules page, and the engine in sync as it's built.
+
+**Engine status:** Phase 1 is done — `Rummy::Game`/`Player`/`Card`/`Deck`/`Discard` (deal +
+serialization only, see `docs/roadmap.md`). Phase 2 (the actual turn logic below — draw, meld,
+lay-off, discard, going out, ranking) is designed in
+`znotes/plans/rummy-phase-2-core-gameplay-brave.md` but not yet built.
 
 - **Players:** 2–6.
 - **Pack:** a standard 52-card deck. No jokers, no wild cards.
@@ -24,7 +28,9 @@ page, and the engine in sync.
   - **Draw one card** — either the top of the stock **or** the top of the discard pile (only the
     top discard card is visible/available). You may always take the top discard card, including
     when it's the last one (leaving the discard pile empty). **Rule:** if you took the top discard
-    card, you may not discard that same card on this turn. **Rule:** if both the stock and the
+    card, you may not discard that same card on this turn — **unless** it is the only card left in
+    your hand, in which case discarding it is allowed and immediately wins the game (you're going
+    out). **Rule:** if both the stock and the
     discard pile are empty when it's your turn to draw, you cannot draw — skip the draw and play
     your turn as normal (optionally meld/lay off), then discard as usual.
   - **Lay down melds (optional):** put down any number of new melds from your hand.
@@ -50,7 +56,7 @@ page, and the engine in sync.
 | Scenario | Behavior |
 |---|---|
 | First player's very first turn | Normal turn rules apply — they may take the starting upcard or draw from stock. |
-| Player took the top discard card, tries to re-discard it same turn | Not allowed — rejected before the move is applied. |
+| Player took the top discard card, tries to re-discard it same turn | Not allowed — rejected before the move is applied — **unless** it's the only card left in hand, in which case it's allowed and wins the game. |
 | Player tries to lay off before laying down any meld of their own | Not allowed — the must-meld-first gate rejects it. |
 | Invalid meld (fewer than 3 cards, mixed suits in a run, non-consecutive run, wrong-rank set) | Rejected by `RummyTurn` validations before it reaches the engine. |
 | Lay-off doesn't fit the target meld (wrong rank for a set, doesn't extend a run in-suit/in-sequence) | Rejected by validation. |

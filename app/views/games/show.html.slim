@@ -1,6 +1,6 @@
 = turbo_stream_from @game
 
-.offline-banner.alert.alert--danger.alert--muted data-controller="offline" data-offline-target="offlineBanner"
+.alert-banner.alert.alert--danger.alert--muted data-controller="offline" data-offline-target="offlineBanner"
   i.li.li-globe-off.icon
   .alert_messages
     .alert_title Offline
@@ -9,4 +9,4 @@
 - if @game.game_state.nil?
   = render partial: "waiting_screen", locals: { game: @game }
 - else
-  = render partial: @game, locals: { turn_timer_seconds: Rails.application.config.x.turn_timer_seconds }
+  = render partial: @game, locals: { turn_timer_seconds: Rails.application.config.x.turn_timer_seconds, turn: local_assigns[:turn] }

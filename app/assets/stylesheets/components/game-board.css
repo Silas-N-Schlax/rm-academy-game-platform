@@ -182,8 +182,8 @@
   display: inline-flex;
   vertical-align: top;
   margin: 0 var(--op-space-small) var(--op-space-small) 0;
-  padding: var(--op-space-2x-small);
-  border: solid calc(var(--op-border-width) * 2) transparent;
+  padding: 0;
+  border: none;
   border-radius: var(--op-radius-medium);
   background: none;
   cursor: pointer;
@@ -191,7 +191,7 @@
 }
 
 .game-board__meld:hover {
-  background-color: var(--op-color-neutral-plus-six);
+  transform: scale(1.05);
 }
 
 .game-board__meld:focus-visible {
@@ -199,9 +199,13 @@
   outline-offset: calc(var(--op-size-unit) * 1); /* 4px */
 }
 
-.game-board__meld--selected {
-  border-color: var(--op-color-primary-base);
-  background-color: var(--op-color-neutral-plus-six);
+.game-board__meld:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.game-board__meld:disabled:hover {
+  transform: none;
 }
 
 .game-board__piles {
@@ -228,6 +232,19 @@
   color: var(--op-color-neutral-on-plus-eight);
 }
 
+.game-board__pile-card--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--op-size-unit) * 20); /* 80px */
+  aspect-ratio: 75 / 110;
+  border: dashed var(--op-border-width) var(--op-color-border);
+  border-radius: var(--op-space-2x-small);
+  background-color: var(--op-color-neutral-plus-six);
+  color: var(--op-color-neutral-on-plus-eight);
+  font-size: var(--op-font-x-small);
+}
+
 .game-board__hand {
   display: flex;
   align-items: flex-end;
@@ -248,6 +265,27 @@
 .game-board__hand-label {
   margin: 0 0 var(--op-space-small);
   font-weight: var(--op-font-weight-semi-bold);
+}
+
+.game-board__hand-form {
+  display: contents;
+}
+
+.game-board__hand-card {
+  display: contents;
+}
+
+.game-board__hand-card .playing-card {
+  cursor: pointer;
+}
+
+.game-board__hand-card-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .game-board__actions {
@@ -480,6 +518,10 @@
     float: none;
     justify-content: center;
     margin: var(--op-space-medium) 0 0;
+  }
+
+  .game-board__pile-card--empty {
+    width: calc(var(--op-size-unit) * 14); /* 56px */
   }
 
   .game-board__hand {

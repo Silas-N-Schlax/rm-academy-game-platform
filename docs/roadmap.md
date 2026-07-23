@@ -30,19 +30,51 @@ rather than duplicating when revisiting a topic.
   unrelated inline win-screen block was silently overriding the dialog's hidden-by-default state and
   breaking the board's layout; see [docs/architecture.md](architecture.md)'s Asset Pipeline section
   for the full mechanism. Engine/real-data wiring below is still not started.
-- **Engine/Slim-to-real-data wiring not yet started.** Architecture facts surfaced while researching
-  the UI, worth knowing before building the engine:
-  - `CardGame::Engine#number_of_cards_to_deal` (`app/models/card_game/engine.rb`) only supports two
-    deal-size tiers today (`SMALL_HAND`/`LARGE_HAND` via one `SMALL_GAME_MAX_SIZE` threshold).
-    Rummy needs a third tier (10 cards for 2 players / 7 for 3-4 / 6 for 5-6), so the engine will
-    need generalizing or an override.
-  - **No existing meld/run/set detection** in the codebase. Go Fish's book detection
-    (`GoFish::Player#create_book_if_possible`, group-by-rank, size 4) is the closest analog for
-    Rummy *sets*, but *runs* (same-suit sequences) must be built from scratch using
-    `CardGame::Card.value(rank)` for ordering.
-  - The best existing model for Rummy's stock + discard pile is Crazy Eights' pattern:
-    `CrazyEights::Discard` (`add_card`/`all_but_top_card`), `CrazyEights::Deck#add_cards`, and the
-    `give_cards_to_player` recycle-on-empty logic in `crazy_eights/game.rb`.
+- **Phase 1 done (2026-07-23): STI skeleton + deal + static render.** `RummyGame < Game` (STI),
+  `Rummy::Game`/`Player`/`Card`/`Deck`/`Discard` engine POROs, full `dump`/`load`/`as_json`/
+  `from_json` serialization, and a real (no-presenter) board render in
+  `app/views/rummy_games/_rummy_game.html.slim`. Resolves the two open questions below:
+  - The `number_of_cards_to_deal` two-tier limitation was resolved via an **override** in
+    `Rummy::Game#number_of_cards_to_deal` (three tiers: 2 players → 10 cards, 3–4 → 7, 5–6 → 6),
+    not a change to the shared `CardGame::Engine` base.
+  - The Crazy Eights `Discard` pattern hunch was correct — `Rummy::Discard` mirrors
+    `CrazyEights::Discard` (`add_card`/`all_but_top_card`) directly.
+  - **Still pending cleanup:** the throwaway `/board_preview` route/controller/view
+    (`board_preview_controller.rb`) is now genuinely stale — real game data flows through
+    `_rummy_game.html.slim` instead of hardcoded mock data — and should be deleted.
+- **Phase 2 built and green (2026-07-23): full turn logic.** Draw (+ stock recycling), meld,
+  lay-off, discard, going out, and ranking by pip total are all implemented end to end — engine
+  POROs (`Rummy::Meld`, `Rummy::TurnResult`, `Rummy::Game#draw`/`#lay_down_meld`/`#lay_off`/
+  `#discard_card`/`#winner?`/`#ranking`), the `RummyTurn` form object, `RummyGame#play`/
+  `#valid_move?`, `TurnsController` wiring, and the full UI (draw-pile forms, hand-checkbox
+  selection, JS-driven lay-off-by-clicking-a-meld, morph-safe selection state, an error toast, and
+  a real ranked game-over modal). Full design doc (now annotated with what shipped, several
+  mid-implementation deviations, and every real bug found along the way) is
+  `znotes/plans/rummy-phase-2-core-gameplay-brave.md` — see its "Handoff notes" section at the
+  bottom before starting further work. `bundle exec rspec` is green (679 examples, run twice for
+  flake-checking); `bin/rubocop`/`bin/brakeman`/`bin/bundler-audit` all clean. **Not yet done:**
+  manual browser playtesting (the implementing session only ran automated specs) — the plan's own
+  handoff notes flag several UI rough edges worth a manual pass before considering this fully done.
+- **Manual review pass, 12 items (2026-07-23):** 10 of 12 fixed — hand-card sizing/overlap fix (see
+  [docs/architecture.md](architecture.md)'s Asset pipeline section for the `display: contents` root
+  cause), game-over button now only renders once the game has ended and the modal auto-opens
+  (`dialog_controller.js` repurposed from dead code, now calling `showModal()`), turn badge now
+  matches the other games' primary/notice coloring, an "Empty" placeholder for the emptied discard
+  pile, the error toast recolored to warning with a close button, a "Clear selection" button, full
+  melds now disable/fade (new `Rummy::Meld#full?`), meld-button hover/highlight cleanup (dead
+  `selectMeld` JS removed), consistent Optics button outlines plus a disabled "draw first" icon on
+  Meld/Discard, and two real engine bugs found and fixed with model+request+system specs: (1) a
+  win-condition gap — discarding the just-drawn discard card is now allowed when it's the only card
+  left (see [docs/rummy_rules.md](rummy_rules.md)), (2) a critical bug where nothing stopped further
+  turns once a game ended, letting the winner draw/discard indefinitely (fixed via a new
+  `game_not_finished` validation on the shared `Turn` base class — see
+  [docs/architecture.md](architecture.md)'s Turn form objects section). **Item 10 explicitly
+  deferred, not MVP:** clicking "Discard" shouldn't unselect an already-checked card if you meant to
+  click something else — no fix attempted, revisit if it comes up again. **Known latent bug noticed
+  but not fixed** (pre-existing, app-wide, predates this session): the toast/offline-banner markup
+  uses `.alert_messages`/`.alert_title`/`.alert_description` (single underscore) but Optics' actual
+  BEM classes are `.alert__messages`/`.alert__title`/`.alert__description` (double underscore) — those
+  inner elements never get Optics' intended spacing/font styling as a result.
 
 ## Known flaky/incomplete tests (2026-07-21)
 

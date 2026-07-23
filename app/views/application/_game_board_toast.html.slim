@@ -1,0 +1,7 @@
+.alert-banner.alert.alert--warning data-controller="game-board-toast" data-game-board-toast-message-value="#{board[:error]}"
+  i.li.li-alert-triangle.icon
+  .alert_messages
+    .alert_title Error
+    p.alert_description data-game-board-toast-target="description"
+  button.btn.btn--icon type="button" aria-label="Dismiss error" data-action="click->game-board-toast#close"
+    i.li.li-x.icon.icon--small

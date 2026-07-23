@@ -148,6 +148,10 @@ class Game < ApplicationRecord
       "CrazyEightsGame" => {
         min: 2,
         max: 7
+      },
+      "RummyGame" => {
+        min: 2,
+        max: 6
       }
     }
   end

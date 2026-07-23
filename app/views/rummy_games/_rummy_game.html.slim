@@ -1,0 +1,16 @@
+- game = @game || game
+- turn = local_assigns[:turn]
+- implementation = game.game_state
+- your_player = implementation.find_player(current_user.id)
+- current_player = implementation.current_player
+- opponents = implementation.players.reject { |player| player.id == current_user.id }
+- your_turn = current_user.id == current_player.id
+- turn_label = your_turn ? "Your Turn" : "#{current_player.name}'s Turn"
+- awaiting_draw = your_turn && implementation.must_draw? && implementation.current_result.draw_source.blank?
+- hand = your_player.hand.map { |card| { card: card.to_file_name, rank: card.rank, suit: card.suit, active: false } }
+- players = opponents.map { |player| { name: player.name, hand_size: player.hand.size, mini_hand: Array.new([ player.hand.size, 4 ].min), overflow: [ player.hand.size - 4, 0 ].max, melded: player.has_melded, flag: "" } }
+- melds = implementation.melds.map { |meld| { cards: meld.cards.map(&:to_file_name), full: meld.full? } }
+- winner_name = implementation.winner? ? implementation.winning_player.name : ""
+- ranking = implementation.winner? ? implementation.ranking.each_with_index.map { |player, index| { place: index + 2, name: player.name, flag: "", pips: player.hand_pip_total } } : []
+- board = { name: game.name, game_type: "Rummy", stock_count: implementation.deck.cards_left, turn_label: turn_label, your_turn: your_turn, awaiting_draw: awaiting_draw, your_name: your_player.name, your_flag: "", discard_top: implementation.discard.top_card&.to_file_name, hand: hand, players: players, melds: melds, feed: [], winner_name: winner_name, ranking: ranking, error: turn&.errors&.[](:base)&.first }
+= render "game_board", board: board

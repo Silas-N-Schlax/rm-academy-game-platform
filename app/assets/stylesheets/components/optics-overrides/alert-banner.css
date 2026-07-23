@@ -1,7 +1,7 @@
-.offline-banner {
+.alert-banner {
   display: none;
 
-  &.offline-banner--active {
+  &.alert-banner--active {
     display: flex;
     position: absolute;
     z-index: 3;
