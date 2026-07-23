@@ -41,8 +41,7 @@
   }
 
   &.playing-card--active {
-    outline: solid calc(var(--op-size-unit) * 1) var(--op-color-primary); /* 4px */
-    outline-offset: calc(var(--op-size-unit) * 1); /* 4px */
+    outline: solid calc(var(--op-size-unit) * 1) var(--op-color-alerts-notice-base); /* 4px */
   }
 
   &.game-board__meld-card {

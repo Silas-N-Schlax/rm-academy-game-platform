@@ -241,23 +241,6 @@
   border-radius: var(--op-radius-medium);
 }
 
-.game-board__selected-readout {
-  display: flex;
-  align-items: center;
-  gap: var(--op-space-2x-small);
-  margin: 0 0 var(--op-space-small);
-  font-size: var(--op-font-small);
-}
-
-.game-board__selected-readout strong {
-  font-weight: var(--op-font-weight-semi-bold);
-}
-
-.game-board__selected-valid {
-  color: var(--op-color-alerts-success);
-  font-weight: var(--op-font-weight-bold);
-}
-
 .game-board__action-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

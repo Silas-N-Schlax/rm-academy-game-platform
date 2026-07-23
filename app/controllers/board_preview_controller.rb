@@ -11,7 +11,7 @@ class BoardPreviewController < ApplicationController
   def mock_board
     {
       name: "Friday Night Cards", game_type: "Rummy", stock_count: 21, turn_label: "Your Turn",
-      your_name: "You", your_flag: "🇺🇸", discard_top: "8_of_diamonds", selected_label: "7♥ 8♥ 9♥",
+      your_name: "You", your_flag: "🇺🇸", discard_top: "8_of_diamonds",
       winner_name: "Alice", players: mock_players, melds: mock_melds, hand: mock_hand,
       feed: mock_feed, ranking: mock_ranking
     }

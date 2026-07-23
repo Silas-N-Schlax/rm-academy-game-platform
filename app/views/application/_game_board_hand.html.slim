@@ -7,12 +7,6 @@ footer.game-board__hand
         = image_tag "cards/#{card[:card]}.svg", class: "playing-card playing-card--large#{active_class}"
 
   .game-board__actions
-    p.game-board__selected-readout
-      strong Selected:
-      = board[:selected_label]
-      span.game-board__selected-valid
-        i.li.li-check.icon.icon--small
-
     .game-board__action-grid
       button.btn.btn--primary type="button" Meld
       button.btn type="button" disabled=true
