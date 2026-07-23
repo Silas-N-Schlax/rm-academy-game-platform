@@ -55,6 +55,10 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - **Full-viewport game-board shells** (e.g. `.gf-game`, `.game-board`) need `overflow: hidden` (fallback) followed by `overflow: clip` on both `html` and `body` to fully lock page scroll — `hidden` alone still permits touch-drag/programmatic scroll into off-screen content in some browsers.
 - `znotes/` is where the project owner stores plans and files that don't need to be committed (gitignored via a global gitignore, not this repo's `.gitignore`).
 
+## Git
+
+- Do not add a `Co-Authored-By` trailer to commit messages unless explicitly asked to.
+
 ## Key context
 
 - [docs/architecture.md](docs/architecture.md) — model relationships, the serialized game-state pattern, Turn form objects, real-time updates, auth/session model
