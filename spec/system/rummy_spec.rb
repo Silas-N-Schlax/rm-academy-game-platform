@@ -31,7 +31,7 @@ RSpec.describe 'Rummy', type: :system do
       your_player = implementation.find_player(game.users.first.id)
       opponent = implementation.find_player(game.users.last.id)
       expect(page).to have_content "Stock: #{implementation.deck.cards_left}"
-      expect(page).to have_selector('.game-board__hand .playing-card', count: your_player.hand.size)
+      expect(page).to have_selector(data_test('hand-card'), count: your_player.hand.size)
       expect(page).to have_content opponent.name
       expect(page).to have_content opponent.hand.size
     end

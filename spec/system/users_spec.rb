@@ -3,10 +3,8 @@ require 'rails_helper'
 RSpec.describe 'Users', type: :system do
   it 'shows the sign-up page with no sidebar' do
     visit new_user_path
-    expected_selector = '.simple-page__form'
-    expected_sidebar_selector = '.op-page__sidebar'
-    expect(page).to have_selector expected_selector
-    expect(page).to_not have_selector expected_sidebar_selector
+    expect(page).to have_selector data_test('signup-form')
+    expect(page).to_not have_selector data_test('sidebar')
   end
 
   it 'sign-up and shows home screen' do
@@ -20,8 +18,7 @@ RSpec.describe 'Users', type: :system do
   it 'sends user to login page when they click on link' do
     visit new_user_path
     click_on 'Have an account?'
-    expected_selector = '#login-form'
-    expect(page).to have_selector expected_selector
+    expect(page).to have_selector data_test('login-form')
   end
 
   context 'when user is on the profile page' do

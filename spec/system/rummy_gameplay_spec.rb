@@ -25,16 +25,16 @@ RSpec.describe 'Rummy gameplay', type: :system do
     it 'auto-displays the game-over modal on a fresh page load, and it can still be closed and reopened' do
       visit game_path(game)
 
-      expect(page).to have_selector('#game-over-modal[open]')
-      within('#game-over-modal') { expect(page).to have_content "#{game.users.first.name} wins!" }
+      expect(page).to have_selector("#{data_test('game-over-modal')}[open]")
+      within(data_test('game-over-modal')) { expect(page).to have_content "#{game.users.first.name} wins!" }
 
       click_button 'Close'
 
-      expect(page).not_to have_selector('#game-over-modal[open]')
+      expect(page).not_to have_selector("#{data_test('game-over-modal')}[open]")
 
       click_button 'View results'
 
-      expect(page).to have_selector('#game-over-modal[open]')
+      expect(page).to have_selector("#{data_test('game-over-modal')}[open]")
     end
   end
 
@@ -58,7 +58,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       expect(page).to have_selector('[data-game-board-target="meldDrawIcon"]:not([hidden])', visible: :all)
 
       click_on 'Draw from stock'
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 4)
+      expect(page).to have_selector(data_test('hand-card'), count: 4)
       check_hand_card 'hand-card-7-Spades'
       check_hand_card 'hand-card-7-Hearts'
       check_hand_card 'hand-card-7-Diamonds'
@@ -86,7 +86,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       click_on 'Draw from stock'
 
       expect(page).to have_content 'Stock: 0'
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
   end
 
@@ -105,8 +105,8 @@ RSpec.describe 'Rummy gameplay', type: :system do
     it 'adds the top discard card to the hand' do
       click_on 'Draw from discard'
 
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
-      expect(page).to have_css("#hand-card-K-Spades")
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(page).to have_field('hand-card-K-Spades')
     end
   end
 
@@ -127,7 +127,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_content 'Stock: 1'
       expect(page).to have_css("[src*='queen_of_hearts']")
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
   end
 
@@ -154,8 +154,8 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       click_button 'Meld'
 
-      expect(page).to have_selector('.game-board__melds .game-board__meld', count: 1)
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
+      expect(page).to have_selector(data_test('meld'), count: 1)
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
   end
 
@@ -182,8 +182,8 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       click_button 'Meld'
 
-      expect(page).to have_selector('.game-board__melds .game-board__meld', count: 1)
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
+      expect(page).to have_selector(data_test('meld'), count: 1)
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
   end
 
@@ -202,16 +202,16 @@ RSpec.describe 'Rummy gameplay', type: :system do
       sign_in_as game.users.first
       visit game_path(game)
       click_on 'Draw from stock'
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 3)
+      expect(page).to have_selector(data_test('hand-card'), count: 3)
     end
 
     it 'moves the checked card onto the clicked meld and shrinks the hand' do
       check_hand_card 'hand-card-K-Clubs'
       expect(page).to have_field('hand-card-K-Clubs', checked: true)
-      find('.game-board__meld').click
+      find(data_test('meld')).click
 
-      expect(page).to have_selector('.game-board__meld img', count: 4)
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
+      expect(page).to have_selector("#{data_test('meld')} img", count: 4)
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
   end
 
@@ -234,7 +234,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
     end
 
     it 'renders the full meld button as disabled' do
-      expect(page).to have_selector('.game-board__meld[disabled]')
+      expect(page).to have_selector("#{data_test('meld')}[disabled]")
     end
   end
 
@@ -257,7 +257,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       click_button 'Discard'
 
       expect(page).to have_content "#{game.users.last.name}'s Turn"
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 2)
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
   end
 
@@ -343,7 +343,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       click_button 'Meld'
 
-      within '#game-over-modal' do
+      within data_test('game-over-modal') do
         expect(page).to have_content "#{game.users.first.name} wins!"
         expect(page).to have_content "2. #{game.users.third.name}"
         expect(page).to have_content '5 pips'
@@ -364,7 +364,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       sign_in_as game.users.first
       visit game_path(game)
       click_on 'Draw from stock'
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 3)
+      expect(page).to have_selector(data_test('hand-card'), count: 3)
     end
 
     it 'keeps a checked-but-unsubmitted card checked through a broadcast refresh' do
@@ -391,7 +391,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       sign_in_as game.users.first
       visit game_path(game)
       click_on 'Draw from stock'
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 4)
+      expect(page).to have_selector(data_test('hand-card'), count: 4)
     end
 
     it 'unchecks every checked hand card and disables the action buttons again' do
@@ -420,7 +420,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       sign_in_as game.users.first
       visit game_path(game)
       click_on 'Draw from stock'
-      expect(page).to have_selector('.game-board__hand .playing-card', count: 4)
+      expect(page).to have_selector(data_test('hand-card'), count: 4)
     end
 
     it 'rejects the meld and surfaces a warning toast' do
@@ -430,11 +430,11 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       click_button 'Meld'
 
-      expect(page).to have_selector('.alert--warning', text: "That's not a valid meld")
+      expect(page).to have_selector(data_test('error-toast'), text: "That's not a valid meld")
 
       find('[aria-label="Dismiss error"]').click
 
-      expect(page).not_to have_selector('.alert-banner--active')
+      expect(page).not_to have_content "That's not a valid meld"
     end
   end
 end

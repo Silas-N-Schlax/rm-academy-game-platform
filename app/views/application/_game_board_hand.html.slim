@@ -5,7 +5,7 @@ footer.game-board__hand
       .card-collection.card-collection--large
         - board[:hand].each do |card|
           - card_id = "hand-card-#{card[:rank]}-#{card[:suit]}"
-          label.game-board__hand-card for="#{card_id}"
+          label.game-board__hand-card for="#{card_id}" data-testid="hand-card"
             input type="checkbox" name="turn[card_ids][]" value="#{card[:rank]}:#{card[:suit]}" id="#{card_id}" class="game-board__hand-card-input" data-game-board-target="handCheckbox" data-action="change->game-board#syncSelectionState"
             = image_tag "cards/#{card[:card]}.svg", class: "playing-card playing-card--large"
 

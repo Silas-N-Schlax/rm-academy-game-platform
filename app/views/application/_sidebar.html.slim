@@ -1,4 +1,4 @@
-.op-page__sidebar
+.op-page__sidebar data-testid="sidebar"
   nav.sidebar.sidebar--drawer.sidebar--padded
     img.sidebar__brand src="/logo.png" alt="Go Fish Logo"/
     .sidebar__content.sidebar__content--start
@@ -22,7 +22,7 @@
       = button_to 'Profile', users_show_path, method: :get, class: 'btn btn--no-border'
       = button_to 'Log Out', session_path, method: :delete, class: 'btn btn--no-border'
 
-.op-page__sidebar.op-page-sidebar--mobile
+.op-page__sidebar.op-page-sidebar--mobile data-testid="sidebar"
   .mobile-navbar
       .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/stats'))
         = link_to stats_path, class: 'btn btn--icon mobile-navbar__btn' do

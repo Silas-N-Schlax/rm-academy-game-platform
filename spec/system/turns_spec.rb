@@ -10,7 +10,7 @@ RSpec.describe 'Turns', type: :system do
       visit game_path(game.reload)
       click_on 'Ask'
       expect(current_path).to eq game_path(game)
-      expect(page).to have_selector('.game-feed__results')
+      expect(page).to have_selector data_test('game-feed-results')
     end
 
     context 'when the game ends' do
@@ -47,9 +47,9 @@ RSpec.describe 'Turns', type: :system do
     end
     it 'displays a turn result' do
       visit game_path(game.reload)
-      find('.playing-card--large', match: :first).click
+      find(data_test('hand-card'), match: :first).click
       expect(current_path).to eq game_path(game)
-      expect(page).to have_selector('.game-feed__result')
+      expect(page).to have_selector data_test('game-feed-result')
     end
 
     context 'when an 8 is tried to play' do
@@ -61,14 +61,14 @@ RSpec.describe 'Turns', type: :system do
         game_state.players.first.hand = [ CrazyEights::Card.new('8', 'Hearts'), CrazyEights::Card.new('8')  ]
         game.save!
         visit game_path(game)
-        find('.playing-card--large', match: :first).click
+        find(data_test('hand-card'), match: :first).click
       end
       it 'allows player to play card' do
         expected_modal_content = 'Oooh, a wild.'
         expect(page).to have_content expected_modal_content
         click_button "Play My Wild", match: :first
         expect(current_path).to eq game_path(game)
-        expect(page).to have_selector('#discard-top-card-rank-8')
+        expect(page).to have_selector data_test('discard-top-card-rank-8')
       end
     end
 
@@ -84,19 +84,19 @@ RSpec.describe 'Turns', type: :system do
         visit game_path(game)
       end
       it 'gives player card when they can draw' do
-        find('.playing-card--x-large', match: :first).click
+        find(data_test('draw-pile')).click
         expected_card_count = 3
         expect(current_path).to eq game_path(game)
-        expect(page.all(:css, '.playing-card--large').count).to eq expected_card_count
+        expect(page.all(data_test('hand-card')).count).to eq expected_card_count
       end
 
       it 'does not give player cards when they cannot draw' do
         game.game_state.discard.cards = [ CrazyEights::Card.new('A', 'Hearts') ]
         game.save!
-        find('.playing-card--x-large', match: :first).click
+        find(data_test('draw-pile')).click
         expected_card_count = 2
         expect(current_path).to eq game_path(game)
-        expect(page.all(:css, '.playing-card--large').count).to eq expected_card_count
+        expect(page.all(data_test('hand-card')).count).to eq expected_card_count
       end
     end
 
@@ -111,7 +111,7 @@ RSpec.describe 'Turns', type: :system do
       it 'display a game over view' do
         expected_content = 'Game Over'
         visit game_path(game)
-        find('.playing-card--large', match: :first).click
+        find(data_test('hand-card'), match: :first).click
         game.reload
         expect(page).to have_content expected_content
         expect(page).to have_content game.users.first.name

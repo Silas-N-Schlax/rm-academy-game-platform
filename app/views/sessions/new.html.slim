@@ -4,7 +4,7 @@
       .simple-page__logo
         img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
 
-      .simple-page__form#login-form
+      .simple-page__form#login-form data-testid="login-form"
         = simple_form_for :session, url: session_path do |f|
           = f.input :email_address
           = f.input :password

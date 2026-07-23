@@ -46,7 +46,7 @@
       = render "game_board_piles", board: board
       .game-board__melds
         - board[:melds].each_with_index do |meld, index|
-          button.game-board__meld type="button" disabled=meld[:full] data-meld-index="#{index}" data-action="click->game-board#layOff"
+          button.game-board__meld type="button" data-testid="meld" disabled=meld[:full] data-meld-index="#{index}" data-action="click->game-board#layOff"
             = render "card_collection", hand: meld[:cards], modifier: " game-board__meld-card", back: false
 
   = render "game_board_hand", board: board
