@@ -1,9 +1,13 @@
 # Rummy Rules (as implemented)
 
 This mirrors the in-app rules page (planned: `/rules`, content-driven from `config/games.yml` via
-the `GameCatalog` model) and the planned `Rummy::Game` engine. Rules are deliberately adapted from
-the traditional in-person game to work online — when the engine is built, keep this doc, the rules
-page, and the engine in sync.
+the `GameCatalog` model). Rules are deliberately adapted from the traditional in-person game to
+work online — keep this doc, the rules page, and the engine in sync as it's built.
+
+**Engine status:** Phase 1 is done — `Rummy::Game`/`Player`/`Card`/`Deck`/`Discard` (deal +
+serialization only, see `docs/roadmap.md`). Phase 2 (the actual turn logic below — draw, meld,
+lay-off, discard, going out, ranking) is designed in
+`znotes/plans/rummy-phase-2-core-gameplay-brave.md` but not yet built.
 
 - **Players:** 2–6.
 - **Pack:** a standard 52-card deck. No jokers, no wild cards.
