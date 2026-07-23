@@ -1,5 +1,7 @@
 module GoFish
   class Book
+    CARDS_PER_BOOK = 4
+
     attr_reader :rank, :value
 
     def initialize(rank, value = Card.value(rank))

@@ -50,9 +50,10 @@ RSpec.describe GoFish::Game, type: :model do
       let(:game_player2) { game.players.last }
       before { game.start }
       it 'deals 7 cards to each player' do
-        expected_hand_size = 7
+        expected_cards_dealt = 7
         game.players.each do |player|
-          expect(player.hand_size).to eq expected_hand_size
+          cards_dealt = player.hand_size + (player.books.size * GoFish::Book::CARDS_PER_BOOK)
+          expect(cards_dealt).to eq expected_cards_dealt
         end
       end
       it 'cards are not in order' do
@@ -70,9 +71,10 @@ RSpec.describe GoFish::Game, type: :model do
       let(:game) { described_class.new(players: [ player1, player2, player3, player4 ]) }
       before { game.start }
       it 'deals 5 cards to each player' do
-        expected_hand_size = 5
+        expected_cards_dealt = 5
         game.players.each do |player|
-          expect(player.hand_size).to eq expected_hand_size
+          cards_dealt = player.hand_size + (player.books.size * GoFish::Book::CARDS_PER_BOOK)
+          expect(cards_dealt).to eq expected_cards_dealt
         end
       end
     end
