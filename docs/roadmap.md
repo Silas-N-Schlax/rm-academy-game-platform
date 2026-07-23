@@ -18,6 +18,18 @@ rather than duplicating when revisiting a topic.
   `.playing-card--active` "selected" state to the shared `playing-card.css`. All still **hardcoded
   mock data** behind a throwaway `/board_preview` route (`board_preview_controller.rb`) — delete
   that route/controller/view once the real engine exists and wires up actual game state.
+- **UI polish pass on the `game-board` component (2026-07-22):** wider, two-row desktop players
+  column; a "Melded" badge replacing the convoluted checkmark; working name tooltips (fixed an
+  `overflow: hidden` clipping bug on `.game-board__players`); selected hand cards now show a green
+  outline (reusing the existing lift-on-hover behavior) instead of the old "Selected: …" text
+  readout; melds are now individually clickable/keyboard-focusable toggle buttons
+  (`game_board_controller.js#selectMeld`); Stock/Discard piles restructured into a floated top-right
+  "true L" layout so melds wrap around them (CSS Grid can't do an L — areas must stay rectangular);
+  mobile header, piles placement, and player-card density all reworked. Also found and fixed a real
+  bug — a BEM class-name collision (`game-over`) between this component's modal and Go Fish's
+  unrelated inline win-screen block was silently overriding the dialog's hidden-by-default state and
+  breaking the board's layout; see [docs/architecture.md](architecture.md)'s Asset Pipeline section
+  for the full mechanism. Engine/real-data wiring below is still not started.
 - **Engine/Slim-to-real-data wiring not yet started.** Architecture facts surfaced while researching
   the UI, worth knowing before building the engine:
   - `CardGame::Engine#number_of_cards_to_deal` (`app/models/card_game/engine.rb`) only supports two
