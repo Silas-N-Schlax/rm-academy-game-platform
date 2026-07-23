@@ -1,0 +1,12 @@
+.game-board__feed-scrim data-game-board-target="feedScrim" data-action="click->game-board#closeFeed"
+
+aside.game-board__feed-drawer data-game-board-target="feedDrawer" aria-label="Play-by-play feed"
+  .game-board__feed-drawer-header
+    h2.game-board__feed-drawer-title Play-by-play
+    button.btn.btn--icon type="button" aria-label="Close feed" data-action="click->game-board#closeFeed"
+      i.li.li-x.icon.icon--small
+  .game-board__feed-drawer-log
+    - board[:feed].each do |entry|
+      .game-board__feed-entry
+        span.game-board__feed-entry-time = entry[:time]
+        = entry[:text]

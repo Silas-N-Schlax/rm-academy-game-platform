@@ -97,6 +97,17 @@ Also: an SVG's `stroke="currentColor"` does **not** resolve when the SVG is embe
 default (effectively black) regardless of the page's theme. Theming such an icon for dark mode needs
 CSS `filter: invert(1)` under `@media (prefers-color-scheme: dark)`, not `currentColor`.
 
+Because every component stylesheet loads unconditionally on every page (no `@import` scoping), CSS
+class names are effectively **global** — a BEM block name must be unique across the whole
+`components/**` directory, not just within its own file. A real instance from the Rummy UI polish
+(2026-07-22): `_game_board_game_over.html.slim`'s `<dialog>` reused the block name `game-over`,
+already owned by Go Fish's non-modal inline win-screen (`game-over.css`'s
+`.game-over { display: flex; }`). CSS's origin-based cascade means normal author rules always beat
+the User-Agent stylesheet regardless of specificity, so that `display: flex` silently overrode the
+browser's built-in `dialog:not([open]) { display: none }`, making the Rummy game-over dialog
+permanently visible and breaking the whole board's layout/width. Fixed by renaming the block to
+`game-board-over`. Grep a candidate class name across `components/**` before naming a new BEM block.
+
 ## Background jobs and other supporting pieces
 
 - **GoodJob** (Postgres-backed, no Redis) runs `ArchiveGameJob`, which marks any `Game` untouched for 2+ days as `archived_at` — there's no scheduled/cron wiring visible in this codebase, so check how/whether this job is currently enqueued before assuming it runs automatically.

@@ -1,0 +1,18 @@
+footer.game-board__hand
+  .game-board__hand-main
+    p.game-board__hand-label = "#{board[:your_name]} #{board[:your_flag]}"
+    .card-collection.card-collection--large
+      - board[:hand].each do |card|
+        - active_class = card[:active] ? " playing-card--active" : ""
+        = image_tag "cards/#{card[:card]}.svg", class: "playing-card playing-card--large#{active_class}"
+
+  .game-board__actions
+    .game-board__action-grid
+      button.btn.btn--primary type="button" Meld
+      button.btn type="button" disabled=true
+        | Lay Off
+        i.li.li-ban.icon.icon--small
+      button.btn type="button" Discard
+      button.btn.btn--no-border type="button"
+        | Sort
+        i.li.li-arrow-up-down.icon.icon--small

@@ -3,6 +3,47 @@
 Future plans and known issues not yet in progress, grouped by theme. Amend entries in place
 rather than duplicating when revisiting a topic.
 
+## Rummy — new game, in progress (2026-07-22)
+
+- **Rules doc complete:** [docs/rummy_rules.md](rummy_rules.md), reflecting decisions made during
+  a BRAVE-style rules brainstorm (Ace low-only, one hand per game, unlimited discard recycling, no
+  "rummy" doubling bonus, must-meld-before-lay-off, ranking losers by pip total).
+- **UI design approved through v7** (`znotes/rummy/html/` — desktop players-column + full board,
+  mobile Melds/Players tabs, slide-out feed drawer, game-over modal, ellipsized long names). Full
+  context in `znotes/rummy/ui-design-plan.md` and `znotes/rummy/ascii-mockups.md`.
+- **Converted into real, reusable Slim/CSS (2026-07-22):** a new `game-board` BEM component
+  (`app/views/application/_game_board*.html.slim`, `app/assets/stylesheets/components/game-board.css`)
+  and a reusable `_truncated_text` tooltip partial (`truncated-text.css`) — the latter is also the
+  tool to use later for the same long-name-overflow bug in Go Fish/Crazy Eights. Added a new
+  `.playing-card--active` "selected" state to the shared `playing-card.css`. All still **hardcoded
+  mock data** behind a throwaway `/board_preview` route (`board_preview_controller.rb`) — delete
+  that route/controller/view once the real engine exists and wires up actual game state.
+- **UI polish pass on the `game-board` component (2026-07-22):** wider, two-row desktop players
+  column; a "Melded" badge replacing the convoluted checkmark; working name tooltips (fixed an
+  `overflow: hidden` clipping bug on `.game-board__players`); selected hand cards now show a green
+  outline (reusing the existing lift-on-hover behavior) instead of the old "Selected: …" text
+  readout; melds are now individually clickable/keyboard-focusable toggle buttons
+  (`game_board_controller.js#selectMeld`); Stock/Discard piles restructured into a floated top-right
+  "true L" layout so melds wrap around them (CSS Grid can't do an L — areas must stay rectangular);
+  mobile header, piles placement, and player-card density all reworked. Also found and fixed a real
+  bug — a BEM class-name collision (`game-over`) between this component's modal and Go Fish's
+  unrelated inline win-screen block was silently overriding the dialog's hidden-by-default state and
+  breaking the board's layout; see [docs/architecture.md](architecture.md)'s Asset Pipeline section
+  for the full mechanism. Engine/real-data wiring below is still not started.
+- **Engine/Slim-to-real-data wiring not yet started.** Architecture facts surfaced while researching
+  the UI, worth knowing before building the engine:
+  - `CardGame::Engine#number_of_cards_to_deal` (`app/models/card_game/engine.rb`) only supports two
+    deal-size tiers today (`SMALL_HAND`/`LARGE_HAND` via one `SMALL_GAME_MAX_SIZE` threshold).
+    Rummy needs a third tier (10 cards for 2 players / 7 for 3-4 / 6 for 5-6), so the engine will
+    need generalizing or an override.
+  - **No existing meld/run/set detection** in the codebase. Go Fish's book detection
+    (`GoFish::Player#create_book_if_possible`, group-by-rank, size 4) is the closest analog for
+    Rummy *sets*, but *runs* (same-suit sequences) must be built from scratch using
+    `CardGame::Card.value(rank)` for ordering.
+  - The best existing model for Rummy's stock + discard pile is Crazy Eights' pattern:
+    `CrazyEights::Discard` (`add_card`/`all_but_top_card`), `CrazyEights::Deck#add_cards`, and the
+    `give_cards_to_player` recycle-on-empty logic in `crazy_eights/game.rb`.
+
 ## Known flaky/incomplete tests (2026-07-21)
 
 - **`spec/system/games_spec.rb` "displays offline banner"** — flaky under full-suite load (~1 in

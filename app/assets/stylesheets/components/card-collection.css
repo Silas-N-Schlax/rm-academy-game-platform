@@ -52,6 +52,18 @@
   &.card-collection--x-large {
     margin-left: calc(var(--_gf-x-large-card-margin));
   }
+
+  &.game-board__meld-card {
+    margin-left: calc(var(--op-size-unit) * 10); /* 40px */
+  }
+
+  &.game-board__mini-card {
+    margin-left: calc(var(--op-size-unit) * 3); /* 12px */
+  }
+
+  &.game-board__pile-card {
+    margin-left: 0;
+  }
 }
 
 /* --op-breakpoint-small */
@@ -78,6 +90,10 @@
     --_gf-x-large-card-width: calc(var(--op-size-unit) * 22); /* 88px */
     --_gf-x-large-card-margin: calc(var(--op-size-unit) * 18); /* 72px */
     --_gf-x-large-card-hover: calc(var(--op-size-unit) * 0);
+  }
+
+  .card-collection.game-board__mini-card {
+    margin-left: calc(var(--op-size-unit) * 4); /* 16px */
   }
 }
 

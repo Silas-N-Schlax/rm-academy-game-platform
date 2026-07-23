@@ -38,7 +38,7 @@ A Rails web app where people play classic card games online with friends, family
 
 Each game type is an STI subclass of `Game` (`GoFishGame`, `CrazyEightsGame`) that serializes its entire live game state as a plain Ruby object (`GoFish::Game` / `CrazyEights::Game`) into a `jsonb` column via a custom `ActiveModel`-style coder (`self.dump`/`self.load`/`as_json`/`from_json`). Moves are validated and applied through non-persisted `ActiveModel` form objects (`GoFishTurn`/`CrazyEightsTurn`) rather than a `turns` database table — this exists specifically so each game type can define its own move validations while sharing one `TurnsController`/routing shape. Real-time updates use Turbo Stream broadcasts (`broadcast_refresh_later_to`), not bespoke ActionCable channels. Full details, including why this shape was chosen: [docs/architecture.md](docs/architecture.md).
 
-Game rules (including deliberate deviations from traditional in-person rules to make online play work) are the single biggest thing that will surprise a newcomer — see [docs/go_fish_rules.md](docs/go_fish_rules.md) and [docs/crazy_eights_rules.md](docs/crazy_eights_rules.md) before touching either game engine.
+Game rules (including deliberate deviations from traditional in-person rules to make online play work) are the single biggest thing that will surprise a newcomer — see [docs/go_fish_rules.md](docs/go_fish_rules.md), [docs/crazy_eights_rules.md](docs/crazy_eights_rules.md), and [docs/rummy_rules.md](docs/rummy_rules.md) before touching any game engine.
 
 ## Conventions (not enforced by Rubocop — enforce these yourself)
 
@@ -48,7 +48,10 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - **TDD always** — write the failing spec first.
 - **Skinny controllers, fat models** — business logic belongs in models/game engines, not controllers.
 - **Validation errors not tied to one specific attribute** (e.g. an invalid move in `GoFishTurn`/`CrazyEightsTurn`) should use `errors.add(:base, "message")`, not `errors.add("message")` — the latter treats the message string itself as the attribute name.
-- **CSS/Slim structure**: use BEM (`block__element--modifier`) as much as possible for class naming. Prefer `@rolemodel/optics` (already a dependency, see `package.json`/`app/assets/stylesheets/components/optics-overrides`) for values (colors, spacing, etc.) and built-in components wherever it fits, instead of hand-rolled one-off CSS. For a custom size with no matching spacing token, use `calc(var(--op-size-unit) * n)` rather than a hard-coded px value (see `panel.css`).
+- **CSS/Slim structure**: use BEM (`block__element--modifier`) as much as possible for class naming. Prefer `@rolemodel/optics` (already a dependency, see `package.json`/`app/assets/stylesheets/components/optics-overrides`) for values (colors, spacing, etc.) and built-in components wherever it fits, instead of hand-rolled one-off CSS. For a custom size with no matching spacing token, use `calc(var(--op-size-unit) * n)` rather than a hard-coded px value (see `panel.css`) — `n` should always be a whole number (never a decimal), and the `calc()` should always have a trailing `/* Npx */` comment with the resulting pixel value.
+- **CSS file ownership**: a rule that targets a given block's class always lives in that block's own stylesheet file — even a compound-selector rule that only applies in combination with another block's modifier (e.g. `.playing-card.game-board__meld-card` belongs in `playing-card.css`, not `game-board.css`).
+- **BEM block names must be unique project-wide**, not just within the file you're editing — there's no CSS scoping between component stylesheets (see [docs/architecture.md](docs/architecture.md)'s Asset Pipeline section: every file under `components/**` loads on every page), so two blocks sharing a name can silently collide, even overriding browser defaults like a `<dialog>`'s hidden-by-default state.
+- **Full-viewport game-board shells** (e.g. `.gf-game`, `.game-board`) need `overflow: hidden` (fallback) followed by `overflow: clip` on both `html` and `body` to fully lock page scroll — `hidden` alone still permits touch-drag/programmatic scroll into off-screen content in some browsers.
 - `znotes/` is where the project owner stores plans and files that don't need to be committed (gitignored via a global gitignore, not this repo's `.gitignore`).
 
 ## Key context
@@ -56,3 +59,4 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - [docs/architecture.md](docs/architecture.md) — model relationships, the serialized game-state pattern, Turn form objects, real-time updates, auth/session model
 - [docs/go_fish_rules.md](docs/go_fish_rules.md) — Go Fish rules as implemented here (matches the in-app rules page)
 - [docs/crazy_eights_rules.md](docs/crazy_eights_rules.md) — Crazy Eights rules as implemented here, including online-specific rule changes and edge cases
+- [docs/rummy_rules.md](docs/rummy_rules.md) — Rummy rules as implemented here (engine not yet built — see `docs/roadmap.md`)

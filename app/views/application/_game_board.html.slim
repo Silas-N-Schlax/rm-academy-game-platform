@@ -1,0 +1,51 @@
+.game-board data-controller="game-board"
+  header.game-board__topbar
+    .game-board__topbar-left
+      a.game-board__back href="#" aria-label="Back"
+        i.li.li-move-left.icon.icon--x-large
+      span.game-board__name = board[:name]
+      span.badge.badge--primary
+        i.li.li-tag.icon.icon--small
+        = board[:game_type]
+    .game-board__topbar-right
+      span.game-board__stock-count
+        i.li.li-layers.icon.icon--small
+        | Stock: #{board[:stock_count]}
+      span.badge.badge--notice
+        i.li.li-circle.icon.icon--small
+        = board[:turn_label]
+
+  .game-board__board
+    .game-board__tabs
+      button.btn.btn--active.game-board__tab type="button" data-tab="melds" data-game-board-target="tab" data-action="click->game-board#switchTab"
+        | Melds
+      button.btn.game-board__tab type="button" data-tab="players" data-game-board-target="tab" data-action="click->game-board#switchTab"
+        | Players
+      button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-action="click->game-board#openFeed"
+        i.li.li-list.icon.icon--small
+      button.btn.btn--icon type="button" aria-label="Preview game-over (demo)" commandfor="game-over-modal" command="show-modal"
+        i.li.li-trophy.icon.icon--small
+
+    .game-board__left-col.game-board__panel data-panel="players" data-game-board-target="panel"
+      aside.game-board__players
+        h2.game-board__players-heading Players
+        - board[:players].each do |player|
+          = render "game_board_player", player: player
+
+      button.btn.game-board__launcher type="button" data-action="click->game-board#openFeed"
+        i.li.li-list.icon.icon--small
+        | Feed
+      button.btn.game-board__launcher type="button" commandfor="game-over-modal" command="show-modal"
+        i.li.li-trophy.icon.icon--small
+        | Preview game-over
+
+    .game-board__board-main.game-board__panel.game-board__panel--active data-panel="melds" data-game-board-target="panel"
+      = render "game_board_piles", board: board
+      .game-board__melds
+        - board[:melds].each do |meld|
+          button.game-board__meld type="button" data-game-board-target="meld" data-action="click->game-board#selectMeld"
+            = render "card_collection", hand: meld, modifier: " game-board__meld-card", back: false
+
+  = render "game_board_hand", board: board
+  = render "game_board_feed", board: board
+  = render "game_board_game_over", board: board

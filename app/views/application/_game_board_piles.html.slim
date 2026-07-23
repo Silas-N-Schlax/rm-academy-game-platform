@@ -1,0 +1,7 @@
+.game-board__piles
+  .game-board__pile
+    span.game-board__pile-label Stock
+    = render "card_collection", hand: [nil], modifier: " game-board__pile-card", back: true
+  .game-board__pile
+    span.game-board__pile-label Discard
+    = render "card_collection", hand: [board[:discard_top]], modifier: " game-board__pile-card", back: false

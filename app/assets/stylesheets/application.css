@@ -1,5 +1,8 @@
 body {
   overflow: hidden;
+  overflow: clip;
+  overscroll-behavior: none;
+  height: 100dvh;
   background-color: var(--op-color-neutral-plus-max);
 }
 
@@ -11,5 +14,9 @@ p, a {
 }
 
 html {
+  height: 100%;
+  overflow: hidden;
+  overflow: clip;
+  overscroll-behavior: none;
   scrollbar-color: var(--op-color-primary-plus-four) var(--op-color-neutral-plus-seven);
 }
