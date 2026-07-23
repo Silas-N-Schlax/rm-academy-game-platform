@@ -63,6 +63,9 @@
   flex-direction: column;
   gap: var(--op-space-small);
   height: min-content;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .game-board__players {
@@ -72,7 +75,6 @@
   border: solid var(--op-border-width) var(--op-color-border);
   border-radius: var(--op-radius-medium);
   box-shadow: var(--op-shadow-medium);
-  overflow: hidden;
 }
 
 .game-board__players-heading {
@@ -85,12 +87,13 @@
   color: var(--op-color-neutral-on-plus-max);
   border-bottom: solid var(--op-border-width) var(--op-color-border);
   background-color: var(--op-color-neutral-plus-six);
+  border-radius: var(--op-radius-medium) var(--op-radius-medium) 0 0;
 }
 
 .game-board__player {
   display: flex;
-  align-items: center;
-  gap: var(--op-space-x-small);
+  flex-direction: column;
+  gap: var(--op-space-2x-small);
   padding-block: var(--op-space-small);
   padding-inline: var(--op-space-small);
   border-bottom: solid var(--op-border-width) var(--op-color-border);
@@ -98,6 +101,20 @@
 
 .game-board__player:last-child {
   border-bottom: none;
+  border-radius: 0 0 var(--op-radius-medium) var(--op-radius-medium);
+}
+
+.game-board__player-row {
+  display: flex;
+  align-items: center;
+  gap: var(--op-space-x-small);
+  min-width: 0;
+}
+
+.game-board__player-flag {
+  flex: 0 0 auto;
+  font-size: var(--op-font-medium);
+  line-height: 1;
 }
 
 .game-board__player-name {
@@ -108,15 +125,8 @@
 }
 
 .game-board__player-melded {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex: 0 0 auto;
-  width: calc(var(--op-size-unit) * 4); /* 16px */
-  height: calc(var(--op-size-unit) * 4); /* 16px */
-  border-radius: 50%;
-  background-color: var(--op-color-alerts-success-plus-two);
-  color: var(--op-color-alerts-success-on-plus-two);
+  white-space: nowrap;
 }
 
 .game-board__mini-fan {
@@ -133,7 +143,7 @@
 
 .game-board__player-count {
   flex: 0 0 auto;
-  margin: 0;
+  margin: 0 0 0 auto;
   min-width: calc(var(--op-size-unit) * 5); /* 20px */
   text-align: right;
   font-size: var(--op-font-2x-small);
@@ -442,5 +452,22 @@
   .game-board__feed-drawer {
     width: 100vw;
     max-width: 100vw;
+  }
+
+  .game-board__player {
+    gap: var(--op-space-small);
+    padding-block: var(--op-space-medium);
+  }
+
+  .game-board__player-flag {
+    font-size: var(--op-font-large);
+  }
+
+  .game-board__player-name {
+    font-size: var(--op-font-medium);
+  }
+
+  .game-board__mini-fan {
+    gap: var(--op-space-2x-small);
   }
 }
