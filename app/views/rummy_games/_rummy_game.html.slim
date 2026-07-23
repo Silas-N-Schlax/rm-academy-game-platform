@@ -1,0 +1,10 @@
+- game = @game || game
+- implementation = game.game_state
+- your_player = implementation.find_player(current_user.id)
+- current_player = implementation.current_player
+- opponents = implementation.players.reject { |player| player.id == current_user.id }
+- turn_label = current_user.id == current_player.id ? "Your Turn" : "#{current_player.name}'s Turn"
+- hand = your_player.hand.map { |card| { card: card.to_file_name, active: false } }
+- players = opponents.map { |player| { name: player.name, hand_size: player.hand.size, mini_hand: Array.new([ player.hand.size, 4 ].min), overflow: [ player.hand.size - 4, 0 ].max, melded: false, flag: "" } }
+- board = { name: game.name, game_type: "Rummy", stock_count: implementation.deck.cards_left, turn_label: turn_label, your_name: your_player.name, your_flag: "", discard_top: implementation.discard.top_card.to_file_name, hand: hand, players: players, melds: [], feed: [], winner_name: "", ranking: [] }
+= render "game_board", board: board
