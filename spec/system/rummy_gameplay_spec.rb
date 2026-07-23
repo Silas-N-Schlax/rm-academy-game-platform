@@ -10,6 +10,14 @@ RSpec.describe 'Rummy gameplay', type: :system do
     page.execute_script("document.querySelector(\"label[for='#{card_id}']\").click()")
   end
 
+  def game_state
+    game.reload.game_state
+  end
+
+  def hand_for(user)
+    game_state.find_player(user.id)
+  end
+
   describe 'reloading an already-finished game', :js do
     before do
       implementation = game.game_state
@@ -59,6 +67,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       click_on 'Draw from stock'
       expect(page).to have_selector(data_test('hand-card'), count: 4)
+      expect(hand_for(game.users.first).hand_size).to eq 4
       check_hand_card 'hand-card-7-Spades'
       check_hand_card 'hand-card-7-Hearts'
       check_hand_card 'hand-card-7-Diamonds'
@@ -87,6 +96,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_content 'Stock: 0'
       expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(hand_for(game.users.first).hand_size).to eq 2
     end
   end
 
@@ -107,6 +117,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_selector(data_test('hand-card'), count: 2)
       expect(page).to have_field('hand-card-K-Spades')
+      expect(hand_for(game.users.first).hand.map(&:to_s)).to include('king_of_spades')
     end
   end
 
@@ -128,6 +139,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       expect(page).to have_content 'Stock: 1'
       expect(page).to have_css("[src*='queen_of_hearts']")
       expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(hand_for(game.users.first).hand_size).to eq 2
     end
   end
 
@@ -156,6 +168,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_selector(data_test('meld'), count: 1)
       expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(game_state.melds.size).to eq 1
     end
   end
 
@@ -184,6 +197,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_selector(data_test('meld'), count: 1)
       expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(game_state.melds.size).to eq 1
     end
   end
 
@@ -212,6 +226,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_selector("#{data_test('meld')} img", count: 4)
       expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(game_state.melds.first.cards.size).to eq 4
     end
   end
 
@@ -258,6 +273,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).to have_content "#{game.users.last.name}'s Turn"
       expect(page).to have_selector(data_test('hand-card'), count: 2)
+      expect(game_state.current_player.id).to eq game.users.last.id
     end
   end
 
@@ -285,6 +301,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       click_button 'Meld'
 
       expect(page).to have_content "#{game.users.first.name} wins!"
+      expect(game.reload.finished_at).to be_present
     end
   end
 
@@ -313,6 +330,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       click_button 'Discard'
 
       expect(page).to have_content "#{game.users.first.name} wins!"
+      expect(game.reload.finished_at).to be_present
     end
   end
 
@@ -350,6 +368,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
         expect(page).to have_content "3. #{game.users.second.name}"
         expect(page).to have_content '10 pips'
       end
+      expect(game.reload.finished_at).to be_present
     end
   end
 
@@ -435,6 +454,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       find('[aria-label="Dismiss error"]').click
 
       expect(page).not_to have_content "That's not a valid meld"
+      expect(game_state.melds).to be_empty
     end
   end
 end

@@ -56,6 +56,7 @@ RSpec.describe 'Users', type: :system do
       click_on "Edit Profile"
       expected_content = 'US'
       expect(page).to have_content expected_content
+      expect(user.reload.country).to eq 'US'
     end
 
     it 'does not have extra empty fields if there is no data' do

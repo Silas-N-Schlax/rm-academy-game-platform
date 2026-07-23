@@ -11,6 +11,7 @@ RSpec.describe 'Turns', type: :system do
       click_on 'Ask'
       expect(current_path).to eq game_path(game)
       expect(page).to have_selector data_test('game-feed-results')
+      expect(game.reload.game_state.results.size).to eq 1
     end
 
     context 'when the game ends' do
@@ -31,6 +32,7 @@ RSpec.describe 'Turns', type: :system do
         expect(page).to have_content game.users.first.name
         expect(page).to have_content game.formatted_time
         expect(page).to have_content game.game_size
+        expect(game.finished_at).to be_present
       end
     end
   end
@@ -50,6 +52,7 @@ RSpec.describe 'Turns', type: :system do
       find(data_test('hand-card'), match: :first).click
       expect(current_path).to eq game_path(game)
       expect(page).to have_selector data_test('game-feed-result')
+      expect(game.reload.game_state.players.first.hand_size).to eq 0
     end
 
     context 'when an 8 is tried to play' do
@@ -69,6 +72,7 @@ RSpec.describe 'Turns', type: :system do
         click_button "Play My Wild", match: :first
         expect(current_path).to eq game_path(game)
         expect(page).to have_selector data_test('discard-top-card-rank-8')
+        expect(game.reload.game_state.discard.top_card.rank).to eq '8'
       end
     end
 
@@ -88,6 +92,7 @@ RSpec.describe 'Turns', type: :system do
         expected_card_count = 3
         expect(current_path).to eq game_path(game)
         expect(page.all(data_test('hand-card')).count).to eq expected_card_count
+        expect(game.reload.game_state.players.first.hand_size).to eq expected_card_count
       end
 
       it 'does not give player cards when they cannot draw' do
@@ -97,6 +102,7 @@ RSpec.describe 'Turns', type: :system do
         expected_card_count = 2
         expect(current_path).to eq game_path(game)
         expect(page.all(data_test('hand-card')).count).to eq expected_card_count
+        expect(game.reload.game_state.players.first.hand_size).to eq expected_card_count
       end
     end
 
@@ -117,6 +123,7 @@ RSpec.describe 'Turns', type: :system do
         expect(page).to have_content game.users.first.name
         expect(page).to have_content game.formatted_time
         expect(page).to have_content game.game_size
+        expect(game.finished_at).to be_present
       end
     end
   end

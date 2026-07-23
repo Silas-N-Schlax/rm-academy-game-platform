@@ -37,7 +37,7 @@ RSpec.describe 'Games', type: :system do
   it 'logs user our when sends to login page if logout' do
     sign_in_as user
     visit root_path
-    click_on 'Log Out'
+    expect { click_on 'Log Out' }.to change(Session, :count).by(-1)
     expect(page).to have_selector data_test('login-form')
   end
 end

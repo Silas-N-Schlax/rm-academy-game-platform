@@ -160,6 +160,7 @@ RSpec.describe 'Games', type: :system do
         visit game_path(game)
         sleep 3
         expect(page).to have_selector(data_test('game-feed-question'), count: 2)
+        expect(game.reload.game_state.results.size).to eq 2
       end
     end
 
@@ -177,6 +178,7 @@ RSpec.describe 'Games', type: :system do
         visit game_path(game)
         click_on 'Ask'
         expect(page).to_not have_selector data_test('timer')
+        expect(game.reload.finished_at).to be_present
       end
     end
   end
