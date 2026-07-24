@@ -229,8 +229,15 @@ rather than duplicating when revisiting a topic.
   show→auto-dismiss pattern, `aria-live="polite"`) shows the latest turn's last feed line
   bottom-center, distinct from the top-right error toast; `GoFishPresenter#action_notice` sources it
   from the same `feed`/`feed_lines(viewer_id)` data the drawer uses. Built generically so Rummy can
-  adopt it later — Rummy untouched this pass. All of section E is now done; only F (old-code
-  cleanup) remains before Go Fish moves to Crazy Eights. **A
+  adopt it later — Rummy untouched this pass. **F (cleanup) done too:** deleted
+  `_player_accordion.html.slim`, `_go_fish_feed.html.slim`, `_go_fish_form.html.slim`, and
+  `ask_button_controller.js` (all had zero remaining callers). Three items from the plan's original
+  cleanup list — `_button_card_collection.html.slim`, the `.gf-game` grid in `game.css`, and the
+  `message-bubble--go-fish` modifier — turned out to still be shared with Crazy Eights' own
+  not-yet-migrated view and were deliberately left in place; revisit once Crazy Eights' migration
+  removes its old view. **The full Go Fish migration (sections A–F) is now done** — next up is
+  `znotes/plans/gf-c8-migration/crazy-eights.md`, reusing this game's `game-table`/`card-select`/
+  `action-notice` foundation. **A
   real test-coverage gap opened by this work:** the only system-level coverage of
   `timer_controller.js`/`auto_play_controller.js` lived in `spec/system/games_spec.rb`, riding on Go
   Fish's old UI — that whole block was deleted (not deferred) since the feature it drove no longer

@@ -7,9 +7,6 @@ import { application } from "./application"
 import ActionNoticeController from "./action_notice_controller"
 application.register("action-notice", ActionNoticeController)
 
-import AskButtonController from "./ask_button_controller"
-application.register("ask-button", AskButtonController)
-
 import AutoPlayController from "./auto_play_controller"
 application.register("auto-play", AutoPlayController)
 
