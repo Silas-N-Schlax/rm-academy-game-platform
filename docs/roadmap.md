@@ -184,6 +184,31 @@ rather than duplicating when revisiting a topic.
   game-over modal, players panel, piles, hand/actions) into small reusable component files, leaning
   on Optics built-ins (`side-panel`, `modal`, `card`, `tab-group`) where they fit. Intended to give
   Go Fish/Crazy Eights reusable pieces once they convert to the new board design. Not started.
+  **Superseded in part (2026-07-24):** the Go Fish/Crazy Eights migration plan below decided those
+  two games do NOT reuse the `player-list` sidebar this bullet assumed — they get a seated
+  `game-table` layout instead. The feed drawer/game-over modal/hand pieces are still reusable.
+- **Go Fish & Crazy Eights migration to the game-board design + presenters — planned, not started
+  (2026-07-24):** a BRAVE-style breakdown (two rounds of artifact mockups) produced a full
+  migration plan, saved to `znotes/plans/go-fish-crazy-eights-migration-brave.md`. Key decisions:
+  each game gets its own PORO presenter (`GoFishPresenter`/`CrazyEightsPresenter`, matching
+  `RummyPresenter`'s shape — no shared base class yet, rule of three); both drop their turn forms
+  entirely for a click-a-card-then-click-a-target interaction via a new shared single-select
+  `card-select` Stimulus controller (mirroring Rummy's `layOff` requestSubmit pattern); both are
+  seated around a central `game-table` grid (evolved from the existing
+  `components/game-table.css`, generalized to fit 1–6 opponent seats) with the center region blank
+  for Go Fish and holding the draw/discard piles for Crazy Eights; a new shared bottom-center
+  "what just happened" action notice (`aria-live="polite"`, reusing
+  `game_board_toast_controller`'s value-changed→auto-dismiss pattern) was designed for all games,
+  worded per-viewer from the same narration source as the feed. An engine audit found
+  `GoFish`/`CrazyEights` `TurnResult`s lack Rummy's `occurred_at`/`feed_lines(viewer_id)`/
+  `actor_label(viewer_id)`/`ranking` — the plan adds these for real parity rather than working
+  around the gap in the presenters. **Turn timer/auto-play wiring is explicitly deferred** to a
+  separate future initiative — keep `timer_controller.js`/`auto_play_controller.js`, just don't
+  wire them into the new boards yet. Sequencing: one PR, Go Fish fully end-to-end first (the
+  harder one — new presenter + new UX), then Crazy Eights reusing that foundation; old code
+  (`_player_accordion`, old feeds, `ask_button_controller.js`, `gf-game` grid, etc.) gets deleted
+  only after each game's new board is verified and safely committed, not interleaved with the
+  other game's build.
 - **Game-hand layout bugs (2026-07-24):** the empty/off-center hand issue (label sitting at the
   bottom when the hand is short, action buttons hugging the bottom instead of centering) is fixed —
   `.game-hand`'s `align-items` changed from `flex-end` to `center` in `game-hand.css`. **Still open:**
