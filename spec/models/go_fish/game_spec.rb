@@ -176,6 +176,18 @@ RSpec.describe GoFish::Game, type: :model do
           expect(game.results.last).to be_a GoFish::TurnResult
         end
       end
+
+      context 'when a turn completes' do
+        let(:game) { described_class.new(players: [ player1, player2 ]) }
+        before { game.players.last.hand << card1 }
+
+        it 'stamps the turn result with when the turn happened' do
+          travel_to Time.zone.parse('2024-01-01 12:00:00') do
+            game.run_turn(player2.id, 'A')
+          end
+          expect(game.results.last.occurred_at).to eq Time.zone.parse('2024-01-01 12:00:00')
+        end
+      end
       context 'when player1 asks for a card player2 does have and go fishing' do
         let(:game) { described_class.new(players: [ player1, player2 ]) }
         let!(:player1_data) { game.players.first }

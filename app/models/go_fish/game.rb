@@ -131,7 +131,7 @@ module GoFish
         current_player: current_player, opponent: opponent,
         rank_asked_for: rank, cards_taken: cards,
         card_picked_up: card_picked_up, goes_again: current_player.name == self.current_player.name,
-        created_book: created_book
+        created_book: created_book, occurred_at: Time.current
       )
     end
   end

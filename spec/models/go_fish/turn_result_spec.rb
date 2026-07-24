@@ -116,7 +116,8 @@ RSpec.describe GoFish::TurnResult, type: :model do
         },
         "goes_again" => false,
         "created_book" => nil,
-        "got_card" => []
+        "got_card" => [],
+        "occurred_at" => nil
       }
     end
      it 'returns expected hash' do
@@ -129,6 +130,12 @@ RSpec.describe GoFish::TurnResult, type: :model do
       json = results.as_json
       result = GoFish::TurnResult.from_json(json)
       expect(result.as_json).to eq json
+    end
+
+    it 'restores the occurred_at timestamp' do
+      results.occurred_at = Time.zone.parse('2024-01-01 12:00:00')
+      restored = GoFish::TurnResult.from_json(results.as_json)
+      expect(restored.occurred_at).to eq Time.zone.parse('2024-01-01 12:00:00')
     end
   end
 

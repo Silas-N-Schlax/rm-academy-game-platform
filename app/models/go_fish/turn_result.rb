@@ -2,9 +2,9 @@ module GoFish
   class TurnResult
     attr_accessor :current_player, :opponent, :cards_taken,
                     :rank_asked_for, :card_picked_up,
-                    :goes_again, :created_book
+                    :goes_again, :created_book, :occurred_at
 
-    def initialize(current_player:, opponent:, cards_taken:, rank_asked_for:, card_picked_up:, goes_again:, created_book: nil)
+    def initialize(current_player:, opponent:, cards_taken:, rank_asked_for:, card_picked_up:, goes_again:, created_book: nil, occurred_at: nil)
       @current_player = current_player
       @opponent = opponent
       @cards_taken = cards_taken
@@ -12,6 +12,7 @@ module GoFish
       @card_picked_up = card_picked_up
       @goes_again = goes_again
       @created_book = created_book
+      @occurred_at = occurred_at
     end
 
     def got_card
@@ -63,7 +64,8 @@ module GoFish
         "card_picked_up" => card_picked_up.as_json,
         "goes_again" => goes_again,
         "created_book" => created_book.as_json,
-        "got_card" => got_card
+        "got_card" => got_card,
+        "occurred_at" => occurred_at&.iso8601
       }
     end
 
@@ -75,6 +77,7 @@ module GoFish
         rank_asked_for: json["rank_asked_for"],
         card_picked_up: GoFish::Card.from_json(json["card_picked_up"]),
         goes_again: json["goes_again"],
+        occurred_at: json["occurred_at"] && Time.zone.parse(json["occurred_at"])
       )
       json["got_card"].map { |element| result.add_got_card_record(GoFish::Player.from_json(element[0]), GoFish::Card.from_json(element[1])) } if json["got_card"]
       result
