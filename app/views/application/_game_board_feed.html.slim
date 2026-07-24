@@ -1,12 +1,16 @@
 .feed-drawer__scrim data-game-board-feed-target="feedScrim" data-action="click->game-board-feed#closeFeed"
 
-aside.side-panel.side-panel--border-left.feed-drawer data-game-board-feed-target="feedDrawer" aria-label="Play-by-play feed"
+aside.side-panel.side-panel--border-left.feed-drawer data-game-board-feed-target="feedDrawer" data-testid="feed-drawer" aria-label="Play-by-play feed"
   .side-panel__header.side-panel__header--padded
     h2.feed-drawer__title Play-by-play
     button.btn.btn--icon type="button" aria-label="Close feed" data-action="click->game-board-feed#closeFeed"
       i.li.li-x.icon.icon--small
   .side-panel__body.side-panel__body--padded.feed-drawer__log
-    - presenter.feed.each do |entry|
-      .feed-drawer__entry
-        span.feed-drawer__entry-time = entry[:time]
-        = entry[:text]
+    - presenter.feed.each do |turn|
+      .feed-drawer__turn
+        .feed-drawer__turn-head
+          span.feed-drawer__actor = turn[:actor]
+          span.feed-drawer__entry-time = turn[:time]
+        ul.feed-drawer__lines
+          - turn[:lines].each do |line|
+            li.feed-drawer__line class=feed_line_class(line[:kind]) = feed_line_text(line)

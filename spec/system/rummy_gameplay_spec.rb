@@ -426,6 +426,36 @@ RSpec.describe 'Rummy gameplay', type: :system do
     end
   end
 
+  describe 'the play-by-play feed', :js do
+    before do
+      implementation = game.game_state
+      implementation.players.first.hand = [ Rummy::Card.new('2', 'Clubs'), Rummy::Card.new('3', 'Diamonds') ]
+      implementation.deck.cards = [ Rummy::Card.new('9', 'Hearts') ]
+      implementation.discard.cards = [ Rummy::Card.new('K', 'Spades') ]
+      game.game_state = implementation
+      game.save!
+      sign_in_as game.users.first
+      visit game_path(game)
+      click_on 'Draw from stock'
+      expect(page).to have_selector(data_test('hand-card'), count: 3)
+    end
+
+    it 'shows the finished turn once opened, and persists a timestamp on the result' do
+      check_hand_card 'hand-card-2-Clubs'
+      click_button 'Discard'
+
+      click_on 'Feed'
+
+      within data_test('feed-drawer') do
+        expect(page).to have_content 'You'
+        expect(page).to have_content 'Just now'
+        expect(page).to have_content 'Drew the 9 of Hearts from the stock'
+        expect(page).to have_content 'Discarded the 2 of Clubs'
+      end
+      expect(game_state.results.last.occurred_at).to be_present
+    end
+  end
+
   describe 'an invalid meld shows an error toast', :js do
     before do
       implementation = game.game_state
