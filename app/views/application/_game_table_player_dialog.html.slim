@@ -1,0 +1,9 @@
+dialog.modal id="opponent-detail-#{player[:id]}" data-testid="opponent-detail-modal" closedby="any"
+  .modal__body
+    h2 = player[:name]
+    p Hand
+    = render "card_collection", hand: player[:hand_backs], modifier: " game-table__mini-card", back: true
+    p Books
+    = render "card_collection", hand: player[:books], modifier: " game-table__mini-card", back: false
+    button.btn.btn--primary type="button" commandfor="opponent-detail-#{player[:id]}" command="close"
+      | Close

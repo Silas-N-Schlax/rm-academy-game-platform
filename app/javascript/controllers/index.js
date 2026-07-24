@@ -10,6 +10,9 @@ application.register("ask-button", AskButtonController)
 import AutoPlayController from "./auto_play_controller"
 application.register("auto-play", AutoPlayController)
 
+import CardSelectController from "./card_select_controller"
+application.register("card-select", CardSelectController)
+
 import CountryController from "./country_controller"
 application.register("country", CountryController)
 
@@ -27,6 +30,9 @@ application.register("game-board-tabs", GameBoardTabsController)
 
 import GameBoardToastController from "./game_board_toast_controller"
 application.register("game-board-toast", GameBoardToastController)
+
+import GofishTurnController from "./gofish_turn_controller"
+application.register("gofish-turn", GofishTurnController)
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)

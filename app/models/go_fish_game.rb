@@ -23,7 +23,7 @@ class GoFishGame < Game
     implementation.valid_player?(player) && implementation.valid_rank?(rank)
   end
 
-  def presenter_class = NullPresenter
+  def presenter_class = GoFishPresenter
 
   def turn_class
     GoFishTurn

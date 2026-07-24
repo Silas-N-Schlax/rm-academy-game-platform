@@ -28,6 +28,10 @@ class GoFishPresenter
     your_player.hand.map { |card| { card: card.to_file_name, rank: card.rank, suit: card.suit } }
   end
 
+  def your_books
+    your_player.books.map(&:to_s)
+  end
+
   def opponents
     opponent_players.map { |player| opponent_attributes(player) }
   end
@@ -59,7 +63,7 @@ class GoFishPresenter
 
   def opponent_attributes(player)
     {
-      name: player.name, hand_size: player.hand_size, book_count: player.books_size,
+      id: player.id, name: player.name, hand_size: player.hand_size, book_count: player.books_size,
       hand_backs: Array.new(player.hand_size), books: player.books.map(&:to_s),
       current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL
     }
