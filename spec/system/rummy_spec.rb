@@ -35,5 +35,10 @@ RSpec.describe 'Rummy', type: :system do
       expect(page).to have_content opponent.name
       expect(page).to have_content opponent.hand.size
     end
+
+    it 'sends the player back to the home page' do
+      find(data_test('board-back-button')).click
+      expect(page).to have_current_path root_path
+    end
   end
 end
