@@ -31,7 +31,7 @@ export default class extends Controller {
   }
 
   syncCardActiveClass(checkbox) {
-    const card = checkbox.closest(".game-board__hand-card").querySelector(".playing-card")
+    const card = checkbox.closest(".game-hand__card").querySelector(".playing-card")
     card.classList.toggle("playing-card--active", checkbox.checked)
   }
 
@@ -50,7 +50,7 @@ export default class extends Controller {
 
   switchTab(event) {
     const tab = event.currentTarget.dataset.tab
-    this.tabTargets.forEach((t) => t.classList.toggle("btn--active", t === event.currentTarget))
+    this.tabTargets.forEach((t) => t.classList.toggle("tab--active", t === event.currentTarget))
     this.panelTargets.forEach((p) => p.classList.toggle("game-board__panel--active", p.dataset.panel === tab))
   }
 

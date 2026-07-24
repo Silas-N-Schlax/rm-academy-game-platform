@@ -1,15 +1,15 @@
 .game-board data-controller="game-board" data-game-board-awaiting-draw-value="#{presenter.awaiting_draw}"
   = render "game_board_toast", presenter: presenter
-  header.game-board__topbar
-    .game-board__topbar-left
-      a.game-board__back href="#" aria-label="Back"
+  header.board-topbar
+    .board-topbar__left
+      a.board-topbar__back href="#" aria-label="Back"
         i.li.li-move-left.icon.icon--x-large
-      span.game-board__name = presenter.name
+      span.board-topbar__name = presenter.name
       span.badge.badge--primary
         i.li.li-tag.icon.icon--small
         = presenter.game_type
-    .game-board__topbar-right
-      span.game-board__stock-count
+    .board-topbar__right
+      span.board-topbar__stock-count
         i.li.li-layers.icon.icon--small
         | Stock: #{presenter.stock_count}
       span.badge class=(presenter.your_turn ? "badge--notice" : "badge--primary")
@@ -17,10 +17,10 @@
         = presenter.turn_label
 
   .game-board__board
-    .game-board__tabs
-      button.btn.btn--active.game-board__tab type="button" data-tab="melds" data-game-board-target="tab" data-action="click->game-board#switchTab"
+    .tab-group.game-board__tab-group
+      button.tab.tab--active type="button" data-tab="melds" data-game-board-target="tab" data-action="click->game-board#switchTab"
         | Melds
-      button.btn.game-board__tab type="button" data-tab="players" data-game-board-target="tab" data-action="click->game-board#switchTab"
+      button.tab type="button" data-tab="players" data-game-board-target="tab" data-action="click->game-board#switchTab"
         | Players
       button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-action="click->game-board#openFeed"
         i.li.li-list.icon.icon--small
@@ -29,10 +29,11 @@
           i.li.li-trophy.icon.icon--small
 
     .game-board__left-col.game-board__panel data-panel="players" data-game-board-target="panel"
-      aside.game-board__players
-        h2.game-board__players-heading Players
-        - presenter.opponents.each do |player|
-          = render "game_board_player", player: player
+      aside.card.card--shadow-medium.player-list
+        h2.card__header.player-list__heading Players
+        .card__body
+          - presenter.opponents.each do |player|
+            = render "game_board_player", player: player
 
       button.btn.game-board__launcher type="button" data-action="click->game-board#openFeed"
         i.li.li-list.icon.icon--small
@@ -44,10 +45,10 @@
 
     .game-board__board-main.game-board__panel.game-board__panel--active data-panel="melds" data-game-board-target="panel"
       = render "game_board_piles", presenter: presenter
-      .game-board__melds
+      .meld-list
         - presenter.melds.each_with_index do |meld, index|
-          button.game-board__meld type="button" data-testid="meld" disabled=meld[:full] data-meld-index="#{index}" data-action="click->game-board#layOff"
-            = render "card_collection", hand: meld[:cards], modifier: " game-board__meld-card", back: false
+          button.meld type="button" data-testid="meld" disabled=meld[:full] data-meld-index="#{index}" data-action="click->game-board#layOff"
+            = render "card_collection", hand: meld[:cards], modifier: " meld__card", back: false
 
   = render "game_board_hand", presenter: presenter
   = render "game_board_feed", presenter: presenter

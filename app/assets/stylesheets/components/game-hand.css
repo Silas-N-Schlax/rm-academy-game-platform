@@ -1,0 +1,71 @@
+.game-hand {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--op-space-medium);
+  padding: var(--op-space-medium);
+  border-top: solid var(--op-border-width) var(--op-color-border);
+  background-color: var(--op-color-neutral-plus-max);
+  overflow: hidden;
+
+  .game-hand__main {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+  }
+
+  .game-hand__label {
+    margin: 0 0 var(--op-space-small);
+    font-weight: var(--op-font-weight-semi-bold);
+  }
+
+  .game-hand__form {
+    display: contents;
+  }
+
+  .game-hand__card {
+    display: contents;
+
+    .playing-card {
+      cursor: pointer;
+    }
+  }
+
+  .game-hand__card-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .game-hand__actions {
+    flex-shrink: 0;
+    width: calc(var(--op-size-unit) * 90); /* 360px */
+    max-width: 100%;
+    padding: var(--op-space-medium);
+    background-color: var(--op-color-neutral-plus-max);
+    border: solid var(--op-border-width) var(--op-color-border);
+    border-radius: var(--op-radius-medium);
+  }
+
+  .game-hand__action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--op-space-small);
+  }
+}
+
+/* --op-breakpoint-small */
+@media (width <= 768px) {
+  .game-hand {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--op-space-small);
+
+    .game-hand__actions {
+      width: 100%;
+    }
+  }
+}

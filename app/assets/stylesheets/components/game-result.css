@@ -1,0 +1,57 @@
+.game-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--op-space-small);
+  text-align: center;
+
+  .game-result__trophy {
+    font-size: var(--op-font-4x-large);
+    color: var(--op-color-alerts-warning-base);
+  }
+
+  .game-result__winner {
+    margin: 0;
+    font-size: var(--op-font-x-large);
+    font-weight: var(--op-font-weight-bold);
+  }
+
+  .game-result__subtitle {
+    margin: 0 0 var(--op-space-small);
+    color: var(--op-color-neutral-on-plus-eight);
+    font-size: var(--op-font-small);
+  }
+
+  .game-result__ranking {
+    width: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: solid var(--op-border-width) var(--op-color-border);
+    border-radius: var(--op-radius-medium);
+    overflow: hidden;
+    text-align: left;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--op-space-small) var(--op-space-medium);
+      border-bottom: solid var(--op-border-width) var(--op-color-border);
+      font-size: var(--op-font-small);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      span:last-child {
+        color: var(--op-color-neutral-on-plus-eight);
+      }
+    }
+  }
+
+  .game-result__close {
+    margin-top: var(--op-space-medium);
+    width: 100%;
+  }
+}
