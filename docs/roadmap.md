@@ -189,7 +189,9 @@ rather than duplicating when revisiting a topic.
   `game-table` layout instead. The feed drawer/game-over modal/hand pieces are still reusable.
 - **Go Fish & Crazy Eights migration to the game-board design + presenters — planned, not started
   (2026-07-24):** a BRAVE-style breakdown (two rounds of artifact mockups) produced a full
-  migration plan, saved to `znotes/plans/go-fish-crazy-eights-migration-brave.md`. Key decisions:
+  migration plan, now split into `znotes/plans/gf-c8-migration/README.md` (decisions/context) plus
+  ordered, commit-sized TDD execution docs `go-fish.md` (done first, builds the shared infra) and
+  `crazy-eights.md` (reuses it) in the same folder. Key decisions:
   each game gets its own PORO presenter (`GoFishPresenter`/`CrazyEightsPresenter`, matching
   `RummyPresenter`'s shape — no shared base class yet, rule of three); both drop their turn forms
   entirely for a click-a-card-then-click-a-target interaction via a new shared single-select
