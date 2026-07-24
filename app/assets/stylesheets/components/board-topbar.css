@@ -31,9 +31,14 @@
   .board-topbar__stock-count {
     display: flex;
     align-items: center;
-    gap: var(--op-space-2x-small);
-    font-size: var(--op-font-medium);
+    gap: var(--op-space-x-small);
+    padding-block: var(--op-space-2x-small);
+    padding-inline: var(--op-space-x-small);
+    border-radius: var(--op-radius-x-large);
+    background-color: var(--op-color-neutral-plus-six);
     color: var(--op-color-neutral-on-plus-max);
+    font-size: var(--op-font-x-small);
+    line-height: var(--op-line-height-dense);
   }
 }
 
@@ -52,12 +57,6 @@
 
     .board-topbar__name {
       font-size: var(--op-font-medium);
-    }
-
-    .board-topbar__stock-count {
-      padding: var(--op-space-3x-small, 2px) var(--op-space-x-small);
-      border-radius: var(--op-radius-large);
-      background-color: var(--op-color-neutral-plus-six);
     }
   }
 }
