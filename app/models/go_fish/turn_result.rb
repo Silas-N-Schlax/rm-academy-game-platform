@@ -55,6 +55,20 @@ module GoFish
       got_card << [ player, card ]
     end
 
+    def actor_label(id)
+      current_or_opponent(id)
+    end
+
+    def feed_lines(id)
+      [
+        { text: question(id).join, kind: :ask },
+        answer_entry,
+        go_fish_entry(id),
+        book_created_entry(id),
+        *got_card_entries(id)
+      ].compact
+    end
+
     def as_json
       {
         "current_player" => current_player.as_json,
@@ -84,6 +98,24 @@ module GoFish
     end
 
     private
+
+    def answer_entry
+      { text: answer, kind: cards_taken.empty? ? :climax : :notable }
+    end
+
+    def go_fish_entry(id)
+      text = go_fish(id)
+      { text: text, kind: :draw } if text
+    end
+
+    def book_created_entry(id)
+      text = book_created(id)
+      { text: text, kind: :notable } if text
+    end
+
+    def got_card_entries(id)
+      got_card_message(id).map { |text| { text: text, kind: :draw } }
+    end
 
     def current_or_opponent(id)
       return "You" if current_player.id == id

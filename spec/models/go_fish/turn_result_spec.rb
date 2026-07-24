@@ -93,6 +93,83 @@ RSpec.describe GoFish::TurnResult, type: :model do
     end
   end
 
+  describe '#actor_label' do
+    it 'returns "You" for the current player and their name for everyone else' do
+      expect(results.actor_label(current_id)).to eq 'You'
+      expect(results.actor_label(opponent_id)).to eq 'Player1'
+    end
+  end
+
+  describe '#feed_lines' do
+    context 'when the ask misses and the asker goes fishing' do
+      it 'renders the ask, the miss, and the draw for the asker' do
+        expect(results.feed_lines(current_id)).to eq [
+          { text: 'You asked Player2 for any Ks', kind: :ask },
+          { text: "Go Fish: Player2 didn't have any Ks", kind: :climax },
+          { text: 'You drew a J of Spades and do not get to go again', kind: :draw }
+        ]
+      end
+
+      it 'renders the same moment from an observer\'s point of view' do
+        expect(results.feed_lines(opponent_id)).to eq [
+          { text: 'Player1 asked Player2 for any Ks', kind: :ask },
+          { text: "Go Fish: Player2 didn't have any Ks", kind: :climax },
+          { text: 'Player1 drew a card and does not get to go again', kind: :draw }
+        ]
+      end
+    end
+
+    context 'when the ask hits' do
+      let(:hit_result) do
+        described_class.new(
+          current_player: GoFish::Player.new(name: 'Player1', id: 0),
+          opponent: GoFish::Player.new(name: 'Player2', id: 1),
+          cards_taken: [ GoFish::Card.new('K') ],
+          rank_asked_for: 'K',
+          card_picked_up: nil,
+          goes_again: true
+        )
+      end
+
+      it 'renders the ask and the hit, without a draw line' do
+        expect(hit_result.feed_lines(current_id)).to eq [
+          { text: 'You asked Player2 for any Ks', kind: :ask },
+          { text: 'Player2 had 1 Ks', kind: :notable }
+        ]
+      end
+    end
+
+    context 'when the ask creates a book' do
+      let(:book_result) do
+        described_class.new(
+          current_player: GoFish::Player.new(name: 'Player1', id: 0),
+          opponent: GoFish::Player.new(name: 'Player2', id: 1),
+          cards_taken: [ GoFish::Card.new('K') ],
+          rank_asked_for: 'K',
+          card_picked_up: nil,
+          goes_again: true,
+          created_book: GoFish::Book.new('K')
+        )
+      end
+
+      it 'appends a notable line for the completed book' do
+        expect(book_result.feed_lines(current_id).last).to eq(
+          { text: 'You created a book of Ks', kind: :notable }
+        )
+      end
+    end
+
+    context 'when a player ran out of cards and drew a replacement' do
+      before { results.add_got_card_record(GoFish::Player.new(name: 'Player2', id: 1), GoFish::Card.new('Q')) }
+
+      it 'appends a draw line for the player who ran out' do
+        expect(results.feed_lines(current_id).last).to eq(
+          { text: 'Player2 ran out of cards, they drew a card', kind: :draw }
+        )
+      end
+    end
+  end
+
   describe '#as_json' do
     let(:expected_hash) do
       {
