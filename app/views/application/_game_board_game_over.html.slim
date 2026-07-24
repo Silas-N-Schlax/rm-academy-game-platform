@@ -3,11 +3,11 @@ dialog.modal#game-over-modal data-testid="game-over-modal" closedby="any" data-c
     div.game-result__trophy
       i.li.li-trophy.icon.icon--x-large
     p.game-result__winner = "#{presenter.winner_name} wins!"
-    p.game-result__subtitle Ranked by pip total left in hand, lowest first
+    p.game-result__subtitle = presenter.ranking_subtitle
     ul.game-result__ranking
       - presenter.ranking.each do |entry|
         li class=("game-result__rank--#{entry[:place]}" if entry[:place].between?(2, 3))
           span = "#{entry[:place]}. #{entry[:name]} #{entry[:flag]}"
-          span = "#{entry[:pips]} pips"
+          span = entry[:score]
     button.btn.btn--primary.game-result__close type="button" commandfor="game-over-modal" command="close"
       | Close

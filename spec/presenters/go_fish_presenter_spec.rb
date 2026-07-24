@@ -121,8 +121,12 @@ RSpec.describe GoFishPresenter do
       presenter = presenter_for(your_user)
       expect(presenter.winner_name).to eq implementation.players.first.name
       expect(presenter.ranking).to eq [
-        { place: 2, name: implementation.players.last.name, flag: '', books: 0 }
+        { place: 2, name: implementation.players.last.name, flag: '', books: 0, score: '0 books' }
       ]
+    end
+
+    it 'describes what the ranking is ordered by' do
+      expect(presenter_for(your_user).ranking_subtitle).to eq 'Ranked by books, most first'
     end
   end
 

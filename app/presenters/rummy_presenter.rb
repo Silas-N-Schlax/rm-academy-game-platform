@@ -48,6 +48,8 @@ class RummyPresenter
     implementation.ranking.each_with_index.map { |player, index| ranking_entry(player, index) }
   end
 
+  def ranking_subtitle = "Ranked by pip total left in hand, lowest first"
+
   private
 
   def turn_base_errors
@@ -79,7 +81,7 @@ class RummyPresenter
   end
 
   def ranking_entry(player, index)
-    { place: index + 2, name: player.name, flag: "", pips: player.hand_pip_total }
+    { place: index + 2, name: player.name, flag: "", pips: player.hand_pip_total, score: "#{player.hand_pip_total} pips" }
   end
 
   def feed_turn(result)

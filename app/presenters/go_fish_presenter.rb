@@ -46,6 +46,8 @@ class GoFishPresenter
       .each_with_index.map { |player, index| ranking_entry(player, index) }
   end
 
+  def ranking_subtitle = "Ranked by books, most first"
+
   private
 
   def turn_base_errors
@@ -70,7 +72,7 @@ class GoFishPresenter
   end
 
   def ranking_entry(player, index)
-    { place: index + 2, name: player.name, flag: "", books: player.books_size }
+    { place: index + 2, name: player.name, flag: "", books: player.books_size, score: "#{player.books_size} books" }
   end
 
   def feed_turn(result)

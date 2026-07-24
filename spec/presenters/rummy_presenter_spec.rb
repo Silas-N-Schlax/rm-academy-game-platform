@@ -118,8 +118,13 @@ RSpec.describe RummyPresenter do
       presenter = presenter_for(your_user)
       expect(presenter.winner_name).to eq implementation.players.first.name
       expect(presenter.ranking).to eq [
-        { place: 2, name: implementation.players.last.name, flag: '', pips: implementation.players.last.hand_pip_total }
+        { place: 2, name: implementation.players.last.name, flag: '', pips: implementation.players.last.hand_pip_total,
+          score: "#{implementation.players.last.hand_pip_total} pips" }
       ]
+    end
+
+    it 'describes what the ranking is ordered by' do
+      expect(presenter_for(your_user).ranking_subtitle).to eq 'Ranked by pip total left in hand, lowest first'
     end
   end
 
