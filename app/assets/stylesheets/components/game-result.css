@@ -47,6 +47,24 @@
       span:last-child {
         color: var(--op-color-neutral-on-plus-eight);
       }
+
+      &.game-result__rank--2 {
+        background-color: var(--op-color-neutral-plus-six);
+
+        span:first-child {
+          color: var(--op-color-neutral-on-plus-six-alt);
+          font-weight: var(--op-font-weight-bold);
+        }
+      }
+
+      &.game-result__rank--3 {
+        background-color: var(--op-color-alerts-warning-plus-six);
+
+        span:first-child {
+          color: var(--op-color-alerts-warning-on-plus-six-alt);
+          font-weight: var(--op-font-weight-bold);
+        }
+      }
     }
   }
 
