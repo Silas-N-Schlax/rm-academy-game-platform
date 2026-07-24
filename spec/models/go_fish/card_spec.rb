@@ -15,6 +15,13 @@ RSpec.describe GoFish::Card, type: :model do
       expect(card.to_s).to eq expected_output
     end
   end
+  describe '#to_file_name' do
+    it 'matches the formatted string used for card image filenames' do
+      card = described_class.new('A')
+      expect(card.to_file_name).to eq 'ace_of_spades'
+    end
+  end
+
   describe '.from_json' do
     context 'when the json is blank' do
       it 'returns an empty array' do
