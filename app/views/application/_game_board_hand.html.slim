@@ -14,12 +14,12 @@ footer.game-hand
 
     .game-hand__actions
       .game-hand__action-grid
-        button.btn.btn--primary type="submit" name="turn[action]" value="meld" data-game-board-selection-target="meldAction"
+        button.btn.btn--primary type="submit" name="turn[action]" value="meld" disabled=presenter.awaiting_draw data-game-board-selection-target="meldAction"
           | Meld
-          i.li.li-lock.icon.icon--small hidden=true data-game-board-selection-target="meldDrawIcon" aria-label="Draw a card first"
-        button.btn type="submit" name="turn[action]" value="discard" data-game-board-selection-target="discardAction"
+          i.li.li-lock.icon.icon--small hidden=(!presenter.awaiting_draw) data-testid="meld-draw-icon" data-game-board-selection-target="meldDrawIcon" aria-label="Draw a card first"
+        button.btn type="submit" name="turn[action]" value="discard" disabled=presenter.awaiting_draw data-game-board-selection-target="discardAction"
           | Discard
-          i.li.li-lock.icon.icon--small hidden=true data-game-board-selection-target="discardDrawIcon" aria-label="Draw a card first"
+          i.li.li-lock.icon.icon--small hidden=(!presenter.awaiting_draw) data-testid="discard-draw-icon" data-game-board-selection-target="discardDrawIcon" aria-label="Draw a card first"
         button.btn type="button"
           | Sort
           i.li.li-arrow-up-down.icon.icon--small

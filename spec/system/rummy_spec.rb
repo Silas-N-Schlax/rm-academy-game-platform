@@ -41,4 +41,42 @@ RSpec.describe 'Rummy', type: :system do
       expect(page).to have_current_path root_path
     end
   end
+
+  context 'when a player must draw before they can meld or discard' do
+    let!(:game) { create :game, type: 'RummyGame' }
+
+    before do
+      game.start!
+      sign_in_as game.users.first
+      visit game_path(game.reload)
+    end
+
+    it 'shows the draw-first lock icon on the meld and discard buttons' do
+      expect(page).to have_selector(data_test('meld-draw-icon'), visible: true)
+      expect(page).to have_selector(data_test('discard-draw-icon'), visible: true)
+      expect(page).to have_button('Meld', disabled: true)
+      expect(page).to have_button('Discard', disabled: true)
+    end
+  end
+
+  context 'when a player has already drawn this turn' do
+    let!(:game) { create :game, type: 'RummyGame' }
+
+    before do
+      game.start!
+      implementation = game.game_state
+      implementation.draw(source: "stock")
+      game.game_state = implementation
+      game.save!
+      sign_in_as game.users.first
+      visit game_path(game.reload)
+    end
+
+    it 'hides the draw-first lock icon and enables the meld and discard buttons' do
+      expect(page).to have_selector(data_test('meld-draw-icon'), visible: false)
+      expect(page).to have_selector(data_test('discard-draw-icon'), visible: false)
+      expect(page).to have_button('Meld', disabled: false)
+      expect(page).to have_button('Discard', disabled: false)
+    end
+  end
 end
