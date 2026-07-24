@@ -39,9 +39,9 @@ rather than duplicating when revisiting a topic.
     not a change to the shared `CardGame::Engine` base.
   - The Crazy Eights `Discard` pattern hunch was correct — `Rummy::Discard` mirrors
     `CrazyEights::Discard` (`add_card`/`all_but_top_card`) directly.
-  - **Still pending cleanup:** the throwaway `/board_preview` route/controller/view
-    (`board_preview_controller.rb`) is now genuinely stale — real game data flows through
-    `_rummy_game.html.slim` instead of hardcoded mock data — and should be deleted.
+  - **Cleanup done (2026-07-24):** the throwaway `/board_preview` route/controller/view
+    (`board_preview_controller.rb`) was deleted now that real game data flows through
+    `_rummy_game.html.slim` instead of hardcoded mock data.
 - **Phase 2 built and green (2026-07-23): full turn logic.** Draw (+ stock recycling), meld,
   lay-off, discard, going out, and ranking by pip total are all implemented end to end — engine
   POROs (`Rummy::Meld`, `Rummy::TurnResult`, `Rummy::Game#draw`/`#lay_down_meld`/`#lay_off`/
@@ -70,11 +70,26 @@ rather than duplicating when revisiting a topic.
   `game_not_finished` validation on the shared `Turn` base class — see
   [docs/architecture.md](architecture.md)'s Turn form objects section). **Item 10 explicitly
   deferred, not MVP:** clicking "Discard" shouldn't unselect an already-checked card if you meant to
-  click something else — no fix attempted, revisit if it comes up again. **Known latent bug noticed
-  but not fixed** (pre-existing, app-wide, predates this session): the toast/offline-banner markup
-  uses `.alert_messages`/`.alert_title`/`.alert_description` (single underscore) but Optics' actual
-  BEM classes are `.alert__messages`/`.alert__title`/`.alert__description` (double underscore) — those
-  inner elements never get Optics' intended spacing/font styling as a result.
+  click something else — no fix attempted, revisit if it comes up again. **Latent bug fixed
+  (2026-07-24):** the toast/offline-banner markup used `.alert_messages`/`.alert_title`/
+  `.alert_description` (single underscore) instead of Optics' actual BEM classes
+  `.alert__messages`/`.alert__title`/`.alert__description` (double underscore), so those inner
+  elements never got Optics' intended spacing/font styling — corrected as part of the UI polish
+  pass below.
+- **UI polish pass, 5 items (2026-07-24):** the turn badge now shows a filled-vs-hollow circle icon
+  (`li-circle-dot`/`li-circle`) to distinguish whose turn it is, since Lucide (the icon set here) has
+  no true solid-circle glyph; the error toast and offline banner (see the BEM class-typo fix above)
+  were repositioned from a full-bleed bar rendering above the header into a proper floating toast —
+  fixed `position`, a slide-in/out transition using `@starting-style`/`display: ... allow-discrete`
+  (the same modern-CSS pattern Optics' own accordion component already uses), and a borderless
+  dismiss button via Optics' `btn--no-border`; the game-over ranking list now gives 2nd/3rd place a
+  subtle silver/bronze-ish color emphasis while other ranks stay plain; the topbar's stock-count pill
+  styling (previously mobile-only, plain text on desktop) is now consistent across breakpoints and
+  height-matched to the turn badge; and the Rummy meld/discard "must draw first" lock icon —
+  previously hardcoded `hidden=true` in the Slim template, relying entirely on JS to correct it after
+  page load — now derives `hidden`/`disabled` directly from `presenter.awaiting_draw` server-side (a
+  non-JS reproduction spec proved the bug before the fix). Also deleted the now-fully-stale
+  `/board_preview` dev route (see Phase 1 above).
 
 ## Known flaky/incomplete tests (2026-07-21)
 
