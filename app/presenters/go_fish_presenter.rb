@@ -75,8 +75,18 @@ class GoFishPresenter
     {
       id: player.id, name: player.name, hand_size: player.hand_size, book_count: player.books_size,
       hand_backs: Array.new(player.hand_size), books: player.books.map(&:to_s),
+      last_action: last_action_for(player),
       current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL
     }
+  end
+
+  def last_action_for(player)
+    result = implementation.results.reverse.find { |turn_result| player_involved?(turn_result, player) }
+    result&.feed_lines(current_user.id)&.last&.fetch(:text) || ""
+  end
+
+  def player_involved?(turn_result, player)
+    turn_result.current_player.id == player.id || turn_result.opponent.id == player.id
   end
 
   def ranking_entry(player, index)

@@ -24,6 +24,13 @@ RSpec.describe 'Go Fish', type: :system do
       find(data_test('board-back-button')).click
       expect(page).to have_current_path root_path
     end
+
+    it "shows counts but no card images on an opponent's seat tile" do
+      within all(data_test('opponent-seat')).first do
+        expect(page).to_not have_selector 'img.playing-card'
+        expect(page).to_not have_selector data_test('opponent-hand-card')
+      end
+    end
   end
 
   context 'when it is your turn' do
@@ -130,6 +137,18 @@ RSpec.describe 'Go Fish', type: :system do
       expect(page).to have_selector("#{data_test('action-notice')}.action-notice--active")
       within data_test('action-notice') do
         expect(page).to have_content "#{opponent.name} ran out of cards, they drew a card"
+      end
+    end
+
+    it "shows the opponent's last action on their seat tile", :js do
+      opponent = game.game_state.players.last
+
+      choose_hand_card 'hand-card-7-Spades'
+      find(data_test('opponent-seat'), text: opponent.name).click
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
+
+      within data_test('opponent-seat') do
+        expect(page).to have_content 'ran out of cards, they drew a card'
       end
     end
   end

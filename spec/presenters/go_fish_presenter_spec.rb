@@ -102,6 +102,25 @@ RSpec.describe GoFishPresenter do
       expect(opponent[:hand_backs].size).to eq 2
       expect(opponent[:books]).to eq [ 'king_of_hearts' ]
     end
+
+    it 'is blank for an opponent with no recorded turns yet' do
+      expect(presenter_for(your_user).opponents.first[:last_action]).to eq ''
+    end
+
+    it "summarizes an opponent's most recent turn, whichever role they played" do
+      opponent_player = implementation.players.last
+      viewer_player = implementation.players.first
+      implementation.results = [
+        GoFish::TurnResult.new(current_player: opponent_player, opponent: viewer_player,
+                                cards_taken: [ GoFish::Card.new('9') ], rank_asked_for: '9', card_picked_up: nil,
+                                goes_again: true, occurred_at: Time.current)
+      ]
+      game.game_state = implementation
+      game.save!
+
+      expected_text = "#{viewer_player.name} had 1 9s"
+      expect(presenter_for(your_user).opponents.first[:last_action]).to eq expected_text
+    end
   end
 
   describe '#winner_name and #ranking' do

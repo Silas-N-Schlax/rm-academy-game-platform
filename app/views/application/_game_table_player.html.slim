@@ -8,3 +8,5 @@ button.game-table__player type="button" class=("game-table__player--current-turn
     span.game-table__player-count data-tooltip-text="Books" data-tooltip-position="bottom"
       i.li.li-book.icon.icon--x-small
       = player[:book_count]
+  - if player[:last_action].present?
+    = render "truncated_text", text: player[:last_action], position: "bottom", additional_class: "game-table__last-action"
