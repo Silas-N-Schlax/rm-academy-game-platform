@@ -29,6 +29,8 @@ A Rails web app where people play classic card games online with friends, family
 - **TDD is required here — do not write implementation code before a failing spec.**
 - **System specs must select elements via `data_test(...)`** (`spec/support/helpers/test_element_helper.rb`) **or visible text — never a CSS class or id.** Classes can change with styling and silently break tests; add `data-testid` attributes to views as needed.
 - **When a system spec exercises an action with a DB side effect, verify the persisted state** (reload the record and check it), not just what the UI shows — the UI can look right without the write having actually landed.
+- **No stubbing/mocking, anywhere** — use only real or fake data (factories, real objects), never a test double standing in for one.
+- **Spec structure**: setup goes in `before`/`let`, the action goes in the `it` description (or a `when`/`context`), and the assertion goes in the `it` block. Helper methods called from specs are fine — define them at the bottom of the spec file if only used there, or as a shared helper (see `spec/support/authentication_helpers.rb`'s `sign_in_as`) if reused across multiple spec files.
 
 ## Linting / CI checks
 
@@ -44,7 +46,7 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 
 ## Conventions (not enforced by Rubocop — enforce these yourself)
 
-- **No method/block body over 7 lines**, not counting the signature line and `end`.
+- **No method/block body over 7 lines**, not counting the signature line and `end` — this applies to RSpec `it`/`context` blocks too, except a block whose body is just a hash literal.
 - **No bare instance variables** outside of controllers, views (Slim templates), initializers, and lazy-init memoization (`@foo ||= ...`). Everywhere else, expose state through `attr_accessor`/`attr_reader` and call it via `self.`.
 - **No magic numbers, strings, or regexes** — pull them into a well-named constant, or a well-named local/instance variable if scope doesn't warrant a constant. Look at existing code (e.g. `GoFish::Card::RANKS`, `CrazyEights::Game::SMALL_GAME_MAX_SIZE`) for the expected style. This is a judgment call, not a rule to apply to every literal — only extract a constant when a literal's meaning genuinely isn't clear from its surrounding context (e.g. a bare number repeated in multiple places, or one with no obvious relation to the code around it). A literal like dividing by `3600` inside a method explicitly about formatting elapsed time doesn't need `SECONDS_PER_HOUR` pulled out just because it's a number.
 - **TDD always** — write the failing spec first.
