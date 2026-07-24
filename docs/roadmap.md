@@ -277,3 +277,38 @@ rather than duplicating when revisiting a topic.
     text. A fix (scoping border-radius to `:first-child`/`:last-child` instead of clipping the
     whole container) was tried and reverted — the last-action tooltip may currently be invisible
     when it pops outside the container's bounds. Revisit if that's confirmed.
+- **Go Fish board UI polish pass (2026-07-24):** seat tiles are bigger and richer (avatar, name,
+  hand/book counts, a `last_action` line sourced the same way as `RummyPresenter`'s) — a card-back
+  mini-fan was added to each tile then **removed** per explicit feedback, keeping the tile free of
+  card imagery. The opponent detail modal (`_game_table_player_dialog.html.slim`) was rebuilt with
+  a real `.modal__header` (avatar + name + close X, own stylesheet `player-detail-dialog.css`) and
+  labeled `.modal__body` sections (Hand/Books, with an empty-books state) instead of everything
+  flattened into `.modal__body`. **Feed/game-over launcher unified across every game:** both
+  buttons (icon-only, `data-testid="open-feed-button"`/`"view-results-button"`) now live solely in
+  the shared `_board_topbar.html.slim` partial — Rummy was retrofitted to render that same partial
+  instead of its own inline topbar, and its now-redundant tab-bar launcher buttons/CSS
+  (`.game-board__launcher`) were deleted. This is the intended pattern for Crazy Eights' migration
+  too — one launcher location for all games, not a per-game convention. Sharing the game-over
+  partial required generalizing it beyond Rummy's hardcoded "pips" text: both presenters expose a
+  `ranking_subtitle` method and each `ranking` entry now carries a generic `score:` string,
+  additive to Rummy's existing `pips:` key (confirmed byte-identical output via Rummy's full
+  system-spec suite). **Mobile seat layout:** a "shrink to fit in one row" approach (tiles shrink
+  indefinitely as opponent count grows) was tried and rejected — replaced with a wrapping,
+  centered flex layout (reads as a 2–3-per-row grid) so tiles stay a legible, consistent size
+  regardless of player count. Two reusable CSS gotchas surfaced and are worth remembering before
+  they bite again elsewhere:
+  - The card-fan overlap technique (`playing-card.css`/`card-collection.css`: each card gets a
+    negative `margin-left`, the container compensates with one matching positive `margin-left`)
+    only works for a single row — under `flex-wrap: wrap`, every wrapped row's leading card still
+    gets pulled left with no per-row compensation, visibly misaligning it. Fixed for the hand
+    footer via `.game-hand__main .card-collection { flex-wrap: nowrap; padding: 0; }` (scroll
+    instead of wrap). Any future card-collection usage that might wrap needs the same nowrap
+    treatment, not a padding/margin tweak.
+  - Flex/grid items default to `min-width: auto` (won't shrink below content's min-content size) —
+    this must be overridden at *every* nesting level, not just the innermost item. The seats row
+    itself (a grid item of `.game-table`) needed its own explicit `min-width: 0` in addition to its
+    flex children's, or the row silently overflows its own parent's width.
+  - **Open, unresolved:** the user spotted a color-bar visual artifact on the right edge of a seat
+    tile, not reproducible in headless Chromium screenshots across several attempts — possibly a
+    browser-specific native affordance for the `commandfor`/`command="show-modal"` button
+    attributes. Revisit with a screenshot or browser/version info from the user.
