@@ -24,6 +24,10 @@ class GoFishPresenter
   def error = turn_base_errors.first
   def feed = implementation.results.reverse.map { |result| feed_turn(result) }
 
+  def action_notice
+    latest_turn_lines.last&.fetch(:text) || ""
+  end
+
   def hand
     your_player.hand.map { |card| { card: card.to_file_name, rank: card.rank, suit: card.suit } }
   end
@@ -53,6 +57,10 @@ class GoFishPresenter
   def turn_base_errors
     return [] if turn.nil?
     turn.errors[:base]
+  end
+
+  def latest_turn_lines
+    feed.first ? feed.first[:lines] : []
   end
 
   def implementation = @implementation ||= game.game_state

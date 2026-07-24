@@ -176,4 +176,28 @@ RSpec.describe GoFishPresenter do
       end
     end
   end
+
+  describe '#action_notice' do
+    it 'is blank before any turn has finished' do
+      expect(presenter_for(your_user).action_notice).to eq ''
+    end
+
+    context 'once a turn has been recorded' do
+      let(:result) do
+        GoFish::TurnResult.new(current_player: implementation.players.first, opponent: implementation.players.last,
+                                cards_taken: [], rank_asked_for: '2', card_picked_up: GoFish::Card.new('9'),
+                                goes_again: false)
+      end
+
+      before do
+        implementation.results = [ result ]
+        game.game_state = implementation
+        game.save!
+      end
+
+      it "is the latest turn's last feed line, from the viewer's point of view" do
+        expect(presenter_for(your_user).action_notice).to eq result.feed_lines(your_user.id).last[:text]
+      end
+    end
+  end
 end

@@ -119,6 +119,19 @@ RSpec.describe 'Go Fish', type: :system do
         expect(page).to have_content "asked #{opponent.name} for any 7s"
       end
     end
+
+    it 'announces what just happened in the action notice', :js do
+      opponent = game.game_state.players.last
+
+      choose_hand_card 'hand-card-7-Spades'
+      find(data_test('opponent-seat'), text: opponent.name).click
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
+
+      expect(page).to have_selector("#{data_test('action-notice')}.action-notice--active")
+      within data_test('action-notice') do
+        expect(page).to have_content "#{opponent.name} ran out of cards, they drew a card"
+      end
+    end
   end
 
   context 'when the game has ended' do
