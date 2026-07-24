@@ -2,6 +2,7 @@ class RummyPresenter
   attr_reader :game, :current_user, :turn, :turn_timer_seconds
 
   MINI_FAN_SIZE = 4
+  DEFAULT_AVATAR_URL = "/default_avatar.png"
   SECONDS_PER_MINUTE = 60
   SECONDS_PER_HOUR = 3600
   SECONDS_PER_DAY = 86400
@@ -67,8 +68,14 @@ class RummyPresenter
       name: player.name, hand_size: player.hand.size,
       mini_hand: Array.new([ player.hand.size, MINI_FAN_SIZE ].min),
       overflow: [ player.hand.size - MINI_FAN_SIZE, 0 ].max,
-      melded: player.has_melded, flag: ""
+      melded: player.has_melded, flag: "", last_action: last_action_for(player),
+      current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL
     }
+  end
+
+  def last_action_for(player)
+    result = implementation.results.reverse.find { |turn_result| turn_result.current_player.id == player.id }
+    result&.feed_lines(current_user.id)&.last&.fetch(:text) || ""
   end
 
   def ranking_entry(player, index)

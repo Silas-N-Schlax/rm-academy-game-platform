@@ -33,7 +33,8 @@ RSpec.describe 'Rummy', type: :system do
       expect(page).to have_content "Stock: #{implementation.deck.cards_left}"
       expect(page).to have_selector(data_test('hand-card'), count: your_player.hand.size)
       expect(page).to have_content opponent.name
-      expect(page).to have_content opponent.hand.size
+      expect(page).to have_selector(data_test('opponent-hand-card'), count: [ opponent.hand.size, RummyPresenter::MINI_FAN_SIZE ].min)
+      expect(page).to have_content "+#{opponent.hand.size - RummyPresenter::MINI_FAN_SIZE}"
     end
 
     it 'sends the player back to the home page' do

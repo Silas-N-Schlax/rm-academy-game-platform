@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   gap: var(--op-space-small);
-  padding: var(--op-space-x-small);
+  padding: var(--op-space-medium);
   margin: 0 0 var(--op-space-medium) var(--op-space-medium);
 
   .card-piles__pile {
@@ -39,6 +39,7 @@
     flex: 0 0 auto;
     float: none;
     justify-content: center;
+    padding: var(--op-space-small);
     margin: var(--op-space-medium) 0 0;
 
     .card-piles__pile-card--empty {

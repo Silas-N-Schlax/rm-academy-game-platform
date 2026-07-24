@@ -68,6 +68,29 @@ RSpec.describe RummyPresenter do
       )
       expect(opponents.first).to include(hand_size: a_kind_of(Integer), melded: false, flag: '')
     end
+
+    it 'defaults every opponent to the placeholder avatar' do
+      expect(presenter_for(your_user).opponents.first[:avatar_url]).to eq '/default_avatar.png'
+    end
+
+    it "flags the opponent whose turn it currently is" do
+      expect(presenter_for(other_user).opponents.first[:current_turn]).to be true
+    end
+
+    it 'is blank for an opponent with no recorded turns yet' do
+      expect(presenter_for(your_user).opponents.first[:last_action]).to eq ''
+    end
+
+    it "summarizes an opponent's most recent turn" do
+      implementation.results = [
+        Rummy::TurnResult.new(current_player: implementation.players.last, card_discarded: Rummy::Card.new('3', 'Diamonds'),
+                               occurred_at: Time.current)
+      ]
+      game.game_state = implementation
+      game.save!
+
+      expect(presenter_for(your_user).opponents.first[:last_action]).to eq 'Discarded the 3 of Diamonds'
+    end
   end
 
   describe '#melds' do

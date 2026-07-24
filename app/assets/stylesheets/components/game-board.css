@@ -10,7 +10,7 @@
   .game-board__board {
     position: relative;
     display: grid;
-    grid-template-columns: calc(var(--op-size-unit) * 62) 1fr; /* 248px */
+    grid-template-columns: calc(var(--op-size-unit) * 78) 1fr; /* 312px */
     gap: var(--op-space-medium);
     padding: var(--op-space-medium);
     overflow-y: auto;

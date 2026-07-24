@@ -59,6 +59,7 @@
 
   &.player-list__mini-card {
     margin-left: calc(var(--op-size-unit) * 3); /* 12px */
+    padding: 0;
   }
 
   &.card-piles__pile-card {

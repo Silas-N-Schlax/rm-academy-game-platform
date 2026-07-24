@@ -52,12 +52,6 @@
   &.player-list__mini-card {
     width: calc(var(--op-size-unit) * 5); /* 20px */
     margin-left: calc(var(--op-size-unit) * -3); /* -12px */
-    transform-origin: bottom center;
-
-    &:nth-child(1) { transform: rotate(-8deg); }
-    &:nth-child(2) { transform: rotate(-3deg); }
-    &:nth-child(3) { transform: rotate(3deg); }
-    &:nth-child(4) { transform: rotate(8deg); }
   }
 
   &.card-piles__pile-card {

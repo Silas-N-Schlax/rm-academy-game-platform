@@ -1,6 +1,9 @@
 .player-list {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border: solid var(--op-border-width) var(--op-color-border);
+  box-shadow: var(--op-shadow-medium);
 
   .player-list__heading {
     margin: 0;
@@ -14,42 +17,74 @@
     background-color: var(--op-color-neutral-plus-six);
   }
 
+  .card__body {
+    padding: 0;
+  }
+
   .player-list__player {
     display: flex;
     flex-direction: column;
     gap: var(--op-space-2x-small);
-    padding-block: var(--op-space-small);
-    padding-inline: var(--op-space-small);
-    border-bottom: solid var(--op-border-width) var(--op-color-border);
+    padding-block: var(--op-space-medium);
+    padding-inline: var(--op-space-medium);
+    box-shadow: 0 var(--op-border-width) 0 0 var(--op-color-border), var(--op-shadow-x-small);
 
-    &:last-child {
-      border-bottom: none;
+    &.player-list__player--current-turn {
+      background-color: var(--op-color-alerts-notice-plus-seven);
     }
   }
 
   .player-list__player-row {
     display: flex;
     align-items: center;
-    gap: var(--op-space-x-small);
+    gap: var(--op-space-small);
     min-width: 0;
   }
 
-  .player-list__player-flag {
+  .player-list__player-avatar {
     flex: 0 0 auto;
-    font-size: var(--op-font-medium);
-    line-height: 1;
+  }
+
+  .player-list__player-name-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--op-space-3x-small, 2px);
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .player-list__player-name {
-    font-weight: var(--op-font-weight-semi-bold);
-    font-size: var(--op-font-small);
+    font-weight: var(--op-font-weight-bold);
+    font-size: var(--op-font-medium);
     margin: 0;
-    flex: 1 1 auto;
+  }
+
+  .player-list__player-last-action {
+    font-size: var(--op-font-2x-small);
+    color: var(--op-color-neutral-on-plus-eight);
+  }
+
+  .player-list__player-status {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--op-space-x-small);
+    margin-left: auto;
   }
 
   .player-list__player-melded {
     flex: 0 0 auto;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--op-size-unit) * 6); /* 24px */
+    height: calc(var(--op-size-unit) * 6); /* 24px */
+    padding: 0;
+    border: none;
+    border-radius: var(--op-radius-circle);
+    background-color: var(--op-color-alerts-notice-base);
+    color: var(--op-color-alerts-notice-on-base);
+    cursor: pointer;
   }
 
   .player-list__mini-fan {
@@ -60,15 +95,6 @@
   }
 
   .player-list__mini-fan-count {
-    font-size: var(--op-font-2x-small);
-    color: var(--op-color-neutral-on-plus-eight);
-  }
-
-  .player-list__player-count {
-    flex: 0 0 auto;
-    margin: 0 0 0 auto;
-    min-width: calc(var(--op-size-unit) * 5); /* 20px */
-    text-align: right;
     font-size: var(--op-font-2x-small);
     color: var(--op-color-neutral-on-plus-eight);
   }
@@ -84,16 +110,8 @@
       padding-block: var(--op-space-medium);
     }
 
-    .player-list__player-flag {
-      font-size: var(--op-font-large);
-    }
-
     .player-list__player-name {
       font-size: var(--op-font-medium);
-    }
-
-    .player-list__mini-fan {
-      gap: var(--op-space-2x-small);
     }
   }
 }
