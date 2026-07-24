@@ -13,3 +13,5 @@ header.board-topbar
     span.badge class=(presenter.your_turn ? "badge--notice" : "badge--primary")
       i.li.icon.icon--small class=(presenter.your_turn ? "li-circle-dot" : "li-circle")
       = presenter.turn_label
+    button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-testid="open-feed-button" data-action="click->game-board-feed#openFeed"
+      i.li.li-list.icon.icon--small

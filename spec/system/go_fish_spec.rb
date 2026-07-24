@@ -52,7 +52,7 @@ RSpec.describe 'Go Fish', type: :system do
       expect(page).to have_selector(data_test('hand-card'), count: 2)
       game.reload
       expect(game.game_state.players.first.hand.map(&:rank)).to eq [ "7", "7" ]
-      expect(game.game_state.players.last.hand.map(&:rank)).to_not include "7"
+      expect(game.game_state.players.last.hand.size).to eq 1
     end
 
     it 'highlights the card when a real user clicks the visible card image', :js do
@@ -85,6 +85,63 @@ RSpec.describe 'Go Fish', type: :system do
 
     it 'renders your completed books' do
       expect(page).to have_selector data_test('your-book-card')
+    end
+  end
+
+  context 'when a turn has been played' do
+    let!(:game) { create :game, type: 'GoFishGame', game_size: 2, player_count: 2 }
+
+    before do
+      game.start!
+      game.game_state.players.first.hand = [ GoFish::Card.new('7', 'Spades') ]
+      game.game_state.players.last.hand = [ GoFish::Card.new('7', 'Hearts') ]
+      game.save!
+      sign_in_as game.users.first
+      visit game_path(game.reload)
+    end
+
+    def choose_hand_card(card_id)
+      find("label[for='#{card_id}']", visible: :all)
+      page.execute_script("document.querySelector(\"label[for='#{card_id}']\").click()")
+    end
+
+    it 'shows the finished turn in the feed drawer once opened', :js do
+      opponent = game.game_state.players.last
+
+      choose_hand_card 'hand-card-7-Spades'
+      find(data_test('opponent-seat'), text: opponent.name).click
+      expect(page).to have_selector(data_test('hand-card'), count: 2)
+
+      find(data_test('open-feed-button')).click
+
+      within data_test('feed-drawer') do
+        expect(page).to have_content 'You'
+        expect(page).to have_content "asked #{opponent.name} for any 7s"
+      end
+    end
+  end
+
+  context 'when the game has ended' do
+    let!(:game) { create :game, type: 'GoFishGame', game_size: 2, player_count: 2 }
+
+    before do
+      game.start!
+      state = game.game_state
+      state.deck = []
+      state.players.each { |player| player.hand = [] }
+      state.players.first.books = [ GoFish::Book.new('K') ]
+      game.game_state = state
+      game.save!
+      sign_in_as game.users.first
+      visit game_path(game.reload)
+    end
+
+    it 'auto-opens the game-over modal with the winner and ranking', :js do
+      expect(page).to have_selector("#{data_test('game-over-modal')}[open]")
+      within data_test('game-over-modal') do
+        expect(page).to have_content "#{game.game_state.players.first.name} wins!"
+        expect(page).to have_content 'Ranked by books, most first'
+      end
     end
   end
 

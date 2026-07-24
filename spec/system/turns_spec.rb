@@ -1,36 +1,5 @@
 require 'rails_helper'
 RSpec.describe 'Turns', type: :system do
-  context 'when a valid GoFish turn is played' do
-    let!(:game) { create :started_game }
-    before do
-      game.start!
-      sign_in_as game.users.first
-    end
-    context 'when the game ends' do
-      before do
-        game.start!
-        game_state = game.game_state
-        game_state.deck.cards = []
-        game_state.players.first.hand = [ GoFish::Card.new('A'), GoFish::Card.new('A'), GoFish::Card.new('A') ]
-        game_state.players.last.hand = [ GoFish::Card.new('A') ]
-        game.save!
-      end
-      xit 'display a game over view' do
-        # Pending: Go Fish's new game-board UI has no game-over wiring yet — see
-        # znotes/plans/gf-c8-migration/go-fish.md section E2.
-        expected_content = 'Game Over'
-        visit game_path(game)
-        click_on 'Ask'
-        game.reload
-        expect(page).to have_content expected_content
-        expect(page).to have_content game.users.first.name
-        expect(page).to have_content game.formatted_time
-        expect(page).to have_content game.game_size
-        expect(game.finished_at).to be_present
-      end
-    end
-  end
-
   context 'when a valid CrazyEights turn is played' do
     let!(:game) { create :started_game, type: 'CrazyEightsGame' }
     before do

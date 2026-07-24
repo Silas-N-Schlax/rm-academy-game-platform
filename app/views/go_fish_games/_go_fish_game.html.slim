@@ -1,4 +1,4 @@
-.game-board data-controller="card-select gofish-turn"
+.game-board data-controller="card-select gofish-turn game-board-feed"
   = render "board_topbar", presenter: presenter
 
   .game-table
@@ -26,3 +26,6 @@
 
   - presenter.opponents.each do |player|
     = render "game_table_player_dialog", player: player
+
+  = render "game_board_feed", presenter: presenter
+  = render "game_board_game_over", presenter: presenter
