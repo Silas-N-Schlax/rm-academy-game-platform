@@ -51,6 +51,20 @@ RSpec.describe GoFishPresenter do
     end
   end
 
+  describe '#your_books' do
+    it 'is empty before the viewer has completed any book' do
+      expect(presenter_for(your_user).your_books).to eq []
+    end
+
+    it 'returns the file name of each completed book once the viewer has one' do
+      implementation.players.first.books = [ GoFish::Book.new('K') ]
+      game.game_state = implementation
+      game.save!
+
+      expect(presenter_for(your_user).your_books).to eq [ 'king_of_hearts' ]
+    end
+  end
+
   describe '#hand_disabled' do
     it 'is false when it is your turn' do
       expect(presenter_for(your_user).hand_disabled).to be false
@@ -67,7 +81,7 @@ RSpec.describe GoFishPresenter do
       expect(opponents.map { |opponent| opponent[:name] }).to_not include(
         game.reload.game_state.find_player(your_user.id).name
       )
-      expect(opponents.first).to include(hand_size: a_kind_of(Integer), book_count: 0)
+      expect(opponents.first).to include(id: game.reload.game_state.players.last.id, hand_size: a_kind_of(Integer), book_count: 0)
     end
 
     it 'defaults every opponent to the placeholder avatar' do
