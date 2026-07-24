@@ -6,8 +6,8 @@ const DISCARD_EXACT_CARDS = 1
 // Connects to data-controller="game-board-selection"
 export default class extends Controller {
   static targets = [
-    "handCheckbox", "meldAction", "meldDrawIcon",
-    "discardAction", "discardDrawIcon", "layoffActionField", "layoffMeldIndexField"
+    "handCheckbox", "meldAction",
+    "discardAction", "layoffActionField", "layoffMeldIndexField"
   ]
   static values = { awaitingDraw: Boolean }
 
@@ -26,8 +26,6 @@ export default class extends Controller {
     this.handCheckboxTargets.forEach((checkbox) => this.syncCardActiveClass(checkbox))
     if (this.hasMeldActionTarget) this.meldActionTarget.disabled = this.awaitingDrawValue || checkedCount < MELD_MIN_CARDS
     if (this.hasDiscardActionTarget) this.discardActionTarget.disabled = this.awaitingDrawValue || checkedCount !== DISCARD_EXACT_CARDS
-    if (this.hasMeldDrawIconTarget) this.meldDrawIconTarget.hidden = !this.awaitingDrawValue
-    if (this.hasDiscardDrawIconTarget) this.discardDrawIconTarget.hidden = !this.awaitingDrawValue
   }
 
   syncCardActiveClass(checkbox) {

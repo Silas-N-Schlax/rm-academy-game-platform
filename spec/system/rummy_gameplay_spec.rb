@@ -60,10 +60,9 @@ RSpec.describe 'Rummy gameplay', type: :system do
       visit game_path(game)
     end
 
-    it 'disables Meld and Discard and shows a draw-first icon until a card is drawn' do
+    it 'disables Meld and Discard until a card is drawn' do
       expect(page).to have_button('Meld', disabled: true)
       expect(page).to have_button('Discard', disabled: true)
-      expect(page).to have_selector('[data-game-board-selection-target="meldDrawIcon"]:not([hidden])', visible: :all)
 
       click_on 'Draw from stock'
       expect(page).to have_selector(data_test('hand-card'), count: 4)
@@ -73,7 +72,6 @@ RSpec.describe 'Rummy gameplay', type: :system do
       check_hand_card 'hand-card-7-Diamonds'
 
       expect(page).to have_button('Meld', disabled: false)
-      expect(page).to have_selector('[data-game-board-selection-target="meldDrawIcon"][hidden]', visible: :all)
     end
   end
 
