@@ -19,6 +19,10 @@ RSpec.describe Game, type: :model do
     it 'requires #valid_move? to be overridden' do
       expect { game.valid_move? }.to raise_error(NotImplementedError, /valid_move\?/)
     end
+
+    it 'requires #presenter_class to be overridden' do
+      expect { game.presenter_class }.to raise_error(NotImplementedError, /presenter_class/)
+    end
   end
 
   describe 'validations' do

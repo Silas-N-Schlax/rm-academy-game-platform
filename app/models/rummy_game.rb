@@ -5,6 +5,8 @@ class RummyGame < Game
 
   def turn_class = RummyTurn
 
+  def presenter_class = RummyPresenter
+
   def play(action:, source: nil, card_ids: [], meld_index: nil)
     implementation = self.game_state
     dispatch_play(implementation, action:, source:, card_ids:, meld_index:)

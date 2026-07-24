@@ -133,6 +133,12 @@ RSpec.describe GoFishGame, type: :model do
     end
   end
 
+  describe '#presenter_class' do
+    it 'returns a no-op presenter so the shared show view can build one without erroring' do
+      expect { described_class.new.presenter_class.new(nil, nil) }.to_not raise_error
+    end
+  end
+
   describe '#players' do
     let!(:game) { create(:game, game_size: 4, player_count: 4) }
     before { game.start! }

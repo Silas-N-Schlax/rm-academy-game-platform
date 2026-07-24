@@ -35,6 +35,7 @@ class Game < ApplicationRecord
 
   def engine_class = raise NotImplementedError, "#{self.class} must implement #engine_class"
   def turn_class = raise NotImplementedError, "#{self.class} must implement #turn_class"
+  def presenter_class = raise NotImplementedError, "#{self.class} must implement #presenter_class"
   def play(**) = raise NotImplementedError, "#{self.class} must implement #play"
   def valid_move?(**) = raise NotImplementedError, "#{self.class} must implement #valid_move?"
 
