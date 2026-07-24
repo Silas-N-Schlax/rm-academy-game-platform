@@ -120,11 +120,67 @@ RSpec.describe RummyPresenter do
     end
   end
 
-  describe '#your_flag and #feed' do
-    it 'are blank placeholders, unchanged from the inline board hash' do
-      presenter = presenter_for(your_user)
-      expect(presenter.your_flag).to eq ''
-      expect(presenter.feed).to eq []
+  describe '#your_flag' do
+    it 'is a blank placeholder, unchanged from the inline board hash' do
+      expect(presenter_for(your_user).your_flag).to eq ''
+    end
+  end
+
+  describe '#feed' do
+    it 'is empty before any turn has finished' do
+      expect(presenter_for(your_user).feed).to eq []
+    end
+
+    context 'once turns have been recorded' do
+      let(:older) do
+        Rummy::TurnResult.new(current_player: implementation.players.first, card_discarded: Rummy::Card.new('2', 'Clubs'),
+                               occurred_at: Time.zone.parse('2024-01-01 11:00:00'))
+      end
+      let(:newer) do
+        Rummy::TurnResult.new(current_player: implementation.players.last, card_discarded: Rummy::Card.new('3', 'Diamonds'),
+                               occurred_at: Time.zone.parse('2024-01-01 11:58:00'))
+      end
+
+      before do
+        implementation.results = [ older, newer ]
+        game.game_state = implementation
+        game.save!
+      end
+
+      it 'orders turns newest first, with actor, relative time, and feed lines' do
+        travel_to Time.zone.parse('2024-01-01 12:00:00') do
+          expect(presenter_for(your_user).feed).to eq [
+            { actor: implementation.players.last.name, time: '2 mins ago',
+              lines: [ { text: 'Discarded the 3 of Diamonds', kind: :discard } ] },
+            { actor: 'You', time: '1 hour ago',
+              lines: [ { text: 'Discarded the 2 of Clubs', kind: :discard } ] }
+          ]
+        end
+      end
+    end
+
+    context 'relative time formatting' do
+      def feed_time_for(occurred_at, now:)
+        implementation.results = [ Rummy::TurnResult.new(current_player: implementation.players.first, occurred_at: occurred_at) ]
+        game.game_state = implementation
+        game.save!
+        travel_to(now) { presenter_for(your_user).feed.first[:time] }
+      end
+
+      it 'says "Just now" for anything under a minute old' do
+        now = Time.zone.parse('2024-01-01 12:00:00')
+        expect(feed_time_for(now - 30.seconds, now: now)).to eq 'Just now'
+      end
+
+      it 'shows whole days once past the hour mark' do
+        now = Time.zone.parse('2024-01-01 12:00:00')
+        expect(feed_time_for(now - 2.days, now: now)).to eq '2 days ago'
+      end
+
+      it 'falls back to "A while ago" once past 30 days' do
+        now = Time.zone.parse('2024-01-01 12:00:00')
+        expect(feed_time_for(now - 31.days, now: now)).to eq 'A while ago'
+      end
     end
   end
 

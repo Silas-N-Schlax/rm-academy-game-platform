@@ -2,6 +2,10 @@ class RummyPresenter
   attr_reader :game, :current_user, :turn, :turn_timer_seconds
 
   MINI_FAN_SIZE = 4
+  SECONDS_PER_MINUTE = 60
+  SECONDS_PER_HOUR = 3600
+  SECONDS_PER_DAY = 86400
+  RECENT_CUTOFF_DAYS = 30
 
   def initialize(game, current_user, turn: nil, turn_timer_seconds: nil)
     @game = game
@@ -19,7 +23,7 @@ class RummyPresenter
   def your_name = your_player.name
   def your_flag = ""
   def discard_top = implementation.discard.top_card&.to_file_name
-  def feed = []
+  def feed = implementation.results.reverse.map { |result| feed_turn(result) }
   def error = turn_base_errors.first
 
   def hand
@@ -69,5 +73,32 @@ class RummyPresenter
 
   def ranking_entry(player, index)
     { place: index + 2, name: player.name, flag: "", pips: player.hand_pip_total }
+  end
+
+  def feed_turn(result)
+    {
+      actor: result.actor_label(current_user.id),
+      time: relative_time(result.occurred_at),
+      lines: result.feed_lines(current_user.id)
+    }
+  end
+
+  def relative_time(occurred_at)
+    return "" if occurred_at.nil?
+    seconds = (Time.current - occurred_at).to_i
+    return "Just now" if seconds < SECONDS_PER_MINUTE
+    return "#{count_with_unit(seconds / SECONDS_PER_MINUTE, "min")} ago" if seconds < SECONDS_PER_HOUR
+    return "#{count_with_unit(seconds / SECONDS_PER_HOUR, "hour")} ago" if seconds < SECONDS_PER_DAY
+    relative_day(seconds)
+  end
+
+  def relative_day(seconds)
+    days = seconds / SECONDS_PER_DAY
+    return "#{count_with_unit(days, "day")} ago" if days < RECENT_CUTOFF_DAYS
+    "A while ago"
+  end
+
+  def count_with_unit(count, unit)
+    "#{count} #{unit}#{"s" if count != 1}"
   end
 end
