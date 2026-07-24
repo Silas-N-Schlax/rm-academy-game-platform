@@ -1,7 +1,7 @@
 footer.game-hand
   = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { id: "hand-actions-form", class: "game-hand__form" } do |f|
     .game-hand__main
-      p.game-hand__label = "#{presenter.your_name} #{presenter.your_flag}"
+      p.game-hand__label = "Your Hand"
       .card-collection.card-collection--large
         - presenter.hand.each do |card|
           - card_id = "hand-card-#{card[:rank]}-#{card[:suit]}"
