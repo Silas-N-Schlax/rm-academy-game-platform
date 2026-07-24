@@ -1,6 +1,6 @@
 .game-hand {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: var(--op-space-medium);
   padding: var(--op-space-medium);
