@@ -88,6 +88,12 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
   hiding which card was drawn from the stock from everyone but the drawer) must be resolved inside
   the `TurnResult` object itself before it reaches the view — copying the Go Fish/Crazy Eights
   template-side-branching pattern would not work against the newer partial's contract.
+- **Any reuse of `TurnResult#feed_lines`/`#actor_label` must pass `current_user.id` as the viewer,
+  never the acting player's own id.** `RummyPresenter#last_action_for` (the per-opponent "last
+  action" summary in the player-list panel) finds an opponent's most recent `TurnResult` and calls
+  `feed_lines(current_user.id)` on it — passing the opponent's own id instead would incorrectly
+  reveal which card they drew from the stock, since `feed_lines` only shows that detail when
+  `actor?(viewer_id)` is true for the *viewer*, not the actor.
 
 ## Testing gotchas
 

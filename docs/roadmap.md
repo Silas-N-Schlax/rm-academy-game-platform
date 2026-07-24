@@ -198,3 +198,23 @@ rather than duplicating when revisiting a topic.
   (not switch to `transform: translateY(...)`, which was also considered and rejected as "brings the
   div to the top and looks weird") — next attempt needs a different mechanism for reserving space
   that doesn't rely on padding offsetting margin.
+- **Player-list panel redesign (2026-07-24):** `RummyPresenter#opponents` now returns
+  `last_action` (each opponent's most recent turn, via `TurnResult#feed_lines` — see
+  [docs/architecture.md](architecture.md)'s feed-rendering section for the viewer-id gotcha this
+  surfaced), `current_turn` (highlights whichever opponent row is up next), and `avatar_url`
+  (hardcoded to a new `RummyPresenter::DEFAULT_AVATAR_URL` = `/default_avatar.png`, the same
+  placeholder image `users/show.html.slim` already uses — swap for the real per-user avatar once
+  that feature exists). The row itself (`_game_board_player.html.slim`/`player-list.css`) was
+  reworked to avatar+name on the left, melded badge (now a small circular checkmark button using
+  Optics' `[data-tooltip-text]` tooltip — already covers hover *and* focus/click out of the box, no
+  override needed) + mini card-fan + `+n` overflow on the right, with the old total-hand-size
+  number dropped entirely. Two open threads from this pass:
+  - `.card-collection` bakes in `padding: 0 var(--op-space-medium)` regardless of size modifier —
+    caused a real, non-obvious gap between the mini-fan and the `+n` text; fixed locally via
+    `.card-collection.player-list__mini-card { padding: 0; }`, but the same trap could bite the next
+    new modifier added to that component.
+  - `.player-list` keeps `overflow: hidden` (needed to clip row backgrounds/shadows to the card's
+    rounded corners), but this also clips the Optics tooltip popup on the truncated last-action
+    text. A fix (scoping border-radius to `:first-child`/`:last-child` instead of clipping the
+    whole container) was tried and reverted — the last-action tooltip may currently be invisible
+    when it pops outside the container's bounds. Revisit if that's confirmed.
