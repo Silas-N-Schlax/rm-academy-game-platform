@@ -224,7 +224,13 @@ rather than duplicating when revisiting a topic.
   byte-identical via its full system-spec suite). The old GoFish-specific game-over specs in
   `spec/system/games_spec.rb`/`spec/system/turns_spec.rb` (testing the removed dropdown UI and
   literal "Game Over"/"won the game!" text) were deleted as redundant with the new coverage in
-  `spec/system/go_fish_spec.rb`. E3 (action-notice) and F (old-code cleanup) are still open. **A
+  `spec/system/go_fish_spec.rb`. **E3 done too:** a new `action-notice` component (own CSS file,
+  `action_notice_controller.js` generalizing `game_board_toast_controller.js`'s value-changed→
+  show→auto-dismiss pattern, `aria-live="polite"`) shows the latest turn's last feed line
+  bottom-center, distinct from the top-right error toast; `GoFishPresenter#action_notice` sources it
+  from the same `feed`/`feed_lines(viewer_id)` data the drawer uses. Built generically so Rummy can
+  adopt it later — Rummy untouched this pass. All of section E is now done; only F (old-code
+  cleanup) remains before Go Fish moves to Crazy Eights. **A
   real test-coverage gap opened by this work:** the only system-level coverage of
   `timer_controller.js`/`auto_play_controller.js` lived in `spec/system/games_spec.rb`, riding on Go
   Fish's old UI — that whole block was deleted (not deferred) since the feature it drove no longer
