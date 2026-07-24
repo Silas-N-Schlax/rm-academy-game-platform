@@ -36,6 +36,10 @@ module GoFish
       ties.max_by { |player| player.highest_book.value }
     end
 
+    def ranking
+      players.sort_by { |player| [ -player.books_size, -(player.highest_book&.value || 0) ] }
+    end
+
     def list_of_ranks(id)
       find_player(id).ranks
     end

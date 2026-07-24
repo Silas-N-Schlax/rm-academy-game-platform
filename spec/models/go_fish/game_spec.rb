@@ -343,6 +343,21 @@ RSpec.describe GoFish::Game, type: :model do
     end
   end
 
+  describe '#ranking' do
+    let!(:game) { described_class.new(players: [ player1, player2, player3 ]) }
+    let!(:game_player1) { game.players[0] }
+    let!(:game_player2) { game.players[1] }
+    let!(:game_player3) { game.players[2] }
+
+    it 'orders players by book count, tie-broken by highest book value' do
+      game_player1.books = [ GoFish::Book.new('2') ]
+      game_player2.books = [ GoFish::Book.new('J'), GoFish::Book.new('K') ]
+      game_player3.books = [ GoFish::Book.new('A') ]
+
+      expect(game.ranking).to eq [ game_player2, game_player3, game_player1 ]
+    end
+  end
+
   describe '#turn_skipped?' do
     let(:game) { described_class.new(players: [ player1, player2 ]) }
     let(:player) { game.current_player }
