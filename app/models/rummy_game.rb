@@ -1,4 +1,7 @@
 class RummyGame < Game
+  MIN_PLAYERS = 2
+  MAX_PLAYERS = 6
+
   serialize :game_state, coder: Rummy::Game
 
   def engine_class = Rummy::Game

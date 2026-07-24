@@ -58,10 +58,10 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#valid_type' do
-    it 'returns array' do
+    it 'returns every Game subclass name, sorted alphabetically' do
       game = Game.new(name: 'test', type: 'GoFishGame', game_size: 2)
       game.save_new_game(create(:user).id)
-      expected_array = [ "GoFishGame", "CrazyEightsGame", "RummyGame" ]
+      expected_array = [ "CrazyEightsGame", "GoFishGame", "RummyGame" ]
       expect(game.valid_types).to eq expected_array
     end
   end
@@ -73,17 +73,6 @@ RSpec.describe Game, type: :model do
       expected_game_size = 1
       expect(game.persisted?).to be true
       expect(game.players.size).to eq expected_game_size
-    end
-  end
-  describe '#game_size_by_type' do
-    let(:game) { described_class.new }
-    it 'returns the min and max values in a hash for that type' do
-      expected_min = 2
-      expected_max = 6
-      type = 'GoFishGame'
-      result = game.game_size_by_type(type)
-      expect(result[:min]).to eq expected_min
-      expect(result[:max]).to eq expected_max
     end
   end
 

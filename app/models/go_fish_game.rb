@@ -1,4 +1,7 @@
 class GoFishGame < Game
+  MIN_PLAYERS = 2
+  MAX_PLAYERS = 6
+
   serialize :game_state, coder: GoFish::Game
 
   def engine_class = GoFish::Game

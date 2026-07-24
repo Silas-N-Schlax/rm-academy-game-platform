@@ -5,16 +5,20 @@
 ```
 User --< sessions (Session)
 User --< players (Player) >-- Game
-Game (STI base, type: "GoFishGame" | "CrazyEightsGame")
+Game (STI base, type: "GoFishGame" | "CrazyEightsGame" | "RummyGame")
   has_many :players, dependent: :destroy
   has_many :users, through: :players
 ```
 
-- `Game` is an STI base class (`type` column). `GoFishGame` and `CrazyEightsGame` are the only subclasses today; adding a new game means adding a new subclass plus a new engine namespace (see below), not touching the base class's schema.
+- `Game` is an STI base class (`type` column). `GoFishGame`, `CrazyEightsGame`, and `RummyGame` are the subclasses today; adding a new game means adding a new subclass plus a new engine namespace (see below), not touching the base class's schema. Per-type player-count bounds live as `MIN_PLAYERS`/`MAX_PLAYERS` constants on each subclass (not a hash on `Game`) — `Game#valid_game_size` reads `self.class::MIN_PLAYERS`/`MAX_PLAYERS` directly, guarded by `const_defined?` so the base class itself is skipped. `Game#valid_types` derives the full type list from `Game.descendants` (sorted alphabetically) rather than a hardcoded list — see the STI gotchas below for a real subtlety this introduces.
 - `has_many :players`/`has_many :users` have no explicit `order`. Rails implicitly orders `.first`/`.last` by `id`, but `.map`/`.each`/`.to_a` do not — those can return rows in a different order under DB load. `GoFish::Game.create`/`CrazyEights::Game.create` learned this the hard way (players could get seated in the wrong turn order) and now `sort_by(&:id)` explicitly before mapping. `app/views/application/_go_fish_form.html.slim`'s player-select dropdown has the same latent gap and is not yet fixed — see `docs/roadmap.md`.
 - `Player` is the join model between `User` and `Game` — one row per seat, holding `winner` (boolean/nil: `true` = won, `nil` = lost or unfinished, since ties aren't possible in either game).
 - `Session`/`Current` follow the standard Rails 8 authentication-generator pattern: a signed cookie holds a `session_id`, `Current.session` is set per-request in `Authentication` (a controller concern), and `Current.user` delegates to it.
 - `Stat` is a plain (non-AR) query object that computes win/loss/average stats per user, optionally filtered by game `type` string.
+
+### STI gotchas
+
+- `Game.descendants` only returns subclasses that have already been autoloaded into memory — confirmed empirically (`Game.descendants` returns `[]` before anything references a subclass). Test env doesn't eager-load by default (only `CI=true` does, per `config/environments/test.rb`), so a naive `Game.descendants` call could silently return an incomplete type list depending on what's already loaded in the process. Fixed via a memoized `Game.eager_load_subclasses!` (called from `valid_types`) that forces `Rails.application.eager_load!` once per process when not already eager-loading. Any other code that leans on `Game.descendants` needs the same guard.
 
 ## The serialized game-state pattern
 

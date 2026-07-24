@@ -1,4 +1,7 @@
 class CrazyEightsGame < Game
+  MIN_PLAYERS = 2
+  MAX_PLAYERS = 7
+
   serialize :game_state, coder: CrazyEights::Game
 
   def engine_class = CrazyEights::Game
