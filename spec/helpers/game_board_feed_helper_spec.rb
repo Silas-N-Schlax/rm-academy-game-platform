@@ -11,10 +11,19 @@ RSpec.describe GameBoardFeedHelper, type: :helper do
       expect(helper.feed_line_class(:win)).to eq 'feed-drawer__line--climax'
     end
 
+    it 'is the climax modifier for a Go Fish climax line' do
+      expect(helper.feed_line_class(:climax)).to eq 'feed-drawer__line--climax'
+    end
+
+    it 'is the notable modifier for a Go Fish notable line' do
+      expect(helper.feed_line_class(:notable)).to eq 'feed-drawer__line--notable'
+    end
+
     it 'is nil for routine lines' do
       expect(helper.feed_line_class(:draw)).to be_nil
       expect(helper.feed_line_class(:discard)).to be_nil
       expect(helper.feed_line_class(:recycle)).to be_nil
+      expect(helper.feed_line_class(:ask)).to be_nil
     end
   end
 
