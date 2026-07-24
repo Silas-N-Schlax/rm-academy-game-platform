@@ -224,6 +224,22 @@ RSpec.describe Rummy::Meld, type: :model do
     end
   end
 
+  describe 'card ordering' do
+    it 'sorts run cards by rank on initialization regardless of input order' do
+      meld = described_class.new(cards: [ Rummy::Card.new('7', 'Hearts'), Rummy::Card.new('5', 'Hearts'), Rummy::Card.new('6', 'Hearts') ])
+      expect(meld.cards).to eq [ Rummy::Card.new('5', 'Hearts'), Rummy::Card.new('6', 'Hearts'), Rummy::Card.new('7', 'Hearts') ]
+    end
+
+    it 'keeps run cards sorted after a card is appended to either end' do
+      meld = described_class.new(cards: [ Rummy::Card.new('5', 'Hearts'), Rummy::Card.new('6', 'Hearts'), Rummy::Card.new('7', 'Hearts') ])
+      meld.cards += [ Rummy::Card.new('4', 'Hearts') ]
+      expect(meld.cards).to eq [
+        Rummy::Card.new('4', 'Hearts'), Rummy::Card.new('5', 'Hearts'),
+        Rummy::Card.new('6', 'Hearts'), Rummy::Card.new('7', 'Hearts')
+      ]
+    end
+  end
+
   describe '#as_json' do
     it 'returns the cards as a plain array' do
       meld = described_class.new(cards: [ Rummy::Card.new('K', 'Spades'), Rummy::Card.new('K', 'Hearts') ])

@@ -296,6 +296,15 @@ RSpec.describe Rummy::Game, type: :model do
         game.lay_off(0, [ eight_hearts ])
         expect(game.current_player).to eq player1
       end
+
+      it 'keeps the meld sorted when the card extends the low end' do
+        four_hearts = Rummy::Card.new('4', 'Hearts')
+        player1.hand = [ four_hearts ]
+        game.lay_off(0, [ four_hearts ])
+        expect(existing_meld.cards).to eq [
+          four_hearts, Rummy::Card.new('5', 'Hearts'), Rummy::Card.new('6', 'Hearts'), Rummy::Card.new('7', 'Hearts')
+        ]
+      end
     end
 
     context 'when the player has not melded yet' do
