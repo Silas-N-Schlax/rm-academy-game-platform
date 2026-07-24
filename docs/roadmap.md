@@ -213,18 +213,23 @@ rather than duplicating when revisiting a topic.
   other game's build.
   **Go Fish execution progress (2026-07-24):** sections A (engine/PORO parity —
   `occurred_at`/`feed_lines`/`actor_label`/`ranking`/`to_file_name`), B (`GoFishPresenter`), C (the
-  `game-table` layout + seated-tile partial + atomic presenter flip), and D (the shared
-  `card-select` + `gofish-turn` Stimulus controllers, click-a-card-then-click-a-seat interaction,
-  server-rendered `disabled` hand cards) are done per
-  `znotes/plans/gf-c8-migration/go-fish.md`. E (feed/game-over/action-notice) and F (old-code
-  cleanup) are still open. **A real test-coverage gap opened by this work:** the only system-level
-  coverage of `timer_controller.js`/`auto_play_controller.js` lived in `spec/system/games_spec.rb`,
-  riding on Go Fish's old UI — that whole block was deleted (not deferred) since the feature it
-  drove no longer renders and won't again until a future initiative wires the timer into the new
-  boards. Until that happens, the turn timer has zero system-spec coverage anywhere in the suite.
-  Two GoFish specs (`spec/system/games_spec.rb`'s "shows the winner banner",
-  `spec/system/turns_spec.rb`'s "display a game over view") are marked `xit` pending section E2's
-  game-over wiring — unskip both once that lands.
+  `game-table` layout + seated-tile partial + atomic presenter flip), D (the shared `card-select` +
+  `gofish-turn` Stimulus controllers, click-a-card-then-click-a-seat interaction, server-rendered
+  `disabled` hand cards), and most of E (feed drawer + game-over modal, both reusing the shared
+  `_game_board_feed`/`_game_board_game_over` partials) are done per
+  `znotes/plans/gf-c8-migration/go-fish.md`. Wiring the shared game-over partial to Go Fish required
+  generalizing it beyond Rummy's hardcoded "pip total"/"pips" text: both presenters now expose a
+  `ranking_subtitle` method and each `ranking` entry carries a generic `score:` string, additive to
+  Rummy's existing `pips:` key (Rummy's own spec/rendered output updated to match, confirmed
+  byte-identical via its full system-spec suite). The old GoFish-specific game-over specs in
+  `spec/system/games_spec.rb`/`spec/system/turns_spec.rb` (testing the removed dropdown UI and
+  literal "Game Over"/"won the game!" text) were deleted as redundant with the new coverage in
+  `spec/system/go_fish_spec.rb`. E3 (action-notice) and F (old-code cleanup) are still open. **A
+  real test-coverage gap opened by this work:** the only system-level coverage of
+  `timer_controller.js`/`auto_play_controller.js` lived in `spec/system/games_spec.rb`, riding on Go
+  Fish's old UI — that whole block was deleted (not deferred) since the feature it drove no longer
+  renders and won't again until a future initiative wires the timer into the new boards. Until that
+  happens, the turn timer has zero system-spec coverage anywhere in the suite.
 - **Game-hand layout bugs (2026-07-24):** the empty/off-center hand issue (label sitting at the
   bottom when the hand is short, action buttons hugging the bottom instead of centering) is fixed —
   `.game-hand`'s `align-items` changed from `flex-end` to `center` in `game-hand.css`. **Still open:**
