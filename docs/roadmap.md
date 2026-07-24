@@ -151,3 +151,21 @@ rather than duplicating when revisiting a topic.
   supersede the older `znotes/plans/engine-refactor-plan.md`, which is now annotated as such).
   Revisit whether full engine unification is still worth pursuing now that 4a/4b have landed, or
   whether the incremental cards already captured most of the value.
+
+## UI/view-layer debt (2026-07-24)
+
+- **`RummyPresenter` extraction — done (2026-07-24):** Rummy's inline `board` hash
+  (`app/views/rummy_games/_rummy_game.html.slim`) is now a `RummyPresenter` PORO
+  (`app/presenters/rummy_presenter.rb`) with a granular method-per-value API, wired via a new
+  `presenter_class` contract on the `Game` models (mirroring `turn_class`/`engine_class` —
+  raises `NotImplementedError` by default). `show.html.slim` builds one presenter (carrying
+  `turn`/`turn_timer_seconds`) as the sole local passed to each game partial. Go Fish/Crazy Eights
+  get a `NullPresenter` stub (`app/presenters/null_presenter.rb`) so the shared show view doesn't
+  error on them; they still build their own display data inline pending their own conversion. No
+  shared `GamePresenter` base class yet — deferred until that conversion gives a second real data
+  point to factor against.
+- **`game-board.css` decomposition** (`znotes/plans/game-board-css-decomposition.md`): shrink the
+  558-line `game-board.css` down to just its layout shell by extracting each section (feed drawer,
+  game-over modal, players panel, piles, hand/actions) into small reusable component files, leaning
+  on Optics built-ins (`side-panel`, `modal`, `card`, `tab-group`) where they fit. Intended to give
+  Go Fish/Crazy Eights reusable pieces once they convert to the new board design. Not started.
