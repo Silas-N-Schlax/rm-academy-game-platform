@@ -6,23 +6,23 @@ footer.game-hand
         - presenter.hand.each do |card|
           - card_id = "hand-card-#{card[:rank]}-#{card[:suit]}"
           label.game-hand__card for="#{card_id}" data-testid="hand-card"
-            input type="checkbox" name="turn[card_ids][]" value="#{card[:rank]}:#{card[:suit]}" id="#{card_id}" class="game-hand__card-input" data-game-board-target="handCheckbox" data-action="change->game-board#syncSelectionState"
+            input type="checkbox" name="turn[card_ids][]" value="#{card[:rank]}:#{card[:suit]}" id="#{card_id}" class="game-hand__card-input" data-game-board-selection-target="handCheckbox" data-action="change->game-board-selection#syncSelectionState"
             = image_tag "cards/#{card[:card]}.svg", class: "playing-card playing-card--large"
 
-    input type="hidden" data-game-board-target="layoffActionField"
-    input type="hidden" data-game-board-target="layoffMeldIndexField"
+    input type="hidden" data-game-board-selection-target="layoffActionField"
+    input type="hidden" data-game-board-selection-target="layoffMeldIndexField"
 
     .game-hand__actions
       .game-hand__action-grid
-        button.btn.btn--primary type="submit" name="turn[action]" value="meld" data-game-board-target="meldAction"
+        button.btn.btn--primary type="submit" name="turn[action]" value="meld" data-game-board-selection-target="meldAction"
           | Meld
-          i.li.li-lock.icon.icon--small hidden=true data-game-board-target="meldDrawIcon" aria-label="Draw a card first"
-        button.btn type="submit" name="turn[action]" value="discard" data-game-board-target="discardAction"
+          i.li.li-lock.icon.icon--small hidden=true data-game-board-selection-target="meldDrawIcon" aria-label="Draw a card first"
+        button.btn type="submit" name="turn[action]" value="discard" data-game-board-selection-target="discardAction"
           | Discard
-          i.li.li-lock.icon.icon--small hidden=true data-game-board-target="discardDrawIcon" aria-label="Draw a card first"
+          i.li.li-lock.icon.icon--small hidden=true data-game-board-selection-target="discardDrawIcon" aria-label="Draw a card first"
         button.btn type="button"
           | Sort
           i.li.li-arrow-up-down.icon.icon--small
-        button.btn type="button" data-action="click->game-board#clearSelection"
+        button.btn type="button" data-action="click->game-board-selection#clearSelection"
           | Clear
           i.li.li-x.icon.icon--small

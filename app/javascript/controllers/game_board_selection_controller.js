@@ -3,10 +3,10 @@ import { Controller } from "@hotwired/stimulus"
 const MELD_MIN_CARDS = 3
 const DISCARD_EXACT_CARDS = 1
 
-// Connects to data-controller="game-board"
+// Connects to data-controller="game-board-selection"
 export default class extends Controller {
   static targets = [
-    "tab", "panel", "feedDrawer", "feedScrim", "handCheckbox", "meldAction", "meldDrawIcon",
+    "handCheckbox", "meldAction", "meldDrawIcon",
     "discardAction", "discardDrawIcon", "layoffActionField", "layoffMeldIndexField"
   ]
   static values = { awaitingDraw: Boolean }
@@ -46,21 +46,5 @@ export default class extends Controller {
     this.layoffMeldIndexFieldTarget.name = "turn[meld_index]"
     this.layoffMeldIndexFieldTarget.value = event.currentTarget.dataset.meldIndex
     document.getElementById("hand-actions-form").requestSubmit()
-  }
-
-  switchTab(event) {
-    const tab = event.currentTarget.dataset.tab
-    this.tabTargets.forEach((t) => t.classList.toggle("tab--active", t === event.currentTarget))
-    this.panelTargets.forEach((p) => p.classList.toggle("game-board__panel--active", p.dataset.panel === tab))
-  }
-
-  openFeed() {
-    this.feedDrawerTarget.classList.add("is-open")
-    this.feedScrimTarget.classList.add("is-open")
-  }
-
-  closeFeed() {
-    this.feedDrawerTarget.classList.remove("is-open")
-    this.feedScrimTarget.classList.remove("is-open")
   }
 }

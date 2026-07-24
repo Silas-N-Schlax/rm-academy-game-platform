@@ -16,8 +16,14 @@ application.register("country", CountryController)
 import DialogController from "./dialog_controller"
 application.register("dialog", DialogController)
 
-import GameBoardController from "./game_board_controller"
-application.register("game-board", GameBoardController)
+import GameBoardFeedController from "./game_board_feed_controller"
+application.register("game-board-feed", GameBoardFeedController)
+
+import GameBoardSelectionController from "./game_board_selection_controller"
+application.register("game-board-selection", GameBoardSelectionController)
+
+import GameBoardTabsController from "./game_board_tabs_controller"
+application.register("game-board-tabs", GameBoardTabsController)
 
 import GameBoardToastController from "./game_board_toast_controller"
 application.register("game-board-toast", GameBoardToastController)
