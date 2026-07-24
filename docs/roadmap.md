@@ -169,3 +169,17 @@ rather than duplicating when revisiting a topic.
   game-over modal, players panel, piles, hand/actions) into small reusable component files, leaning
   on Optics built-ins (`side-panel`, `modal`, `card`, `tab-group`) where they fit. Intended to give
   Go Fish/Crazy Eights reusable pieces once they convert to the new board design. Not started.
+- **Game-hand layout bugs (2026-07-24):** the empty/off-center hand issue (label sitting at the
+  bottom when the hand is short, action buttons hugging the bottom instead of centering) is fixed —
+  `.game-hand`'s `align-items` changed from `flex-end` to `center` in `game-hand.css`. **Still open:**
+  when the hand has exactly one card (or every card is selected at once), hovering/selecting raises
+  the card via a negative `margin-top` (`playing-card.css`), which visibly shrinks the whole
+  `.card-collection`/`.game-hand` container instead of just lifting the card. A fix attempt — adding
+  `padding-top` on `.card-collection--*` equal to the hover offset, expecting the reserved padding to
+  absorb the flex line's margin-driven height reduction — was tried and empirically disproven
+  (measured via `getBoundingClientRect()` in a throwaway system spec): the container still shrinks by
+  exactly the hover offset regardless of the padding, because padding and margin don't interact the
+  way that fix assumed. Reverted. The user explicitly wants to keep the negative-margin lift technique
+  (not switch to `transform: translateY(...)`, which was also considered and rejected as "brings the
+  div to the top and looks weird") — next attempt needs a different mechanism for reserving space
+  that doesn't rely on padding offsetting margin.
