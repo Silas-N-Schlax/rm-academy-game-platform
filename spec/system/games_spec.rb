@@ -200,6 +200,19 @@ RSpec.describe 'Games', type: :system do
       expect(page).to have_selector data_test('new-game-form')
       expect(page).to have_content 'is too short'
     end
+
+    it 'creates the game after the user corrects the error and resubmits' do
+      game_name = 'Valid Game Name'
+      sign_in_as user
+      fill_in_new_game_form(7, game_name)
+      expect(page).to have_content 'Game size must be between'
+
+      fill_in 'Game size', with: 6
+      expect do
+        click_on 'Create Game'
+        expect(page).to have_content game_name
+      end.to change(Game, :count).by 1
+    end
   end
 
   context 'when a go fish game has ended' do

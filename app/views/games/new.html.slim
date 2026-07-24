@@ -4,7 +4,7 @@
       img.simple-page__logo-img alt='go fish game logo' src='/logo.png'
 
     .simple-page__form#new-game-form data-testid="new-game-form"
-      = simple_form_for @game, url: games_path(@game) do |f|
+      = simple_form_for @game, as: "game", url: games_path(@game) do |f|
         = f.input :name
         = f.input :type,
             as: :select,
