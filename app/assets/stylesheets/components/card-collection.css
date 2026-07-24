@@ -67,6 +67,11 @@
   }
 }
 
+.game-hand__main .card-collection {
+  flex-wrap: nowrap;
+  padding: 0;
+}
+
 /* --op-breakpoint-small */
 @media (width <= 768px) {
   .card-collection {
