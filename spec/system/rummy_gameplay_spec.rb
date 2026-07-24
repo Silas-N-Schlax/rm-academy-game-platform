@@ -40,7 +40,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
 
       expect(page).not_to have_selector("#{data_test('game-over-modal')}[open]")
 
-      click_button 'View results'
+      find(data_test('view-results-button')).click
 
       expect(page).to have_selector("#{data_test('game-over-modal')}[open]")
     end
@@ -442,7 +442,7 @@ RSpec.describe 'Rummy gameplay', type: :system do
       check_hand_card 'hand-card-2-Clubs'
       click_button 'Discard'
 
-      click_on 'Feed'
+      find(data_test('open-feed-button')).click
 
       within data_test('feed-drawer') do
         expect(page).to have_content 'You'

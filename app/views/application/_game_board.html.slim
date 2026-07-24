@@ -1,20 +1,6 @@
 .game-board data-controller="game-board-tabs game-board-feed game-board-selection" data-game-board-selection-awaiting-draw-value="#{presenter.awaiting_draw}"
   = render "game_board_toast", presenter: presenter
-  header.board-topbar
-    .board-topbar__left
-      a.board-topbar__back href=root_path aria-label="Back" data-testid="board-back-button"
-        i.li.li-move-left.icon.icon--x-large
-      span.board-topbar__name = presenter.name
-      span.badge.badge--primary
-        i.li.li-tag.icon.icon--small
-        = presenter.game_type
-    .board-topbar__right
-      span.board-topbar__stock-count
-        i.li.li-layers.icon.icon--small
-        | Stock: #{presenter.stock_count}
-      span.badge class=(presenter.your_turn ? "badge--notice" : "badge--primary")
-        i.li.icon.icon--small class=(presenter.your_turn ? "li-circle-dot" : "li-circle")
-        = presenter.turn_label
+  = render "board_topbar", presenter: presenter
 
   .game-board__board
     .tab-group.game-board__tab-group
@@ -22,11 +8,6 @@
         | Melds
       button.tab type="button" data-tab="players" data-game-board-tabs-target="tab" data-action="click->game-board-tabs#switchTab"
         | Players
-      button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-action="click->game-board-feed#openFeed"
-        i.li.li-list.icon.icon--small
-      - if presenter.winner_name.present?
-        button.btn.btn--icon type="button" aria-label="View game results" commandfor="game-over-modal" command="show-modal"
-          i.li.li-trophy.icon.icon--small
 
     .game-board__left-col.game-board__panel data-panel="players" data-game-board-tabs-target="panel"
       aside.card.card--shadow-medium.player-list
@@ -34,14 +15,6 @@
         .card__body
           - presenter.opponents.each do |player|
             = render "game_board_player", player: player
-
-      button.btn.game-board__launcher type="button" data-action="click->game-board-feed#openFeed"
-        i.li.li-list.icon.icon--small
-        | Feed
-      - if presenter.winner_name.present?
-        button.btn.game-board__launcher type="button" commandfor="game-over-modal" command="show-modal"
-          i.li.li-trophy.icon.icon--small
-          | View results
 
     .game-board__board-main.game-board__panel.game-board__panel--active data-panel="melds" data-game-board-tabs-target="panel"
       = render "game_board_piles", presenter: presenter

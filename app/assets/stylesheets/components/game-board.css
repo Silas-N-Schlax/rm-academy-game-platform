@@ -30,11 +30,6 @@
     box-sizing: border-box;
   }
 
-  .game-board__launcher {
-    width: 100%;
-    gap: var(--op-space-2x-small);
-  }
-
   .game-board__tab-group {
     display: none;
 
@@ -83,10 +78,6 @@
 
     .game-board__left-col {
       flex-direction: column;
-
-      > .game-board__launcher {
-        display: none;
-      }
     }
 
     .game-board__board-main {

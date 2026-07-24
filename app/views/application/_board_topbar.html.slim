@@ -15,3 +15,6 @@ header.board-topbar
       = presenter.turn_label
     button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-testid="open-feed-button" data-action="click->game-board-feed#openFeed"
       i.li.li-list.icon.icon--small
+    - if presenter.winner_name.present?
+      button.btn.btn--icon type="button" aria-label="View game results" data-testid="view-results-button" commandfor="game-over-modal" command="show-modal"
+        i.li.li-trophy.icon.icon--small
