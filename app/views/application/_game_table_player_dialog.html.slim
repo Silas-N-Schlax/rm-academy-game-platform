@@ -1,9 +1,17 @@
 dialog.modal id="opponent-detail-#{player[:id]}" data-testid="opponent-detail-modal" closedby="any"
-  .modal__body
-    h2 = player[:name]
-    p Hand
-    = render "card_collection", hand: player[:hand_backs], modifier: " game-table__mini-card", back: true
-    p Books
-    = render "card_collection", hand: player[:books], modifier: " game-table__mini-card", back: false
-    button.btn.btn--primary type="button" commandfor="opponent-detail-#{player[:id]}" command="close"
-      | Close
+  .modal__header
+    .player-detail__identity
+      img.avatar.avatar--small src="#{player[:avatar_url]}" alt=""
+      = render "truncated_text", text: player[:name], position: "bottom", additional_class: "player-detail__name"
+    button.btn.btn--icon type="button" aria-label="Close" data-testid="opponent-detail-close" commandfor="opponent-detail-#{player[:id]}" command="close"
+      i.li.li-x.icon.icon--small
+  .modal__body.player-detail__body
+    .player-detail__section
+      p.player-detail__section-label Hand
+      = render "card_collection", hand: player[:hand_backs], modifier: "--small", back: true, testid: "opponent-detail-hand-card"
+    .player-detail__section
+      p.player-detail__section-label Books
+      - if player[:books].any?
+        = render "card_collection", hand: player[:books], modifier: "--small", back: false, testid: "opponent-detail-book-card"
+      - else
+        p.player-detail__empty No books yet

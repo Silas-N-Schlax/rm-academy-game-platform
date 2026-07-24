@@ -77,6 +77,23 @@ RSpec.describe 'Go Fish', type: :system do
       expect(page).to_not have_selector data_test('opponent-detail-modal'), visible: true
       expect(page).to have_selector(data_test('hand-card'), count: 2)
     end
+
+    it 'opens the opponent detail modal with their hand and books when no card is selected', :js do
+      opponent = game.game_state.players.last
+
+      find(data_test('opponent-seat'), text: opponent.name).click
+
+      expect(page).to have_selector("#{data_test('opponent-detail-modal')}[open]")
+      within data_test('opponent-detail-modal') do
+        expect(page).to have_content opponent.name
+        expect(page).to have_content 'Hand'
+        expect(page).to have_content 'Books'
+        expect(page).to have_selector(data_test('opponent-detail-hand-card'), count: 1)
+      end
+
+      find(data_test('opponent-detail-close')).click
+      expect(page).to_not have_selector("#{data_test('opponent-detail-modal')}[open]")
+    end
   end
 
   context 'when you have completed a book' do
