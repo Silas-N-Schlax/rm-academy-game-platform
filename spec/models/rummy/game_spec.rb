@@ -375,6 +375,13 @@ RSpec.describe Rummy::Game, type: :model do
         expect(game.results.last.card_discarded).to eq two_clubs
       end
 
+      it 'stamps the finished result with when the turn happened' do
+        travel_to Time.zone.parse('2024-01-01 12:00:00') do
+          game.discard_card(two_clubs)
+        end
+        expect(game.results.last.occurred_at).to eq Time.zone.parse('2024-01-01 12:00:00')
+      end
+
       it 'advances the turn to the next player' do
         game.discard_card(two_clubs)
         expect(game.current_player).to eq player2
