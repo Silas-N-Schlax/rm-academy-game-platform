@@ -1,11 +1,11 @@
-dialog.modal.game-board-over#game-over-modal data-testid="game-over-modal" closedby="any" data-controller=("dialog" if board[:winner_name].present?)
+dialog.modal.game-board-over#game-over-modal data-testid="game-over-modal" closedby="any" data-controller=("dialog" if presenter.winner_name.present?)
   .game-board-over__body
     div.game-board-over__trophy
       i.li.li-trophy.icon.icon--x-large
-    p.game-board-over__winner = "#{board[:winner_name]} wins!"
+    p.game-board-over__winner = "#{presenter.winner_name} wins!"
     p.game-board-over__subtitle Ranked by pip total left in hand, lowest first
     ul.game-board-over__ranking
-      - board[:ranking].each do |entry|
+      - presenter.ranking.each do |entry|
         li
           span = "#{entry[:place]}. #{entry[:name]} #{entry[:flag]}"
           span = "#{entry[:pips]} pips"

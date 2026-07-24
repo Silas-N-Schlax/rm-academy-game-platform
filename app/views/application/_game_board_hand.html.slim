@@ -1,9 +1,9 @@
 footer.game-board__hand
   = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { id: "hand-actions-form", class: "game-board__hand-form" } do |f|
     .game-board__hand-main
-      p.game-board__hand-label = "#{board[:your_name]} #{board[:your_flag]}"
+      p.game-board__hand-label = "#{presenter.your_name} #{presenter.your_flag}"
       .card-collection.card-collection--large
-        - board[:hand].each do |card|
+        - presenter.hand.each do |card|
           - card_id = "hand-card-#{card[:rank]}-#{card[:suit]}"
           label.game-board__hand-card for="#{card_id}" data-testid="hand-card"
             input type="checkbox" name="turn[card_ids][]" value="#{card[:rank]}:#{card[:suit]}" id="#{card_id}" class="game-board__hand-card-input" data-game-board-target="handCheckbox" data-action="change->game-board#syncSelectionState"

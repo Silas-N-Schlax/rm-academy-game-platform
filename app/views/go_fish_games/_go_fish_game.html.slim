@@ -36,7 +36,7 @@
                 = render partial: "go_fish_feed", locals: { result: result, current_player: current_user.id }
 
         - if game.finished_at.nil? && current_user.id == implementation.current_player.id
-          .timer data-testid="timer" data-controller="timer" data-timer-seconds-value=game.remaining_turn_seconds(turn_timer_seconds) data-timer-anchor-value=game.updated_at.to_f
+          .timer data-testid="timer" data-controller="timer" data-timer-seconds-value=game.remaining_turn_seconds(Rails.application.config.x.turn_timer_seconds) data-timer-anchor-value=game.updated_at.to_f
             .timer__title Turn Time
             .timer__time data-testid="timer-time" data-timer-target="time" 00:00
           = render partial: "go_fish_form", locals: { implementation:, game: }
