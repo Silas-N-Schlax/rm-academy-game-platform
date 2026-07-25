@@ -187,8 +187,8 @@ rather than duplicating when revisiting a topic.
   **Superseded in part (2026-07-24):** the Go Fish/Crazy Eights migration plan below decided those
   two games do NOT reuse the `player-list` sidebar this bullet assumed — they get a seated
   `game-table` layout instead. The feed drawer/game-over modal/hand pieces are still reusable.
-- **Go Fish & Crazy Eights migration to the game-board design + presenters — planned, not started
-  (2026-07-24):** a BRAVE-style breakdown (two rounds of artifact mockups) produced a full
+- **Go Fish & Crazy Eights migration to the game-board design + presenters — DONE (2026-07-25):**
+  a BRAVE-style breakdown (two rounds of artifact mockups) produced a full
   migration plan, now split into `znotes/plans/gf-c8-migration/README.md` (decisions/context) plus
   ordered, commit-sized TDD execution docs `go-fish.md` (done first, builds the shared infra) and
   `crazy-eights.md` (reuses it) in the same folder. Key decisions:
@@ -235,9 +235,38 @@ rather than duplicating when revisiting a topic.
   cleanup list — `_button_card_collection.html.slim`, the `.gf-game` grid in `game.css`, and the
   `message-bubble--go-fish` modifier — turned out to still be shared with Crazy Eights' own
   not-yet-migrated view and were deliberately left in place; revisit once Crazy Eights' migration
-  removes its old view. **The full Go Fish migration (sections A–F) is now done** — next up is
-  `znotes/plans/gf-c8-migration/crazy-eights.md`, reusing this game's `game-table`/`card-select`/
-  `action-notice` foundation. **A
+  removes its old view. **The full Go Fish migration (sections A–F) is now done.**
+  **Crazy Eights execution progress (2026-07-25):** sections G (engine/PORO parity —
+  `occurred_at`/`feed_lines`/`actor_label` on `CrazyEights::TurnResult`, `ranking` by fewest cards
+  left on `CrazyEights::Game`; `Card#to_file_name` already existed), H (`CrazyEightsPresenter`,
+  same shape as `GoFishPresenter`), I (rewrote `_crazy_eights_game.html.slim` onto the shared
+  `game-table` layout with a populated center holding `card-piles` + an on-board wild-suit
+  indicator, reusing Go Fish's seated-tile partial — generalized to skip the book-count row/click
+  action when a `book_count` key isn't present in the opponent hash — and flipped
+  `presenter_class` atomically with the view rewrite), J (`crazyeights_turn_controller.js` mounted
+  alongside the reused, unmodified `card-select` controller: wild-8 opens `dialog.modal#wild-dialog`
+  for a suit pick before submitting, draw pile stays a plain form submit), K (feed/game-over/action-
+  notice wired for Crazy Eights — composition only, no new CSS/JS needed beyond presenter mapping),
+  and L (cleanup) are all done per `znotes/plans/gf-c8-migration/crazy-eights.md`. **Two real bugs
+  surfaced and fixed along the way:** (1) the unified turn form always submits a `wild_suit` field,
+  so every *normal* play was silently recording an empty-string wild suit —
+  `CrazyEights::Game#set_wild_suit` now treats a blank string the same as `nil`; (2) a classic CSS
+  Grid "blowout" bug in the shared `game-table.css` — `.game-table__center` had no `min-height: 0`,
+  so on short viewports its content (draw/discard piles + wild-suit badge) overflowed past its `1fr`
+  grid track instead of being constrained to it, leaving zero visible gap before the hand footer and
+  sometimes hiding the wild-suit badge entirely. Fixed with `min-height: 0`,
+  `justify-content: safe center` (degrades to top-aligned instead of symmetric center-overflow when
+  space is tight), and a guaranteed `padding-bottom`; verified at several viewport sizes including
+  mobile, and confirmed Go Fish's (empty-center) board is unaffected. **L (cleanup) deleted**
+  the now-fully-dead `_crazy_eights_game_table.html.slim`, `_crazy_eights_feed.html.slim`,
+  `_button_card_collection.html.slim`, the old `_game_over.html.slim`, the `.gf-game` grid
+  (`game.css`), and `message-bubble.css` (only used by the deleted old feed) — the three items Go
+  Fish's own cleanup had left alone specifically because Crazy Eights' old view still referenced
+  them. Old-UI specs (`spec/system/turns_spec.rb`) were dropped as redundant with the new
+  `spec/system/crazy_eights_spec.rb`, matching how Go Fish's migration dropped its own stale specs.
+  **The full Go Fish + Crazy Eights migration (both games, all sections) is now done** and
+  committed. Before/after reference screenshots for both games live in `docs/screenshots/go_fish/`
+  and `docs/screenshots/crazy_eights/`. **A
   real test-coverage gap opened by this work:** the only system-level coverage of
   `timer_controller.js`/`auto_play_controller.js` lived in `spec/system/games_spec.rb`, riding on Go
   Fish's old UI — that whole block was deleted (not deferred) since the feature it drove no longer
