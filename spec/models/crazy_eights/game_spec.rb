@@ -88,6 +88,14 @@ RSpec.describe CrazyEights::Game, type: :model do
       end
     end
 
+    context 'when a normal card is played with a blank wild_suit param' do
+      it 'does not set the wild suit' do
+        game.play_card(rank: 'J', suit: 'Hearts', wild_suit: '')
+        expect(game.wild_suit).to be_nil
+        expect(game.latest_result.wild_suit).to be_nil
+      end
+    end
+
     context 'when the card is valid and its a wild' do
       let(:wild_suit) { 'Diamonds' }
        before do
