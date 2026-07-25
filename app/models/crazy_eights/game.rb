@@ -45,6 +45,10 @@ module CrazyEights
       players.find(&:empty_hand?)
     end
 
+    def ranking
+      players.sort_by(&:hand_size)
+    end
+
     def valid_card?(rank, suit)
       return false unless Card.valid_rank?(rank) && Card.valid_suit?(suit)
       top_card = discard.top_card

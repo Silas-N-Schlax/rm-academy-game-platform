@@ -282,6 +282,21 @@ RSpec.describe CrazyEights::Game, type: :model do
     end
   end
 
+  describe '#ranking' do
+    let!(:game) { described_class.new(players: [ player1, player2, player3 ]) }
+    let!(:game_player1) { game.players[0] }
+    let!(:game_player2) { game.players[1] }
+    let!(:game_player3) { game.players[2] }
+
+    it 'orders players by fewest cards left' do
+      game_player1.hand = [ CrazyEights::Card.new('2') ]
+      game_player2.hand = []
+      game_player3.hand = [ CrazyEights::Card.new('2'), CrazyEights::Card.new('3') ]
+
+      expect(game.ranking).to eq [ game_player2, game_player1, game_player3 ]
+    end
+  end
+
   describe '#valid_card?' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
     let!(:player1_data) { game.players.first }
