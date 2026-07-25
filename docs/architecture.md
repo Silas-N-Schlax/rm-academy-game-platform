@@ -73,21 +73,20 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
 
 - `Game` broadcasts via Turbo Streams: `after_create_commit`/`after_update_commit` call `broadcast_refresh_later_to "games"` (for lobby/list views) and `broadcast_refresh_later_to self` (for the individual game page).
 - `Player` also broadcasts to `"games"` on create/update so the lobby list picks up seat changes.
-- `app/views/games/show.html.slim` subscribes with `turbo_stream_from @game` and re-renders via `render @game`, which uses Rails' polymorphic partial lookup — `GoFishGame` renders `go_fish_games/_go_fish_game`, `CrazyEightsGame` renders `crazy_eights_games/_crazy_eights_game`. `show.html.slim` builds one `@game.presenter_class.new(@game, current_user, turn:, turn_timer_seconds:)` and passes it down as the sole `presenter:` local — `Game#presenter_class` raises `NotImplementedError` by default, mirroring `engine_class`/`turn_class`. Rummy implements a real presenter (`RummyPresenter`, `app/presenters/rummy_presenter.rb`) that the shared `_game_board*` partials call directly (`presenter.hand`, `presenter.opponents`, etc.) instead of reaching into a hash. Go Fish and Crazy Eights aren't converted yet — they still build their own display data directly from `implementation` inline in their own partials, and `presenter_class` returns a `NullPresenter` stub (`app/presenters/null_presenter.rb`) purely so the shared show view doesn't blow up on them. A `GamePresenter` base class abstracted from `RummyPresenter`'s shape is deferred until Go Fish's conversion gives a second real data point.
+- `app/views/games/show.html.slim` subscribes with `turbo_stream_from @game` and re-renders via `render @game`, which uses Rails' polymorphic partial lookup — `GoFishGame` renders `go_fish_games/_go_fish_game`, `CrazyEightsGame` renders `crazy_eights_games/_crazy_eights_game`. `show.html.slim` builds one `@game.presenter_class.new(@game, current_user, turn:, turn_timer_seconds:)` and passes it down as the sole `presenter:` local — `Game#presenter_class` raises `NotImplementedError` by default, mirroring `engine_class`/`turn_class`. All three games now have a real presenter (`RummyPresenter`, `GoFishPresenter`, `CrazyEightsPresenter` — one file each under `app/presenters/`, same method-per-value shape) that the shared `_game_board*` partials call directly (`presenter.hand`, `presenter.opponents`, etc.) instead of reaching into a hash; `NullPresenter` (`app/presenters/null_presenter.rb`) is now dead code kept only as the `Game` base class's placeholder default. With three concrete presenters now in hand, the rule-of-three point for extracting a shared `GamePresenter` base class has been reached — it just hasn't been done yet, since no third presenter-touching feature has forced the question.
 - The Go Fish turn timer (`timer_controller.js`) is a good example of a Turbo-morph gotcha: the countdown restarts from a dedicated Stimulus `anchor` value (`game.updated_at.to_f`), not from the remaining-seconds value itself. Morph only fires a Stimulus `valueChanged` callback when the attribute **string** actually changes on re-render — on a go-again turn the recomputed remaining-seconds can coincidentally match the prior render's value, which would silently fail to reset the countdown if that value were the restart trigger. `GoFishGame#remaining_turn_seconds` also assumes `updated_at` marks turn-start (true today because only `start!`/`play`/`end_game` write the `games` row mid-game) — a future `touch:` association or incidental `game.update` elsewhere would silently desync the timer.
 - A related but distinct morph gotcha: Idiomorph (the library behind `turbo-refresh-method: morph`, enabled in `_head.html.slim`) matches old/new DOM nodes **by `id`** and, when it finds a match on a form element, preserves that element's *live* value/checked state rather than overwriting it with the freshly-rendered HTML. This means in-progress client-side state (e.g. a checked-but-unsubmitted checkbox) can survive an unrelated `broadcast_refresh_later_to` refresh — but only if the element has a stable, unique `id` for Idiomorph to match against. Any interactive multi-select UI built on top of the broadcast-refresh loop needs stable ids on its inputs, or a background refresh can silently reset a player's in-progress selection. Because morph preserves the underlying input state but doesn't re-fire a `change` event, code that derives visual state (CSS classes, button enablement) from those inputs should re-sync on the `turbo:morph` document event, not rely solely on `change` listeners.
 - `finished_at` is only set as a **side effect of `Game#play`/`end_game`**, not automatically whenever `winner?` becomes true. Code (including specs) that mutates `game_state` directly into a winning state without going through `play` will have `finished_at` still `nil` — anything reading it (e.g. the game-over display) must not assume it's set just because `winner?` is true.
 - **A same-page form-submit redirect is also a morph, and it's asynchronous.** When a Turbo-intercepted form POST redirects back to the page it was submitted from (e.g. `TurnsController#create`'s `redirect_to game_path(@game)`), Turbo Drive treats the resulting GET as a same-page visit and applies `turbo-refresh-method: morph` — it does **not** behave like a synchronous full reload. A system spec that immediately follows one form interaction with another (check a box, then click a button) can race ahead of the morph settling, silently losing form state (e.g. `card_ids` missing from the next POST) with no error raised — found while building Rummy's lay-off/meld system specs, several of which were intermittently flaky until each `:js` spec asserted on the settled post-morph state (e.g. an updated hand card count) before its next interaction. This is a distinct gotcha from the stable-id/Idiomorph one above — that one is about *what* gets preserved across a morph; this one is about *timing* between a morph-triggering navigation and whatever the test does next.
-- **Two feed-rendering patterns coexist.** Go Fish and Crazy Eights render turn-by-turn history via
-  their own per-game partials (`_go_fish_feed.html.slim`, `_crazy_eights_feed.html.slim`), which
-  take a `result`/`current_player` local and branch on viewer identity **inside the template**
-  (`result.messages_for_current` vs. `result.messages_for_all`). Rummy — and any future new game —
-  instead renders through the shared `_game_board_feed.html.slim`, which takes a flat
-  `board[:feed]` array of already-resolved `{time:, text:}` hashes with no viewer branching in the
-  view at all. This means for any game built on `_game_board_feed`, the per-viewer wording (e.g.
-  hiding which card was drawn from the stock from everyone but the drawer) must be resolved inside
-  the `TurnResult` object itself before it reaches the view — copying the Go Fish/Crazy Eights
-  template-side-branching pattern would not work against the newer partial's contract.
+- **All three games now share one feed-rendering contract.** Every game renders turn-by-turn
+  history through the shared `_game_board_feed.html.slim`, which takes each presenter's `feed`
+  array of already-resolved `{actor:, time:, lines: [{text:, kind:}]}` hashes with **no viewer
+  branching in the view at all** — each `TurnResult` resolves per-viewer wording itself via
+  `feed_lines(viewer_id)`/`actor_label(viewer_id)` (e.g. hiding which card was drawn from the stock
+  from everyone but the drawer), called with `current_user.id` from the presenter before the data
+  ever reaches the template. A future new game must implement these two methods on its own
+  `TurnResult` and feed the shared partial the same way — there is no per-game feed partial to fall
+  back on anymore (Go Fish's and Crazy Eights' original ones were deleted once each migrated).
 - **Any reuse of `TurnResult#feed_lines`/`#actor_label` must pass `current_user.id` as the viewer,
   never the acting player's own id.** `RummyPresenter#last_action_for` (the per-opponent "last
   action" summary in the player-list panel) finds an opponent's most recent `TurnResult` and calls
@@ -151,6 +150,19 @@ card. Fixed via `display: contents` on the wrapping `<label>` so its child `<img
 the flex layout directly, as if the label weren't there. Any future checkbox/label-wrapped card UI
 needs the same treatment to keep this shared technique working.
 
+A CSS Grid item needs an explicit `min-height: 0` (or `min-width: 0` for row-direction tracks) to
+actually respect a `1fr` track size — a grid item's default `min-height` is `auto`, meaning it
+refuses to shrink below its own content's intrinsic size even when that's taller than the track it
+was allotted, so the content silently blows out past the grid container's own boundary instead of
+being constrained or scrolling. Found in `components/game-table.css`'s `.game-table__center`
+(2026-07-25): on a short viewport, its content (Crazy Eights' draw/discard piles plus the wild-suit
+badge) overflowed past `.game-table`'s bottom edge by tens of pixels, landing directly against the
+hand footer with zero visible gap and sometimes pushing the wild-suit badge out of view entirely.
+Fixed with `min-height: 0` plus `justify-content: safe center` (degrades to top-aligned instead of
+overflowing symmetrically top-and-bottom when content doesn't fit) and a guaranteed `padding-bottom`.
+Any future grid layout with a `1fr`/`auto` mix and variable-height content needs the same
+`min-height: 0` guard, or a short viewport can reproduce this exact silent overflow.
+
 `app/javascript/controllers/index.js` is **auto-generated** (per its own header comment) and does not
 pick up a new controller file just by existing — a new `data-controller="foo"` in a view is silently
 inert (no error, the controller simply never connects) until `bin/rails stimulus:manifest:update` is
@@ -158,6 +170,16 @@ run to add its `import`/`application.register(...)` lines. Hand-editing this fil
 generator is the intended path and won't leave it out of sync. Forgetting this step looks exactly
 like a morph/timing bug (attributes update, JS-driven behavior doesn't) — check that the controller
 is actually registered before chasing a timing explanation.
+
+A per-game Stimulus controller's filename determines its registered identifier via a mechanical
+underscore-to-dash translation (`stimulus:manifest:update` does this, not the developer), so a
+compound game name needs its internal underscore **dropped** from the filename to land on the short
+identifier the existing convention uses: `gofish_turn_controller.js` → `gofish-turn`,
+`crazyeights_turn_controller.js` → `crazyeights-turn` — not `crazy_eights_turn_controller.js` →
+`crazy-eights-turn`, which is what the mechanical translation would otherwise produce from the
+"natural" filename. Get this wrong and a view's `data-controller`/`data-action` written against the
+short form silently never connects — the same silent-failure shape as forgetting to regenerate the
+manifest at all, but caused by a filename/identifier mismatch instead.
 
 ## Background jobs and other supporting pieces
 
