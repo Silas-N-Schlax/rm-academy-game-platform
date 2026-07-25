@@ -101,7 +101,10 @@ module CrazyEights
     end
 
     def add_current_result_if_possible
-      results << current_result unless results.include?(current_result)
+      return if results.include?(current_result)
+
+      current_result.occurred_at = Time.current
+      results << current_result
     end
 
     def give_cards_to_player

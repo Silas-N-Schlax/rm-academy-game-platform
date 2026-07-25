@@ -94,6 +94,43 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
     end
   end
 
+  describe '#actor_label' do
+    it 'returns "You" for the current player and their name for everyone else' do
+      expect(result.actor_label(current_player.id)).to eq 'You'
+      expect(result.actor_label(current_player.id + 1)).to eq 'player'
+    end
+  end
+
+  describe '#feed_lines' do
+    it 'renders the draw and play lines from the current player\'s point of view' do
+      expect(result.feed_lines(current_player.id)).to eq [
+        { text: 'You drew a King of Spades, and Jack of Hearts', kind: :draw },
+        { text: 'You played a Jack of Spades', kind: :climax }
+      ]
+    end
+
+    it 'renders the same moment from an observer\'s point of view' do
+      expect(result.feed_lines(current_player.id + 1)).to eq [
+        { text: 'player drew 2 cards', kind: :draw },
+        { text: 'player played a Jack of Spades', kind: :climax }
+      ]
+    end
+
+    it 'omits the draw line when no cards were drawn' do
+      result.cards_drawn = []
+      expect(result.feed_lines(current_player.id)).to eq [
+        { text: 'You played a Jack of Spades', kind: :climax }
+      ]
+    end
+
+    it 'omits the play line when no card has been played yet' do
+      result.card_played = nil
+      expect(result.feed_lines(current_player.id)).to eq [
+        { text: 'You drew a King of Spades, and Jack of Hearts', kind: :draw }
+      ]
+    end
+  end
+
   describe '#add_to_drawn_card' do
     it 'adds a card to the drawn cards array' do
       result.add_to_drawn_card(CrazyEights::Card.new('J'))
@@ -112,6 +149,12 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
     it 'restores current state of the card' do
       json = result.as_json
       expect(CrazyEights::TurnResult.from_json(json).as_json).to eq expected_hash
+    end
+
+    it 'restores the occurred_at timestamp' do
+      result.occurred_at = Time.zone.parse('2024-01-01 12:00:00')
+      restored = CrazyEights::TurnResult.from_json(result.as_json)
+      expect(restored.occurred_at).to eq Time.zone.parse('2024-01-01 12:00:00')
     end
   end
 
@@ -136,7 +179,8 @@ RSpec.describe CrazyEights::TurnResult, type: :model do
         "id" => 0,
         "hand" => []
       },
-      "wild_suit" => nil
+      "wild_suit" => nil,
+      "occurred_at" => nil
     }
   end
 end

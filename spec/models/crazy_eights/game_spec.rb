@@ -86,6 +86,10 @@ RSpec.describe CrazyEights::Game, type: :model do
         expect(game.results.size).to eq expected_results_size
         expect(game.current_result.current_player.id).to_not eq game.latest_result.current_player.id
       end
+
+      it 'records when the turn occurred' do
+        expect(game.latest_result.occurred_at).to_not be_nil
+      end
     end
 
     context 'when a normal card is played with a blank wild_suit param' do
@@ -426,7 +430,8 @@ RSpec.describe CrazyEights::Game, type: :model do
             },
             "cards_drawn" => [],
             "current_player" => nil,
-            "wild_suit" => nil
+            "wild_suit" => nil,
+            "occurred_at" => nil
           }
         ],
         "current_result" => {
@@ -437,7 +442,8 @@ RSpec.describe CrazyEights::Game, type: :model do
             "id" => 1,
             "hand" => []
           },
-          "wild_suit" => nil
+          "wild_suit" => nil,
+          "occurred_at" => nil
         },
         "current_player_idx" => 0,
         "wild_suit" => nil
