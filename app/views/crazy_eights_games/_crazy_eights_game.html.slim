@@ -1,47 +1,49 @@
-- implementation = @game.game_state
-.gf-game.gf-game--tall-feed
-  .gf-game__board.gf-game--border
-    .panel
-      .panel__header.panel__header--title
-        = link_to root_path do
-          i.li.li-move-left.icon.icon--x-large.panel__header-link
-        span #{@game.name}
+.game-board data-controller="card-select crazyeights-turn game-board-feed" data-crazyeights-turn-wild-rank-value="#{CrazyEights::Card::WILD_RANK}"
+  = render "board_topbar", presenter: presenter
 
-      .panel__content
-        - if implementation.winner?
-          = render partial: 'game_over', locals: { game: @game }
+  .game-table
+    .game-table__seats
+      - presenter.opponents.each do |player|
+        = render "game_table_player", player: player
+    .game-table__center
+      .card.card--shadow-small.card-piles
+        .card-piles__pile
+          span.card-piles__pile-label Stock
+          = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { id: "draw-form" } do |f|
+            = f.input :request, as: :hidden, input_html: { value: true }
+            = image_submit_tag "cards/back.svg", class: "playing-card card-piles__pile-card", alt: "Draw a card", data: { testid: "draw-pile" }
+        .card-piles__pile
+          span.card-piles__pile-label Discard
+          button.card-piles__pile-card type="button" data-testid="discard-pile" data-action="click->crazyeights-turn#play"
+            = image_tag "cards/#{presenter.discard_top}.svg", class: "playing-card card-piles__pile-card"
+      - if presenter.wild_suit
+        span.badge.badge--primary data-testid="wild-suit-indicator"
+          i.li.li-wand.icon.icon--small
+          | Wild suit: #{presenter.wild_suit}
 
-        - else
-          = render partial: 'crazy_eights_game_table'
+  = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { id: "play-form" } do |f|
+    input type="hidden" name="turn[rank]" data-card-select-target="rankField"
+    input type="hidden" name="turn[suit]" data-card-select-target="suitField"
+    input type="hidden" name="turn[wild_suit]" data-crazyeights-turn-target="wildSuitField"
 
+  dialog.modal#wild-dialog data-testid="wild-dialog" closedby="any"
+    .modal__header
+      | Choose a suit for your wild
+    .modal__body
+      - CrazyEights::Card::SUITS.each do |suit|
+        button.btn.btn--primary type="button" data-testid="wild-suit-option" data-suit="#{suit}" data-action="click->crazyeights-turn#chooseSuit"
+          = suit
 
+  footer.game-hand
+    .game-hand__main
+      p.game-hand__label = "Your Hand"
+      .card-collection.card-collection--large
+        - presenter.hand.each do |card|
+          - card_id = "hand-card-#{card[:rank]}-#{card[:suit]}"
+          label.game-hand__card for="#{card_id}"
+            input type="radio" name="hand-card-select" id="#{card_id}" disabled=presenter.hand_disabled data-testid="hand-card" data-card-select-target="card" data-rank="#{card[:rank]}" data-suit="#{card[:suit]}" data-action="change->card-select#choose"
+            = image_tag "cards/#{card[:card]}.svg", class: "playing-card playing-card--large", data: { testid: "hand-card-image" }
 
-  .gf-game__feed.gf-game--border
-    .panel.panel--secondary
-      .panel__header.panel__header--game-feed
-        Game Feed
-        - if current_user.id == implementation.current_player.id
-          button.badge.badge--notice Your Turn
-        - else
-          button.badge.badge--primary #{implementation.current_player.name}'s Turn
-
-      .panel__content
-        .game-feed
-          .game-feed__logs
-            - implementation.results.each do |result|
-                = render partial: "crazy_eights_feed", locals: { result: result, current_player: implementation.find_player(current_user.id) }
-
-  .gf-game__hand.gf-game--border
-    .panel.panel--neutral
-      .panel__header.panel__header--slim
-        span Your Cards
-        span
-          .text-pair.text-pair--inline
-            span.text-pair__subtitle.text-pair__subtitle--small data-tooltip-text="Cards Remaining in Deck" data-tooltip-position="left"
-              i.icon.li.li-club.icon--medium.icon--neutral
-            span.text-pair__title.text-pair__title--small #{implementation.deck.cards_left}
-      .panel__content
-        .gf-game__cards
-          - if implementation.find_player(current_user.id).hand.empty?
-          - else
-            = render partial: 'button_card_collection', locals: {hand: implementation.find_player(current_user.id).sorted_hand, modifier: '--large', back: false}
+  = render "game_board_feed", presenter: presenter
+  = render "game_board_game_over", presenter: presenter
+  = render "action_notice", presenter: presenter

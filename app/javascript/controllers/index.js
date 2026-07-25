@@ -16,6 +16,9 @@ application.register("card-select", CardSelectController)
 import CountryController from "./country_controller"
 application.register("country", CountryController)
 
+import CrazyeightsTurnController from "./crazyeights_turn_controller"
+application.register("crazyeights-turn", CrazyeightsTurnController)
+
 import DialogController from "./dialog_controller"
 application.register("dialog", DialogController)
 

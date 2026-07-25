@@ -1,12 +1,14 @@
-button.game-table__player type="button" class=("game-table__player--current-turn" if player[:current_turn]) data-testid="opponent-seat" data-player-id="#{player[:id]}" data-action="click->gofish-turn#target" commandfor="opponent-detail-#{player[:id]}" command="show-modal"
+- has_detail_modal = player.key?(:book_count)
+button.game-table__player type="button" class=("game-table__player--current-turn" if player[:current_turn]) data-testid="opponent-seat" data-player-id="#{player[:id]}" data-action=("click->gofish-turn#target" if has_detail_modal) commandfor=("opponent-detail-#{player[:id]}" if has_detail_modal) command=("show-modal" if has_detail_modal)
   img.avatar.avatar--small src="#{player[:avatar_url]}" alt=""
   = render "truncated_text", text: player[:name], position: "bottom", additional_class: "game-table__player-name"
   .game-table__player-counts
     span.game-table__player-count data-tooltip-text="Cards in hand" data-tooltip-position="bottom"
       i.li.li-layers.icon.icon--x-small
       = player[:hand_size]
-    span.game-table__player-count data-tooltip-text="Books" data-tooltip-position="bottom"
-      i.li.li-book.icon.icon--x-small
-      = player[:book_count]
+    - if has_detail_modal
+      span.game-table__player-count data-tooltip-text="Books" data-tooltip-position="bottom"
+        i.li.li-book.icon.icon--x-small
+        = player[:book_count]
   - if player[:last_action].present?
     = render "truncated_text", text: player[:last_action], position: "bottom", additional_class: "game-table__last-action"

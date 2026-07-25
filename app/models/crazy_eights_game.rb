@@ -20,7 +20,7 @@ class CrazyEightsGame < Game
     CrazyEightsTurn
   end
 
-  def presenter_class = NullPresenter
+  def presenter_class = CrazyEightsPresenter
 
   def valid_move?(rank:, suit:)
     implementation.valid_card?(rank, suit)
