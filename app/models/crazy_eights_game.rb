@@ -1,10 +1,9 @@
 class CrazyEightsGame < Game
-  MIN_PLAYERS = 2
-  MAX_PLAYERS = 7
-
   serialize :game_state, coder: CrazyEights::Game
 
   def engine_class = CrazyEights::Game
+  def min_players = 2
+  def max_players = 7
 
   def play(rank: nil, suit: nil, wild_suit: nil, request: false)
     implementation = self.game_state

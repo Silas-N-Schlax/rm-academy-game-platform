@@ -23,6 +23,14 @@ RSpec.describe Game, type: :model do
     it 'requires #presenter_class to be overridden' do
       expect { game.presenter_class }.to raise_error(NotImplementedError, /presenter_class/)
     end
+
+    it 'requires #min_players to be overridden' do
+      expect { game.min_players }.to raise_error(NotImplementedError, /min_players/)
+    end
+
+    it 'requires #max_players to be overridden' do
+      expect { game.max_players }.to raise_error(NotImplementedError, /max_players/)
+    end
   end
 
   describe 'validations' do

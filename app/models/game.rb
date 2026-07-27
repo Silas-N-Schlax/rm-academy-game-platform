@@ -38,6 +38,8 @@ class Game < ApplicationRecord
   def presenter_class = raise NotImplementedError, "#{self.class} must implement #presenter_class"
   def play(**) = raise NotImplementedError, "#{self.class} must implement #play"
   def valid_move?(**) = raise NotImplementedError, "#{self.class} must implement #valid_move?"
+  def min_players = raise NotImplementedError, "#{self.class} must implement #min_players"
+  def max_players = raise NotImplementedError, "#{self.class} must implement #max_players"
 
   def valid_types
     self.class.eager_load_subclasses!
@@ -116,11 +118,11 @@ class Game < ApplicationRecord
   end
 
   def valid_game_size
-    return unless self.class.const_defined?(:MIN_PLAYERS, false)
+    return if self.class == Game
     return if game_size.nil?
 
-    min = self.class::MIN_PLAYERS
-    max = self.class::MAX_PLAYERS
+    min = self.min_players
+    max = self.max_players
 
     if game_size < min || game_size > max
       errors.add(:game_size, "Game size must be between #{min} and #{max} players for #{type}.")

@@ -156,4 +156,16 @@ RSpec.describe GoFishGame, type: :model do
       expect(game.ranks_list(game_players.first.id)).to eq game_players.first.ranks
     end
   end
+
+  describe '#min_players' do
+    it 'returns 2' do
+      expect(described_class.new.min_players).to eq 2
+    end
+  end
+
+  describe '#max_players' do
+    it 'returns 6' do
+      expect(described_class.new.max_players).to eq 6
+    end
+  end
 end
