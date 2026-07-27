@@ -5,8 +5,7 @@ module Rummy
     end
 
     def add_cards(new_cards)
-      new_cards.each { |card| cards << card }
-      shuffle_deck
+      new_cards.each { |card| cards << card }.reverse
     end
   end
 end

@@ -15,10 +15,8 @@ RSpec.describe Rummy::Deck, type: :model do
       expect(deck.cards_left).to eq 2
     end
 
-    it 'shuffles the deck after adding' do
-      allow(deck).to receive(:shuffle_deck)
-      deck.add_cards(cards)
-      expect(deck).to have_received(:shuffle_deck)
+    it 'adds the given cards in reverse order' do
+     expect(deck.add_cards(cards)).to eq cards.reverse
     end
   end
 end
