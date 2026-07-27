@@ -35,7 +35,9 @@ RSpec.describe 'Games', type: :system do
     context 'when a user clicks on a game they have not joined' do
       before do
         visit root_path
-        click_on 'Join'
+        within "##{dom_id(game)}" do
+          click_on 'Join'
+        end
       end
       it 'shows them that game and joins the game if they can join' do
         expected_player_count = 2
