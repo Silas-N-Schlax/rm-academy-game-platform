@@ -1,10 +1,23 @@
 .alert-banner {
   display: none;
+  position: fixed;
+  z-index: var(--op-z-index-alert-group);
+  inset-block-start: var(--op-space-large);
+  inset-inline-end: 0;
+  max-width: calc(var(--op-size-unit) * 90); /* 360px */
+  box-shadow: var(--op-shadow-medium);
+  opacity: 0;
+  transform: translateX(var(--op-space-large));
+  transition: opacity 300ms ease, transform 300ms ease, display 300ms allow-discrete;
 
   &.alert-banner--active {
     display: flex;
-    position: absolute;
-    z-index: 3;
-    right: 0;
+    opacity: 1;
+    transform: translateX(0);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateX(var(--op-space-large));
+    }
   }
 }

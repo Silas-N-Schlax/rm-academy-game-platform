@@ -1,35 +1,70 @@
 .game-table {
-  height: 100dvh;
-  overflow: hidden;
+  flex: 1;
   display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--op-space-medium);
+  padding: var(--op-space-medium);
+  overflow-y: auto;
+  overflow-x: hidden;
   background-color: var(--op-color-neutral-plus-max);
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  grid-template-areas:
-    "one two three four"
-    "five pile pile six";
 
-  .game-table__piles {
-    grid-area: pile;
+  .game-table__seats {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: var(--op-space-medium);
+  }
+
+  .game-table__center {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--op-space-x-large);
+    justify-content: safe center;
+    gap: var(--op-space-small);
+    min-height: 0;
+    padding-bottom: var(--op-space-medium);
+    overflow-y: auto;
   }
 
   .game-table__player {
-    padding: var(--op-space-large);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--op-space-x-small);
+    min-width: calc(var(--op-size-unit) * 40); /* 160px */
+    max-width: calc(var(--op-size-unit) * 55); /* 220px */
+    padding: var(--op-space-medium);
+    border-radius: var(--op-radius-medium);
+    box-shadow: var(--op-shadow-medium);
+    background-color: var(--op-color-neutral-plus-seven);
+    color: var(--op-color-neutral-on-plus-seven);
 
-    .game-table__player-content {
+    &.game-table__player--current-turn {
+      background-color: var(--op-color-alerts-notice-plus-seven);
+    }
+
+    .game-table__player-name {
+      max-width: 100%;
+      font-weight: var(--op-font-weight-semi-bold);
+    }
+
+    .game-table__player-counts {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: var(--op-space-small);
-      border-radius: var(--op-radius-medium);
-      box-shadow: var(--op-shadow-medium);
-      background-color: var(--op-color-neutral-plus-seven);
-      color: var(--op-color-neutral-on-plus-seven);
+      gap: var(--op-space-small);
+      font-size: var(--op-font-x-small);
+    }
+
+    .game-table__player-count {
+      display: flex;
+      align-items: center;
+      gap: var(--op-space-2x-small);
+    }
+
+    .game-table__last-action {
+      max-width: 100%;
+      font-size: var(--op-font-x-small);
+      color: var(--op-color-neutral-minus-two);
     }
   }
 }
@@ -37,29 +72,17 @@
 /* --op-breakpoint-medium */
 @media (width <= 1024px) {
   .game-table {
-    overflow-y: auto;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    grid-template-areas:
-      "one two"
-      "three four"
-      "five siz"
-      "pile pile";
+    padding: var(--op-space-small);
+    gap: var(--op-space-small);
 
-    .game-table__piles {
-      grid-area: pile;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: var(--op-space-x-small);
+    .game-table__seats {
+      gap: var(--op-space-small);
     }
 
     .game-table__player {
-      padding: var(--op-space-x-small);
-
-      .game-table__player-content {
-        padding: var(--op-space-x-small);
-      }
+      min-width: calc(var(--op-size-unit) * 26); /* 104px */
+      max-width: calc(var(--op-size-unit) * 32); /* 128px */
+      padding: var(--op-space-small);
     }
   }
 }

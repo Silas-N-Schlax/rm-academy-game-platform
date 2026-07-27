@@ -42,25 +42,20 @@
 
   &.playing-card--active {
     outline: solid calc(var(--op-size-unit) * 1) var(--op-color-alerts-notice-base); /* 4px */
+    border-radius: var(--op-radius-large);
   }
 
-  &.game-board__meld-card {
+  &.meld__card {
     width: calc(var(--op-size-unit) * 16); /* 64px */
     margin-left: calc(var(--op-size-unit) * -10); /* -40px */
   }
 
-  &.game-board__mini-card {
+  &.player-list__mini-card {
     width: calc(var(--op-size-unit) * 5); /* 20px */
     margin-left: calc(var(--op-size-unit) * -3); /* -12px */
-    transform-origin: bottom center;
-
-    &:nth-child(1) { transform: rotate(-8deg); }
-    &:nth-child(2) { transform: rotate(-3deg); }
-    &:nth-child(3) { transform: rotate(3deg); }
-    &:nth-child(4) { transform: rotate(8deg); }
   }
 
-  &.game-board__pile-card {
+  &.card-piles__pile-card {
     width: calc(var(--op-size-unit) * 20); /* 80px */
     margin-left: 0;
   }
@@ -68,12 +63,12 @@
 
 /* --op-breakpoint-small */
 @media (width <= 768px) {
-  .playing-card.game-board__mini-card {
+  .playing-card.player-list__mini-card {
     width: calc(var(--op-size-unit) * 7); /* 28px */
     margin-left: calc(var(--op-size-unit) * -4); /* -16px */
   }
 
-  .playing-card.game-board__pile-card {
+  .playing-card.card-piles__pile-card {
     width: calc(var(--op-size-unit) * 14); /* 56px */
   }
 }

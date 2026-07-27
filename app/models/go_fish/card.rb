@@ -20,6 +20,10 @@ module GoFish
       "#{SPELLED_RANKS[rank]}_of_#{suit}".downcase
     end
 
+    def to_file_name
+      to_s
+    end
+
     def self.from_json(json)
       return [] if json.blank?
       super

@@ -31,9 +31,49 @@ RSpec.describe 'Rummy', type: :system do
       your_player = implementation.find_player(game.users.first.id)
       opponent = implementation.find_player(game.users.last.id)
       expect(page).to have_content "Stock: #{implementation.deck.cards_left}"
-      expect(page).to have_selector('.game-board__hand .playing-card', count: your_player.hand.size)
+      expect(page).to have_selector(data_test('hand-card'), count: your_player.hand.size)
       expect(page).to have_content opponent.name
-      expect(page).to have_content opponent.hand.size
+      expect(page).to have_selector(data_test('opponent-hand-card'), count: [ opponent.hand.size, RummyPresenter::MINI_FAN_SIZE ].min)
+      expect(page).to have_content "+#{opponent.hand.size - RummyPresenter::MINI_FAN_SIZE}"
+    end
+
+    it 'sends the player back to the home page' do
+      find(data_test('board-back-button')).click
+      expect(page).to have_current_path root_path
+    end
+  end
+
+  context 'when a player must draw before they can meld or discard' do
+    let!(:game) { create :game, type: 'RummyGame' }
+
+    before do
+      game.start!
+      sign_in_as game.users.first
+      visit game_path(game.reload)
+    end
+
+    it 'disables the meld and discard buttons' do
+      expect(page).to have_button('Meld', disabled: true)
+      expect(page).to have_button('Discard', disabled: true)
+    end
+  end
+
+  context 'when a player has already drawn this turn' do
+    let!(:game) { create :game, type: 'RummyGame' }
+
+    before do
+      game.start!
+      implementation = game.game_state
+      implementation.draw(source: "stock")
+      game.game_state = implementation
+      game.save!
+      sign_in_as game.users.first
+      visit game_path(game.reload)
+    end
+
+    it 'enables the meld and discard buttons' do
+      expect(page).to have_button('Meld', disabled: false)
+      expect(page).to have_button('Discard', disabled: false)
     end
   end
 end

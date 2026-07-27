@@ -50,9 +50,10 @@ RSpec.describe GoFish::Game, type: :model do
       let(:game_player2) { game.players.last }
       before { game.start }
       it 'deals 7 cards to each player' do
-        expected_hand_size = 7
+        expected_cards_dealt = 7
         game.players.each do |player|
-          expect(player.hand_size).to eq expected_hand_size
+          cards_dealt = player.hand_size + (player.books.size * GoFish::Book::CARDS_PER_BOOK)
+          expect(cards_dealt).to eq expected_cards_dealt
         end
       end
       it 'cards are not in order' do
@@ -70,9 +71,10 @@ RSpec.describe GoFish::Game, type: :model do
       let(:game) { described_class.new(players: [ player1, player2, player3, player4 ]) }
       before { game.start }
       it 'deals 5 cards to each player' do
-        expected_hand_size = 5
+        expected_cards_dealt = 5
         game.players.each do |player|
-          expect(player.hand_size).to eq expected_hand_size
+          cards_dealt = player.hand_size + (player.books.size * GoFish::Book::CARDS_PER_BOOK)
+          expect(cards_dealt).to eq expected_cards_dealt
         end
       end
     end
@@ -172,6 +174,18 @@ RSpec.describe GoFish::Game, type: :model do
         end
         it 'returns a valid round result' do
           expect(game.results.last).to be_a GoFish::TurnResult
+        end
+      end
+
+      context 'when a turn completes' do
+        let(:game) { described_class.new(players: [ player1, player2 ]) }
+        before { game.players.last.hand << card1 }
+
+        it 'stamps the turn result with when the turn happened' do
+          travel_to Time.zone.parse('2024-01-01 12:00:00') do
+            game.run_turn(player2.id, 'A')
+          end
+          expect(game.results.last.occurred_at).to eq Time.zone.parse('2024-01-01 12:00:00')
         end
       end
       context 'when player1 asks for a card player2 does have and go fishing' do
@@ -338,6 +352,21 @@ RSpec.describe GoFish::Game, type: :model do
           expect(game.winning_player.name).to be game_player1.name
         end
       end
+    end
+  end
+
+  describe '#ranking' do
+    let!(:game) { described_class.new(players: [ player1, player2, player3 ]) }
+    let!(:game_player1) { game.players[0] }
+    let!(:game_player2) { game.players[1] }
+    let!(:game_player3) { game.players[2] }
+
+    it 'orders players by book count, tie-broken by highest book value' do
+      game_player1.books = [ GoFish::Book.new('2') ]
+      game_player2.books = [ GoFish::Book.new('J'), GoFish::Book.new('K') ]
+      game_player3.books = [ GoFish::Book.new('A') ]
+
+      expect(game.ranking).to eq [ game_player2, game_player3, game_player1 ]
     end
   end
 

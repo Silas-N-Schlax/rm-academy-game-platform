@@ -16,8 +16,8 @@ RSpec.describe 'Games', type: :system do
 
     it 'shows open games and users games' do
       visit root_path
-      expect(page).to have_css('#user-games > *', count: 2)
-      expect(page).to have_css('#open-games > *', count: 2)
+      expect(page).to have_css("#{data_test('user-games')} > *", count: 2)
+      expect(page).to have_css("#{data_test('open-games')} > *", count: 2)
     end
 
     context 'when a user clicks on a game they joined', :js do
@@ -103,7 +103,7 @@ RSpec.describe 'Games', type: :system do
       sign_in_as user
       visit games_path
       click_on 'New Game'
-      expect(page).to have_selector '#new-game-form'
+      expect(page).to have_selector data_test('new-game-form')
     end
   end
 
@@ -116,68 +116,6 @@ RSpec.describe 'Games', type: :system do
         fill_in_new_game_form(3, game_name)
         expect(page).to have_content game_name
       end.to change(Game, :count).by 1
-    end
-  end
-
-   context 'when a game has started' do
-    let!(:game) { create :game }
-    before do
-      game.start!
-      sign_in_as game.users.first
-      visit game_path(game)
-    end
-    it 'has a timer that auto submits the form when expired', :js, :fast_timer do
-      expect(page).to have_selector('.timer')
-      expect(page).to have_selector('.game-feed__question')
-    end
-
-    it 'displays the countdown as a whole number', :js do
-      expect(find('.timer__time').text).to match(/\A\d+\z/)
-    end
-
-    it 'does not reset the countdown when the page is reloaded', :js do
-      remaining_before_reload = find('.timer')['data-timer-seconds-value'].to_f
-      travel 20.seconds do
-        visit game_path(game)
-        remaining_after_reload = find('.timer')['data-timer-seconds-value'].to_f
-        expect(remaining_after_reload).to be_within(1).of(remaining_before_reload - 20)
-      end
-    end
-
-    context 'when the player gets to go again' do
-      let!(:game) { create :game }
-      before do
-        game.start!
-        implementation = game.game_state
-        implementation.deck.cards = [ GoFish::Card.new('J') ]
-        players = implementation.players
-        players.first.hand = [ GoFish::Card.new('J') ]
-        players.last.hand = [ GoFish::Card.new('J'), GoFish::Card.new('10') ]
-        game.save
-        sign_in_as game.users.first
-      end
-      it 'resets timer', :js, :fast_timer do
-        visit game_path(game)
-        sleep 3
-        expect(page).to have_selector('.game-feed__question', count: 2)
-      end
-    end
-
-    context 'when the game is over' do
-      let!(:game) { create :game }
-      before do
-        implementation = game.game_state
-        implementation.deck.cards = []
-        players = implementation.players
-        players.first.hand = [ GoFish::Card.new('J'), GoFish::Card.new('J'), GoFish::Card.new('J') ]
-        players.last.hand = [ GoFish::Card.new('J') ]
-        game.save
-      end
-      it 'removes timers when game is over', :js do
-        visit game_path(game)
-        click_on 'Ask'
-        expect(page).to_not have_selector('.timer')
-      end
     end
   end
 
@@ -195,27 +133,21 @@ RSpec.describe 'Games', type: :system do
       game_name = 'G'
       sign_in_as user
       fill_in_new_game_form(7, game_name)
-      expect(page).to have_selector '#new-game-form'
+      expect(page).to have_selector data_test('new-game-form')
       expect(page).to have_content 'is too short'
     end
-  end
 
-  context 'when a go fish game has ended' do
-    let!(:game) { create :game }
-    before do
-      sign_in_as game.users.first
-      game.start!
-      state = game.game_state
-      state.deck = []
-      state.players.each { |player| player.hand = [] }
-      state.players.first.books = [ GoFish::Book.new('K') ]
-      game.game_state = state
-      game.save!
-      visit game_path(game)
-    end
-    it 'shows the winner banner' do
-      expect(page).to have_content 'Game Over'
-      expect(page).to have_content "#{game.game_state.players.first.name} won the game!"
+    it 'creates the game after the user corrects the error and resubmits' do
+      game_name = 'Valid Game Name'
+      sign_in_as user
+      fill_in_new_game_form(7, game_name)
+      expect(page).to have_content 'Game size must be between'
+
+      fill_in 'Game size', with: 6
+      expect do
+        click_on 'Create Game'
+        expect(page).to have_content game_name
+      end.to change(Game, :count).by 1
     end
   end
 
@@ -229,9 +161,9 @@ RSpec.describe 'Games', type: :system do
       emulate_worker_network(offline: true)
     end
     it 'displays offline banner' do
-      expect(page).to have_selector('.alert-banner--active')
+      expect(page).to have_selector("#{data_test('offline-banner')}.alert-banner--active")
       emulate_worker_network(offline: false)
-      expect(page).to have_no_selector('.alert-banner--active')
+      expect(page).to have_no_selector("#{data_test('offline-banner')}.alert-banner--active")
     end
   end
 

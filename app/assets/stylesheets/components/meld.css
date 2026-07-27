@@ -1,0 +1,50 @@
+.meld-list {
+  display: block;
+}
+
+.meld {
+  display: inline-flex;
+  vertical-align: top;
+  margin: 0 var(--op-space-small) var(--op-space-small) 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--op-radius-medium);
+  background: none;
+  cursor: pointer;
+  transition: var(--op-transition-modal);
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    outline: solid calc(var(--op-size-unit) * 1) var(--op-color-primary-base); /* 4px */
+    outline-offset: calc(var(--op-size-unit) * 1); /* 4px */
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+/* --op-breakpoint-small */
+@media (width <= 768px) {
+  .meld-list {
+    order: 1;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: var(--op-space-small);
+  }
+
+  .meld {
+    margin: 0;
+  }
+}

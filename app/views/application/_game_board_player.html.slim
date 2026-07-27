@@ -1,13 +1,15 @@
-.game-board__player
-  .game-board__player-row
-    span.game-board__player-flag = player[:flag]
-    = render "truncated_text", text: player[:name], position: "right", additional_class: "game-board__player-name"
-    - if player[:melded]
-      span.badge.badge--notice.game-board__player-melded
-        i.li.li-check.icon.icon--x-small
-        | Melded
-    p.game-board__player-count = player[:hand_size]
-  .game-board__mini-fan
-    = render "card_collection", hand: player[:mini_hand], modifier: " game-board__mini-card", back: true
-    - if player[:overflow].to_i > 0
-      span.game-board__mini-fan-count = "+#{player[:overflow]}"
+.player-list__player class=("player-list__player--current-turn" if player[:current_turn])
+  .player-list__player-row
+    img.avatar.avatar--small.player-list__player-avatar src="#{player[:avatar_url]}" alt=""
+    .player-list__player-name-block
+      = render "truncated_text", text: player[:name], position: "right", additional_class: "player-list__player-name"
+      - if player[:last_action].present?
+        = render "truncated_text", text: player[:last_action], position: "right", additional_class: "player-list__player-last-action"
+    .player-list__player-status
+      - if player[:melded]
+        button.player-list__player-melded type="button" data-tooltip-text="Melded" data-tooltip-position="top" data-testid="player-melded-badge"
+          i.li.li-check.icon.icon--x-small
+      .player-list__mini-fan
+        = render "card_collection", hand: player[:mini_hand], modifier: " player-list__mini-card", back: true, testid: "opponent-hand-card"
+        - if player[:overflow].to_i > 0
+          span.player-list__mini-fan-count data-testid="opponent-hand-overflow" = "+#{player[:overflow]}"

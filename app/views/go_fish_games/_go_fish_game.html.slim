@@ -1,70 +1,32 @@
-- game = @game || game
-- implementation = game.game_state
-.gf-game
-  .gf-game__board.gf-game--border
-    .panel
-      .panel__header.panel__header--title
-        = link_to root_path do
-          i.li.li-move-left.icon.icon--x-large.panel__header-link
-        span #{game.name}
+.game-board data-controller="card-select gofish-turn game-board-feed"
+  = render "board_topbar", presenter: presenter
 
-      .panel__content
-        - if implementation.winner?
-          = render partial: 'game_over', locals: { game: game }
+  .game-table
+    .game-table__seats
+      - presenter.opponents.each do |player|
+        = render "game_table_player", player: player
+    .game-table__center
 
-        - else
-          .players
-            .players__header Players
-            .players__details
-              - implementation.players.each do |player|
-                - unless current_user.id == player.id
-                  = render partial: "player_accordion", locals: { player: player }
+  = simple_form_for @game.turn_class.new(game: @game, user: current_user), url: game_turns_path(@game), method: :post, html: { id: "ask-form" } do |f|
+    input type="hidden" name="turn[player]" data-gofish-turn-target="playerField"
+    input type="hidden" name="turn[rank]" data-card-select-target="rankField"
 
-  .gf-game__feed.gf-game--border
-    .panel.panel--secondary
-      .panel__header.panel__header--game-feed
-        Game Feed
-        - if current_user.id == implementation.current_player.id
-          button.badge.badge--notice Your Turn
-        - else
-          button.badge.badge--primary #{implementation.current_player.name}'s Turn
+  footer.game-hand
+    .game-hand__main
+      p.game-hand__label = "Your Hand"
+      .card-collection.card-collection--large
+        - presenter.hand.each do |card|
+          - card_id = "hand-card-#{card[:rank]}-#{card[:suit]}"
+          label.game-hand__card for="#{card_id}"
+            input type="radio" name="hand-card-select" id="#{card_id}" disabled=presenter.hand_disabled data-testid="hand-card" data-card-select-target="card" data-rank="#{card[:rank]}" data-suit="#{card[:suit]}" data-action="change->card-select#choose"
+            = image_tag "cards/#{card[:card]}.svg", class: "playing-card playing-card--large", data: { testid: "hand-card-image" }
+      - if presenter.your_books.any?
+        p.game-hand__label data-testid="your-books-label" = "Your Books"
+        = render "card_collection", hand: presenter.your_books, modifier: "--medium", back: false, testid: "your-book-card"
 
-      .panel__content
-        .game-feed
-          .game-feed__logs
-            - implementation.results.each do |result|
-                = render partial: "go_fish_feed", locals: { result: result, current_player: current_user.id }
+  - presenter.opponents.each do |player|
+    = render "game_table_player_dialog", player: player
 
-        - if game.finished_at.nil? && current_user.id == implementation.current_player.id
-          .timer data-controller="timer" data-timer-seconds-value=game.remaining_turn_seconds(turn_timer_seconds) data-timer-anchor-value=game.updated_at.to_f
-            .timer__title Turn Time
-            .timer__time data-timer-target="time" 00:00
-          = render partial: "go_fish_form", locals: { implementation:, game: }
-
-        - else
-          = render partial: "go_fish_form", locals: { implementation:, game: }
-
-  .gf-game__hand.gf-game--border
-    .panel.panel--neutral
-      .panel__header.panel__header--slim
-        span Your Cards
-        span
-          .text-pair.text-pair--inline
-            span.text-pair__subtitle.text-pair__subtitle--small data-tooltip-text="Cards Remaining in Deck" data-tooltip-position="left"
-              i.icon.li.li-club.icon--medium.icon--neutral
-            span.text-pair__title.text-pair__title--small #{implementation.deck.cards_left}
-      .panel__content
-        .gf-game__cards
-          - if implementation.find_player(current_user.id).hand.empty?
-          - else
-            = render partial: 'card_collection', locals: {hand: implementation.find_player(current_user.id).sorted_hand, modifier: '--large', back: false}
-
-  .gf-game__books.gf-game--border
-    .panel.panel--neutral
-      .panel__header.panel__header--slim Your Books
-      .panel__content
-        .gf-game__cards
-          - if implementation.find_player(current_user.id).hand.empty?
-          - else
-            = render partial: 'card_collection', locals: {hand: implementation.find_player(current_user.id).books, modifier: '--medium', back: false}
-
+  = render "game_board_feed", presenter: presenter
+  = render "game_board_game_over", presenter: presenter
+  = render "action_notice", presenter: presenter

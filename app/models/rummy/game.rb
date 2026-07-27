@@ -123,6 +123,7 @@ module Rummy
     private
 
     def finish_turn
+      current_result.occurred_at = Time.current
       results << current_result unless results.include?(current_result)
       next_player_turn unless winner?
       self.current_result = nil

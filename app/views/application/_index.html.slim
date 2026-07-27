@@ -2,7 +2,7 @@
 
 main.op-page__main-content
   .game-list
-    section#user-games
+    section#user-games data-testid="user-games"
       header.content-header
         .content-header__details
           h2.content-header__title Your Games
@@ -19,7 +19,7 @@ main.op-page__main-content
         - else
           .game-list__no-data You have no active games...
 
-    section#open-games
+    section#open-games data-testid="open-games"
       header.content-header
         .content-header__details
           h2.content-header__title Open Games

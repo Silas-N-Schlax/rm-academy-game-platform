@@ -35,7 +35,5 @@ Rails.application.routes.draw do
 
   resources :offline, only: [ :index ]
 
-  resources :board_preview, only: [ :index ]
-
   root "games#index"
 end

@@ -21,6 +21,10 @@ FactoryBot.define do
       name { nil }
     end
 
+    trait :long_name do
+      name { "This is a super super long name, it will work!" }
+    end
+
     trait :no_email do
       email_address { nil }
     end
@@ -52,6 +56,7 @@ FactoryBot.define do
 
     factory :user2, traits: [ :user2 ]
     factory :no_name_user, traits: [ :no_name ]
+    factory :long_name_user, traits: [ :long_name ]
     factory :no_email_user, traits: [ :no_email ]
     factory :invalid_email_user, traits: [ :invalid_email ]
     factory :no_password_user, traits: [ :no_password ]

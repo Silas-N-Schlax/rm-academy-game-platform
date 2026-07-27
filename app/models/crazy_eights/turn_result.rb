@@ -1,17 +1,18 @@
 module CrazyEights
   class TurnResult
     attr_reader :current_player
-    attr_accessor :card_played, :cards_drawn, :wild_suit
+    attr_accessor :card_played, :cards_drawn, :wild_suit, :occurred_at
 
     DREW_MESSAGE_BEGINNING = "drew a".freeze
     PLAYED_CARD_MESSAGE = "played a"
     PLAYED_WILD_MESSAGE = "played a wild! The suit is".freeze
 
-    def initialize(current_player:, card_played: nil, cards_drawn: [], wild_suit: nil)
+    def initialize(current_player:, card_played: nil, cards_drawn: [], wild_suit: nil, occurred_at: nil)
       @card_played = card_played
       @current_player = current_player
       @cards_drawn = cards_drawn
       @wild_suit = wild_suit
+      @occurred_at = occurred_at
     end
 
     def messages_for_current
@@ -32,12 +33,22 @@ module CrazyEights
       cards_drawn << card
     end
 
+    def actor_label(viewer_id)
+      actor?(viewer_id) ? "You" : current_player.name
+    end
+
+    def feed_lines(viewer_id)
+      messages = actor?(viewer_id) ? messages_for_current : messages_for_all
+      [ draw_entry(messages), play_entry(messages) ].compact
+    end
+
     def as_json
       {
         "card_played" => card_played.as_json,
         "current_player" => current_player.as_json,
         "cards_drawn" => cards_drawn.map(&:as_json),
-        "wild_suit" => wild_suit
+        "wild_suit" => wild_suit,
+        "occurred_at" => occurred_at&.iso8601
       }
     end
 
@@ -47,7 +58,8 @@ module CrazyEights
         card_played: Card.from_json(json["card_played"]),
         current_player: Player.from_json(json["current_player"]),
         cards_drawn: json["cards_drawn"].map { |card| Card.from_json(card) },
-        wild_suit: json["wild_suit"]
+        wild_suit: json["wild_suit"],
+        occurred_at: json["occurred_at"] && Time.zone.parse(json["occurred_at"])
       )
     end
 
@@ -73,6 +85,18 @@ module CrazyEights
       return "You" if current
 
       current_player.name
+    end
+
+    def actor?(viewer_id)
+      current_player.id == viewer_id
+    end
+
+    def draw_entry(messages)
+      { text: messages[0], kind: :draw } if messages[0]
+    end
+
+    def play_entry(messages)
+      { text: messages[1], kind: :climax } if messages[1]
     end
   end
 end

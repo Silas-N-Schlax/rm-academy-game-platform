@@ -2,9 +2,9 @@ module GoFish
   class TurnResult
     attr_accessor :current_player, :opponent, :cards_taken,
                     :rank_asked_for, :card_picked_up,
-                    :goes_again, :created_book
+                    :goes_again, :created_book, :occurred_at
 
-    def initialize(current_player:, opponent:, cards_taken:, rank_asked_for:, card_picked_up:, goes_again:, created_book: nil)
+    def initialize(current_player:, opponent:, cards_taken:, rank_asked_for:, card_picked_up:, goes_again:, created_book: nil, occurred_at: nil)
       @current_player = current_player
       @opponent = opponent
       @cards_taken = cards_taken
@@ -12,6 +12,7 @@ module GoFish
       @card_picked_up = card_picked_up
       @goes_again = goes_again
       @created_book = created_book
+      @occurred_at = occurred_at
     end
 
     def got_card
@@ -54,6 +55,20 @@ module GoFish
       got_card << [ player, card ]
     end
 
+    def actor_label(id)
+      current_or_opponent(id)
+    end
+
+    def feed_lines(id)
+      [
+        { text: question(id).join, kind: :ask },
+        answer_entry,
+        go_fish_entry(id),
+        book_created_entry(id),
+        *got_card_entries(id)
+      ].compact
+    end
+
     def as_json
       {
         "current_player" => current_player.as_json,
@@ -63,7 +78,8 @@ module GoFish
         "card_picked_up" => card_picked_up.as_json,
         "goes_again" => goes_again,
         "created_book" => created_book.as_json,
-        "got_card" => got_card
+        "got_card" => got_card,
+        "occurred_at" => occurred_at&.iso8601
       }
     end
 
@@ -75,12 +91,31 @@ module GoFish
         rank_asked_for: json["rank_asked_for"],
         card_picked_up: GoFish::Card.from_json(json["card_picked_up"]),
         goes_again: json["goes_again"],
+        occurred_at: json["occurred_at"] && Time.zone.parse(json["occurred_at"])
       )
       json["got_card"].map { |element| result.add_got_card_record(GoFish::Player.from_json(element[0]), GoFish::Card.from_json(element[1])) } if json["got_card"]
       result
     end
 
     private
+
+    def answer_entry
+      { text: answer, kind: cards_taken.empty? ? :climax : :notable }
+    end
+
+    def go_fish_entry(id)
+      text = go_fish(id)
+      { text: text, kind: :draw } if text
+    end
+
+    def book_created_entry(id)
+      text = book_created(id)
+      { text: text, kind: :notable } if text
+    end
+
+    def got_card_entries(id)
+      got_card_message(id).map { |text| { text: text, kind: :draw } }
+    end
 
     def current_or_opponent(id)
       return "You" if current_player.id == id

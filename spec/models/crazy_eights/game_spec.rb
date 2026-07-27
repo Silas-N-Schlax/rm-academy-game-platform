@@ -86,6 +86,18 @@ RSpec.describe CrazyEights::Game, type: :model do
         expect(game.results.size).to eq expected_results_size
         expect(game.current_result.current_player.id).to_not eq game.latest_result.current_player.id
       end
+
+      it 'records when the turn occurred' do
+        expect(game.latest_result.occurred_at).to_not be_nil
+      end
+    end
+
+    context 'when a normal card is played with a blank wild_suit param' do
+      it 'does not set the wild suit' do
+        game.play_card(rank: 'J', suit: 'Hearts', wild_suit: '')
+        expect(game.wild_suit).to be_nil
+        expect(game.latest_result.wild_suit).to be_nil
+      end
     end
 
     context 'when the card is valid and its a wild' do
@@ -282,6 +294,21 @@ RSpec.describe CrazyEights::Game, type: :model do
     end
   end
 
+  describe '#ranking' do
+    let!(:game) { described_class.new(players: [ player1, player2, player3 ]) }
+    let!(:game_player1) { game.players[0] }
+    let!(:game_player2) { game.players[1] }
+    let!(:game_player3) { game.players[2] }
+
+    it 'orders players by fewest cards left' do
+      game_player1.hand = [ CrazyEights::Card.new('2') ]
+      game_player2.hand = []
+      game_player3.hand = [ CrazyEights::Card.new('2'), CrazyEights::Card.new('3') ]
+
+      expect(game.ranking).to eq [ game_player2, game_player1, game_player3 ]
+    end
+  end
+
   describe '#valid_card?' do
     let!(:game) { described_class.new(players: [ player1, player2 ]) }
     let!(:player1_data) { game.players.first }
@@ -403,7 +430,8 @@ RSpec.describe CrazyEights::Game, type: :model do
             },
             "cards_drawn" => [],
             "current_player" => nil,
-            "wild_suit" => nil
+            "wild_suit" => nil,
+            "occurred_at" => nil
           }
         ],
         "current_result" => {
@@ -414,7 +442,8 @@ RSpec.describe CrazyEights::Game, type: :model do
             "id" => 1,
             "hand" => []
           },
-          "wild_suit" => nil
+          "wild_suit" => nil,
+          "occurred_at" => nil
         },
         "current_player_idx" => 0,
         "wild_suit" => nil

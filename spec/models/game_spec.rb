@@ -19,6 +19,18 @@ RSpec.describe Game, type: :model do
     it 'requires #valid_move? to be overridden' do
       expect { game.valid_move? }.to raise_error(NotImplementedError, /valid_move\?/)
     end
+
+    it 'requires #presenter_class to be overridden' do
+      expect { game.presenter_class }.to raise_error(NotImplementedError, /presenter_class/)
+    end
+
+    it 'requires #min_players to be overridden' do
+      expect { game.min_players }.to raise_error(NotImplementedError, /min_players/)
+    end
+
+    it 'requires #max_players to be overridden' do
+      expect { game.max_players }.to raise_error(NotImplementedError, /max_players/)
+    end
   end
 
   describe 'validations' do
@@ -34,6 +46,17 @@ RSpec.describe Game, type: :model do
 
     it 'returns false if name is too short' do
       game = build :short_name_game
+      expect(game).to be_invalid
+    end
+
+    it 'returns false if name is too long' do
+      game = build :long_name_game
+      expect(game).to be_invalid
+    end
+
+    it 'returns false if name is no unique' do
+      create :game2
+      game = build :game2
       expect(game).to be_invalid
     end
 
@@ -54,10 +77,10 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#valid_type' do
-    it 'returns array' do
+    it 'returns every Game subclass name, sorted alphabetically' do
       game = Game.new(name: 'test', type: 'GoFishGame', game_size: 2)
       game.save_new_game(create(:user).id)
-      expected_array = [ "GoFishGame", "CrazyEightsGame", "RummyGame" ]
+      expected_array = [ "CrazyEightsGame", "GoFishGame", "RummyGame" ]
       expect(game.valid_types).to eq expected_array
     end
   end
@@ -69,17 +92,6 @@ RSpec.describe Game, type: :model do
       expected_game_size = 1
       expect(game.persisted?).to be true
       expect(game.players.size).to eq expected_game_size
-    end
-  end
-  describe '#game_size_by_type' do
-    let(:game) { described_class.new }
-    it 'returns the min and max values in a hash for that type' do
-      expected_min = 2
-      expected_max = 6
-      type = 'GoFishGame'
-      result = game.game_size_by_type(type)
-      expect(result[:min]).to eq expected_min
-      expect(result[:max]).to eq expected_max
     end
   end
 

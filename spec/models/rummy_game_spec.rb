@@ -109,4 +109,16 @@ RSpec.describe RummyGame, type: :model do
       expect(game.turn_class).to eq RummyTurn
     end
   end
+
+  describe '#min_players' do
+    it 'returns 2' do
+      expect(described_class.new.min_players).to eq 2
+    end
+  end
+
+  describe '#max_players' do
+    it 'returns 6' do
+      expect(described_class.new.max_players).to eq 6
+    end
+  end
 end

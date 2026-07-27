@@ -134,4 +134,22 @@ RSpec.describe CrazyEightsGame, type: :model do
       expect(game.turn_class).to be_a CrazyEightsTurn.class
     end
   end
+
+  describe '#presenter_class' do
+    it 'returns a no-op presenter so the shared show view can build one without erroring' do
+      expect { described_class.new.presenter_class.new(nil, nil) }.to_not raise_error
+    end
+  end
+
+  describe '#min_players' do
+    it 'returns 2' do
+      expect(described_class.new.min_players).to eq 2
+    end
+  end
+
+  describe '#max_players' do
+    it 'returns 7' do
+      expect(described_class.new.max_players).to eq 7
+    end
+  end
 end
