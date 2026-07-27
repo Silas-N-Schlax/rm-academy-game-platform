@@ -3,6 +3,23 @@
 Future plans and known issues not yet in progress, grouped by theme. Amend entries in place
 rather than duplicating when revisiting a topic.
 
+## Leaderboard — shipped (2026-07-27)
+
+- **`/leaderboard` page shipped**, ranking every user by total wins → total games → win/loss ratio →
+  total time played → account age (older wins ties). Built on a new `Stat#leaderboard` (one grouped
+  SQL query) and a BEM `leaderboard` table component; see `docs/architecture.md`'s Core models and
+  Asset pipeline sections for the underlying `Stat`/`Game#end_game`/Optics gotchas this surfaced.
+- **Root-cause data fix landed alongside it:** `Game#end_game` now writes `winner: false` for every
+  non-winning player (previously only the winner was ever touched, leaving everyone else `nil` —
+  indistinguishable from an unfinished game).
+- **Known gap, not fixed:** games that finished **before** this session land still have `nil` for
+  their losers instead of `false`. No backfill migration was written — revisit if historical
+  loss/win-percentage counts for existing games need to be corrected retroactively.
+- **Deferred follow-up:** a denser "tight standings" mobile treatment (sticky header, hairline rows
+  instead of per-row borders, a shorter `14h 22m`-style time format) was designed and set aside in
+  favor of the simpler bordered-row treatment for the initial ship. Worth revisiting once the board
+  regularly runs past a single phone screenful.
+
 ## Rummy — new game, in progress (2026-07-22)
 
 - **Rules doc complete:** [docs/rummy_rules.md](rummy_rules.md), reflecting decisions made during

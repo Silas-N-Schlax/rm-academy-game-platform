@@ -12,9 +12,10 @@ Game (STI base, type: "GoFishGame" | "CrazyEightsGame")
 
 - `Game` is an STI base class (`type` column). `GoFishGame` and `CrazyEightsGame` are the only subclasses today; adding a new game means adding a new subclass plus a new engine namespace (see below), not touching the base class's schema.
 - `has_many :players`/`has_many :users` have no explicit `order`. Rails implicitly orders `.first`/`.last` by `id`, but `.map`/`.each`/`.to_a` do not — those can return rows in a different order under DB load. `GoFish::Game.create`/`CrazyEights::Game.create` learned this the hard way (players could get seated in the wrong turn order) and now `sort_by(&:id)` explicitly before mapping. `app/views/application/_go_fish_form.html.slim`'s player-select dropdown has the same latent gap and is not yet fixed — see `docs/roadmap.md`.
-- `Player` is the join model between `User` and `Game` — one row per seat, holding `winner` (boolean/nil: `true` = won, `nil` = lost or unfinished, since ties aren't possible in either game).
+- `Player` is the join model between `User` and `Game` — one row per seat, holding `winner` (boolean/nil: `true` = won a finished game, `false` = lost a finished game, `nil` = the game hasn't finished yet). `Game#end_game` sets every non-winning player to `false` (not just leaving them `nil`) when a game ends — fixed 2026-07-27; before that, a non-winner was indistinguishable from a player in an unfinished game, which inflated loss/game counts in `Stat`. Games finished before that fix still have `nil` for their losers (no backfill migration was written — see `docs/roadmap.md`).
 - `Session`/`Current` follow the standard Rails 8 authentication-generator pattern: a signed cookie holds a `session_id`, `Current.session` is set per-request in `Authentication` (a controller concern), and `Current.user` delegates to it.
-- `Stat` is a plain (non-AR) query object that computes win/loss/average stats per user, optionally filtered by game `type` string.
+- `Stat` is a plain (non-AR) query object that computes win/loss/average stats per user, optionally filtered by game `type` string, plus a `#leaderboard` method (a single grouped query ranking every user by total wins → total games → win/loss ratio → time played → account age). Every column across `Stat` — including `#leaderboard` — is scoped to **finished games only**; this is why `#total_games` doesn't just equal `user.games.size`.
+- `Game.open_games` used to silently exclude any open game with **zero players** — it originally used `joins(:players)` (an INNER JOIN), which produces no row at all for a game with no matching `players` row. Changed to `includes(:players)` plus a correlated subquery so a zero-player open game is correctly included. This is a real behavior change: an existing system spec assumed only one open game would ever show a "Join" button and broke when a second (zero-player) one appeared — fixed by scoping the click to `dom_id(game)` rather than relying on there being just one match.
 
 ## The serialized game-state pattern
 
@@ -91,6 +92,7 @@ There's no bespoke `ActionCable` channel for gameplay. Instead:
 - This app aliases Capybara's `select` to a custom `smart_select` (`spec/support/helpers/select_helper.rb`) that resolves `from:` by **label text**, not element id/name — `select 'X', from: 'some_field_id'` fails with a confusing "unable to find label" error instead of selecting by id.
 - `Game#can_start?` requires `players.size == game_size` **exactly**. A factory built with a `player_count:` transient but a mismatched (or default) `game_size:` makes `start!` **silently return `nil`** rather than raise — `game_state` stays nil with no obvious error pointing at the mismatch.
 - Clicking a specific card in Rummy's overlapping fanned hand (`rummy_gameplay_spec.rb`) needs a `label.click()` JS dispatch (see the `check_hand_card` helper — `page.execute_script("...label[for='...'].click()")`), not a coordinate-based Capybara click. Chromium/Playwright's synthetic-mouse hit-testing intermittently reports a false "blocked by a different card" even when the real DOM geometry is correct (independently verified via `elementFromPoint`) — likely a hover-path quirk, not an actual visual-overlap bug. A `label.click()` still exercises real DOM click-activation semantics (toggles the checkbox, fires `change`), just without simulated mouse coordinates.
+- Asserting a CSS state that's gated by a `transition-delay` (e.g. the Optics tooltip reveal — see Asset pipeline below) needs to **poll** (`wait_until` from `capybara_helper.rb`), not read `getComputedStyle` synchronously right after the triggering action. A synchronous read can catch the *stale* pre-transition value even when the underlying rule is correct — and the inverse is more dangerous: a spec that only asserts `.matches_css?(':focus-visible')` without also checking the actual visual effect (opacity/visibility) will pass even if the CSS rule producing that effect is completely missing, silently defeating the point of the test.
 
 ## Asset pipeline (Propshaft)
 
@@ -134,6 +136,25 @@ during a manual review, 2026-07-23): the negative margin landed on the `<img>` i
 card. Fixed via `display: contents` on the wrapping `<label>` so its child `<img>` participates in
 the flex layout directly, as if the label weren't there. Any future checkbox/label-wrapped card UI
 needs the same treatment to keep this shared technique working.
+
+Optics' `[data-tooltip-text]` component only reveals on `:hover` by default — unreachable on touch
+or via keyboard. `theme.css` adds a `[data-tooltip-text]:focus-visible` rule (opacity/visibility,
+mirroring Optics' own `:hover` rule) so every tooltip in the app — not just a specific one — is also
+reachable by tapping/tabbing to it. Two things to know if you touch this: the reveal is gated by
+Optics' `--op-transition-tooltip` token, which has a **300ms delay before its 300ms fade even
+starts** — a system spec asserting the reveal must wait past that (see Testing gotchas above), not
+read `getComputedStyle` synchronously. And Optics' `.table` component sets `contain: paint`, which
+**clips** any cell content that overflows the table's own outer box — relevant for any column with
+unbounded-length content (e.g. an ever-growing duration string); the fix is `overflow-wrap: anywhere`
+scoped to just the affected columns (not the whole row, or a player name column will break
+mid-word), letting long content wrap onto a second line instead of clipping at the table edge or
+bleeding into a neighboring cell.
+
+Applying `display: flex` **directly to a `<td>`** breaks its normal row-height-stretch behavior in a
+`border-collapse: separate` table (found building the leaderboard, 2026-07-27): the flexed cell
+sizes to its own content height instead of matching its taller siblings, leaving a visible seam
+where its short background/border ends before the row's actual bottom edge. Keep the flex layout on
+a child element inside the cell, never the `<td>` itself.
 
 `app/javascript/controllers/index.js` is **auto-generated** (per its own header comment) and does not
 pick up a new controller file just by existing — a new `data-controller="foo"` in a view is silently
