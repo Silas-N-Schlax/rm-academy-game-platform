@@ -70,7 +70,7 @@ class Game < ApplicationRecord
   end
 
   def open_games(user_id)
-    Game.includes(:players)
+    Game.joins(:players)
       .where(finished_at: nil, started_at: nil, archived_at: nil)
       .where("(SELECT COUNT(*) FROM players WHERE players.game_id = games.id) < games.game_size")
   end
