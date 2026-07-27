@@ -1,0 +1,25 @@
+.page
+  header.content-header
+    .content-header__details
+      .content-header__title Leaderboard
+    p.leaderboard-standing
+      | You're
+      strong = " ##{your_rank} "
+      | of
+      strong = " #{@rows.size} "
+      | players
+    .divider.divider--medium
+
+  .page__content
+    table.table.table--fixed-layout.leaderboard
+      colgroup
+        col.leaderboard__col-rank
+        col
+        col.leaderboard__col-stat
+        col.leaderboard__col-stat
+        col.leaderboard__col-stat.leaderboard__col-stat--ratio
+        col.leaderboard__col-stat.leaderboard__col-stat--time
+      = render 'leaderboard_head'
+      tbody
+        - @rows.each_with_index do |row, index|
+          = render 'leaderboard_row', row: row, rank: index + 1

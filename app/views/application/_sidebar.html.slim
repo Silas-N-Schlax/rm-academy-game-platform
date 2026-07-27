@@ -16,6 +16,9 @@
       a.btn.btn--no-border.btn--sidebar href=stats_path class=class_names('btn--active' => request.path.include?('/stats'))
         i.li.li-chart-column-big.icon
         p Stats
+      a.btn.btn--no-border.btn--sidebar href=leaderboard_index_path class=class_names('btn--active' => request.path.include?('/leaderboard'))
+        i.li.li-trophy.icon
+        p Leaderboard
 
     .sidebar__content.sidebar__content--end
       .divider.divider--medium
@@ -28,6 +31,11 @@
         = link_to stats_path, class: 'btn btn--icon mobile-navbar__btn' do
           i.li.li-chart-column-big.icon.icon--x-large
         p Stats
+
+      .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/leaderboard'))
+        = link_to leaderboard_index_path, class: 'btn btn--icon mobile-navbar__btn' do
+          i.li.li-trophy.icon.icon--x-large
+        p LB
 
       .mobile-navbar__group class=class_names('mobile-navbar__group--active' => request.path.include?('/rules'))
         = link_to rules_path, class: 'btn btn--icon mobile-navbar__btn' do
