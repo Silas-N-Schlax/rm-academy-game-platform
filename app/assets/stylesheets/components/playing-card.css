@@ -42,6 +42,7 @@
 
   &.playing-card--active {
     outline: solid calc(var(--op-size-unit) * 1) var(--op-color-alerts-notice-base); /* 4px */
+    border-radius: var(--op-radius-large);
   }
 
   &.meld__card {
