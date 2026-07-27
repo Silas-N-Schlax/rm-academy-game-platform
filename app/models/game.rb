@@ -75,6 +75,10 @@ class Game < ApplicationRecord
       .where("(SELECT COUNT(*) FROM players WHERE players.game_id = games.id) < games.game_size")
   end
 
+  def finished_games_by_user(user_id)
+    Game.includes(:players).where.not(finished_at: nil).where(players: { user_id: })
+  end
+
   def winner
     self.players.find_by(winner: true)
   end

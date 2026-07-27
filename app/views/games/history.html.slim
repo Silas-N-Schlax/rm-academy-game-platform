@@ -7,7 +7,7 @@
 
   .page__content
     .dynamic-grid
-      - @games.select { |game| game.players.find { |player| player.user.id == @user.id } }.each do |game|
+      - @games.select { |game| game.players.find { |player| player.user.id == current_user.id } }.each do |game|
         - unless game.finished_at.nil?
 
           button.card.card--padded.card--shadow-small commandfor="history-#{game.id}-dialog" command="show-modal"
