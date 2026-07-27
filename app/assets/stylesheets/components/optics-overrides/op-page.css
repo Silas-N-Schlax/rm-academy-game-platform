@@ -34,6 +34,6 @@
   }
 
   .op-page__main {
-    margin-bottom: calc(var(--op-size-unit) * 31);
+    margin-bottom: calc(var(--op-size-unit) * 275);
   }
 }
