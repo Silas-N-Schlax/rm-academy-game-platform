@@ -1,0 +1,20 @@
+header.board-topbar
+  .board-topbar__left
+    a.board-topbar__back href=root_path aria-label="Back" data-testid="board-back-button"
+      i.li.li-move-left.icon.icon--x-large
+    span.board-topbar__name = presenter.name
+    span.badge.badge--primary
+      i.li.li-tag.icon.icon--small
+      = presenter.game_type
+  .board-topbar__right
+    span.board-topbar__stock-count
+      i.li.li-layers.icon.icon--small
+      | Stock: #{presenter.stock_count}
+    span.badge class=(presenter.your_turn ? "badge--notice" : "badge--primary")
+      i.li.icon.icon--small class=(presenter.your_turn ? "li-circle-dot" : "li-circle")
+      = presenter.turn_label
+    button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-testid="open-feed-button" data-action="click->game-board-feed#openFeed"
+      i.li.li-list.icon.icon--small
+    - if presenter.winner_name.present?
+      button.btn.btn--icon type="button" aria-label="View game results" data-testid="view-results-button" commandfor="game-over-modal" command="show-modal"
+        i.li.li-trophy.icon.icon--small

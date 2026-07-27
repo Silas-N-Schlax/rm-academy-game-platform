@@ -23,6 +23,10 @@ FactoryBot.define do
       name { nil }
     end
 
+    trait :long_name do
+      name { "This is a super super long name and it will work 100%" }
+    end
+
     trait :short_name do
       name { 'g' }
     end
@@ -79,6 +83,7 @@ FactoryBot.define do
 
     factory :no_name_game, traits: [ :no_name ]
     factory :short_name_game, traits: [ :short_name ]
+    factory :long_name_game, traits: [ :long_name ]
     factory :no_game_size_game, traits: [ :no_game_size ]
     factory :too_small_game, traits: [ :too_small ]
     factory :too_large_game, traits: [ :too_large ]
@@ -87,5 +92,6 @@ FactoryBot.define do
     factory :finished_game, traits: [ :finished ]
     factory :archived_game, traits: [ :archived ]
     factory :stale_game, traits: [ :stale ]
+    factory :game2, traits: [ :game2 ]
   end
 end

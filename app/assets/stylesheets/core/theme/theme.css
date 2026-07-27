@@ -13,8 +13,8 @@
 }
 
 [data-tooltip-text] {
-  --_op-tooltip-background-color: var(--op-color-alerts-warning-plus-three);
-  --_op-tooltip-text-color: var(--op-color-alerts-warning-on-plus-three);
+  --_op-tooltip-background-color: var(--op-color-primary-plus-five);
+  --_op-tooltip-text-color: var(--op-color-primary-on-plus-five);
   --_op-tooltip-tooltip-radius: var(--op-radius-small);
 }
 

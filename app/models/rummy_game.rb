@@ -2,8 +2,12 @@ class RummyGame < Game
   serialize :game_state, coder: Rummy::Game
 
   def engine_class = Rummy::Game
+  def min_players = 2
+  def max_players = 6
 
   def turn_class = RummyTurn
+
+  def presenter_class = RummyPresenter
 
   def play(action:, source: nil, card_ids: [], meld_index: nil)
     implementation = self.game_state

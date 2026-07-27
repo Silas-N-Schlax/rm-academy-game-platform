@@ -45,6 +45,10 @@ module CrazyEights
       players.find(&:empty_hand?)
     end
 
+    def ranking
+      players.sort_by(&:hand_size)
+    end
+
     def valid_card?(rank, suit)
       return false unless Card.valid_rank?(rank) && Card.valid_suit?(suit)
       top_card = discard.top_card
@@ -97,7 +101,10 @@ module CrazyEights
     end
 
     def add_current_result_if_possible
-      results << current_result unless results.include?(current_result)
+      return if results.include?(current_result)
+
+      current_result.occurred_at = Time.current
+      results << current_result
     end
 
     def give_cards_to_player
@@ -110,9 +117,8 @@ module CrazyEights
     end
 
     def set_wild_suit(wild_suit)
-      self.wild_suit = wild_suit if wild_suit
-      self.wild_suit = nil if wild_suit.nil?
-      current_result.wild_suit = wild_suit
+      self.wild_suit = wild_suit.presence
+      current_result.wild_suit = wild_suit.presence
     end
 
     def after_deal

@@ -2,6 +2,8 @@ class CrazyEightsGame < Game
   serialize :game_state, coder: CrazyEights::Game
 
   def engine_class = CrazyEights::Game
+  def min_players = 2
+  def max_players = 7
 
   def play(rank: nil, suit: nil, wild_suit: nil, request: false)
     implementation = self.game_state
@@ -16,6 +18,8 @@ class CrazyEightsGame < Game
   def turn_class
     CrazyEightsTurn
   end
+
+  def presenter_class = CrazyEightsPresenter
 
   def valid_move?(rank:, suit:)
     implementation.valid_card?(rank, suit)

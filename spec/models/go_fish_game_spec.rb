@@ -163,6 +163,12 @@ RSpec.describe GoFishGame, type: :model do
     end
   end
 
+  describe '#presenter_class' do
+    it 'returns a no-op presenter so the shared show view can build one without erroring' do
+      expect { described_class.new.presenter_class.new(nil, nil) }.to_not raise_error
+    end
+  end
+
   describe '#players' do
     let!(:game) { create(:game, game_size: 4, player_count: 4) }
     before { game.start! }
@@ -178,6 +184,18 @@ RSpec.describe GoFishGame, type: :model do
     it 'returns a list of ranks in the players hand' do
       game_players = game.game_state.players
       expect(game.ranks_list(game_players.first.id)).to eq game_players.first.ranks
+    end
+  end
+
+  describe '#min_players' do
+    it 'returns 2' do
+      expect(described_class.new.min_players).to eq 2
+    end
+  end
+
+  describe '#max_players' do
+    it 'returns 6' do
+      expect(described_class.new.max_players).to eq 6
     end
   end
 end

@@ -2,6 +2,8 @@ class GoFishGame < Game
   serialize :game_state, coder: GoFish::Game
 
   def engine_class = GoFish::Game
+  def min_players = 2
+  def max_players = 6
 
   def play(player:, rank:)
     implementation = self.game_state
@@ -19,6 +21,8 @@ class GoFishGame < Game
   def valid_move?(player:, rank:)
     implementation.valid_player?(player) && implementation.valid_rank?(rank)
   end
+
+  def presenter_class = GoFishPresenter
 
   def turn_class
     GoFishTurn

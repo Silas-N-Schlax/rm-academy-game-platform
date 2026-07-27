@@ -1,6 +1,6 @@
 module Rummy
   class Meld
-    attr_accessor :cards
+    attr_reader :cards
 
     MIN_RUN_SIZE = 3
     MAX_RUN_SIZE = Card::RUN_ORDER.size
@@ -8,7 +8,11 @@ module Rummy
     GROUP_DESCRIPTIONS = { 3 => "three", 4 => "four" }.freeze
 
     def initialize(cards:)
-      @cards = cards
+      self.cards = cards
+    end
+
+    def cards=(new_cards)
+      @cards = new_cards.sort_by(&:run_position)
     end
 
     def self.valid_group?(cards)
@@ -39,7 +43,7 @@ module Rummy
 
     def description
       return "#{GROUP_DESCRIPTIONS[cards.size]} #{spelled_rank(cards.first.rank)}s" if group?
-      "run of #{sorted_cards.map(&:rank).join('-')} of #{cards.first.suit}"
+      "run of #{cards.map(&:rank).join('-')} of #{cards.first.suit}"
     end
 
     def group?
@@ -60,17 +64,13 @@ module Rummy
 
     private
 
-    def sorted_cards
-      cards.sort_by(&:run_position)
-    end
-
     def accepts_for_group?(card)
       cards.size < GROUP_SIZES.max && card.rank == cards.first.rank && cards.none? { |c| c.suit == card.suit }
     end
 
     def accepts_for_run?(card)
       return false unless card.suit == cards.first.suit
-      [ sorted_cards.first.run_position - 1, sorted_cards.last.run_position + 1 ].include?(card.run_position)
+      [ cards.first.run_position - 1, cards.last.run_position + 1 ].include?(card.run_position)
     end
 
     def applies_in_order?(ordered_cards)

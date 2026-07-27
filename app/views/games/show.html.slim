@@ -1,12 +1,13 @@
 = turbo_stream_from @game
 
-.alert-banner.alert.alert--danger.alert--muted data-controller="offline" data-offline-target="offlineBanner"
-  i.li.li-globe-off.icon
-  .alert_messages
-    .alert_title Offline
-    .alert_description You are offline, reconnect to keep playing
+.alert-banner.alert.alert--danger.alert--muted data-testid="offline-banner" data-controller="offline" data-offline-target="offlineBanner"
+  i.li.li-globe-off.icon.alert__icon
+  .alert__messages
+    .alert__title Offline
+    .alert__description You are offline, reconnect to keep playing
 
 - if @game.game_state.nil?
   = render partial: "waiting_screen", locals: { game: @game }
 - else
-  = render partial: @game, locals: { turn_timer_seconds: Rails.application.config.x.turn_timer_seconds, turn: local_assigns[:turn] }
+  - presenter = @game.presenter_class.new(@game, current_user, turn: local_assigns[:turn], turn_timer_seconds: Rails.application.config.x.turn_timer_seconds)
+  = render partial: @game, locals: { presenter: presenter }

@@ -7,7 +7,7 @@ class Game < ApplicationRecord
   after_update_commit { broadcast_refresh_later_to "games" }
   after_update_commit { broadcast_refresh_later_to self }
 
-  validates :name, presence: true, length: { minimum: 4 }
+  validates :name, presence: true, length: { in: 4..25 }, uniqueness: { case_sensitive: true }
   validates :type, presence: true, inclusion: { in: ->(game) { game.valid_types } }
   validates :game_size, presence: true
   validate :valid_game_size
@@ -35,15 +35,15 @@ class Game < ApplicationRecord
 
   def engine_class = raise NotImplementedError, "#{self.class} must implement #engine_class"
   def turn_class = raise NotImplementedError, "#{self.class} must implement #turn_class"
+  def presenter_class = raise NotImplementedError, "#{self.class} must implement #presenter_class"
   def play(**) = raise NotImplementedError, "#{self.class} must implement #play"
   def valid_move?(**) = raise NotImplementedError, "#{self.class} must implement #valid_move?"
+  def min_players = raise NotImplementedError, "#{self.class} must implement #min_players"
+  def max_players = raise NotImplementedError, "#{self.class} must implement #max_players"
 
   def valid_types
-    game_details_hash.keys
-  end
-
-  def game_size_by_type(type)
-    game_details_hash[type]
+    self.class.eager_load_subclasses!
+    Game.descendants.map(&:name).sort
   end
 
   def join(user_id)
@@ -106,6 +106,12 @@ class Game < ApplicationRecord
     format("%02d:%02d:%02d", hours, minutes, seconds)
   end
 
+  def self.eager_load_subclasses!
+    return if @subclasses_loaded
+    Rails.application.eager_load! unless Rails.application.config.eager_load
+    @subclasses_loaded = true
+  end
+
   private
 
   def format_status_message
@@ -115,11 +121,11 @@ class Game < ApplicationRecord
   end
 
   def valid_game_size
-    valid_game_size = game_size_by_type(type)
-    return if valid_game_size.nil? || game_size.nil?
+    return if self.class == Game
+    return if game_size.nil?
 
-    min = valid_game_size[:min]
-    max = valid_game_size[:max]
+    min = self.min_players
+    max = self.max_players
 
     if game_size < min || game_size > max
       errors.add(:game_size, "Game size must be between #{min} and #{max} players for #{type}.")
@@ -138,23 +144,5 @@ class Game < ApplicationRecord
     self.finished_at = Time.current
     players.update_all(winner: false)
     Player.find_by(user_id: winner_id, game_id: self.id).update!(winner: true)
-  end
-
-
-  def game_details_hash
-    {
-      "GoFishGame" => {
-        min: 2,
-        max: 6
-      },
-      "CrazyEightsGame" => {
-        min: 2,
-        max: 7
-      },
-      "RummyGame" => {
-        min: 2,
-        max: 6
-      }
-    }
   end
 end

@@ -56,9 +56,9 @@ rather than duplicating when revisiting a topic.
     not a change to the shared `CardGame::Engine` base.
   - The Crazy Eights `Discard` pattern hunch was correct — `Rummy::Discard` mirrors
     `CrazyEights::Discard` (`add_card`/`all_but_top_card`) directly.
-  - **Still pending cleanup:** the throwaway `/board_preview` route/controller/view
-    (`board_preview_controller.rb`) is now genuinely stale — real game data flows through
-    `_rummy_game.html.slim` instead of hardcoded mock data — and should be deleted.
+  - **Cleanup done (2026-07-24):** the throwaway `/board_preview` route/controller/view
+    (`board_preview_controller.rb`) was deleted now that real game data flows through
+    `_rummy_game.html.slim` instead of hardcoded mock data.
 - **Phase 2 built and green (2026-07-23): full turn logic.** Draw (+ stock recycling), meld,
   lay-off, discard, going out, and ranking by pip total are all implemented end to end — engine
   POROs (`Rummy::Meld`, `Rummy::TurnResult`, `Rummy::Game#draw`/`#lay_down_meld`/`#lay_off`/
@@ -87,11 +87,26 @@ rather than duplicating when revisiting a topic.
   `game_not_finished` validation on the shared `Turn` base class — see
   [docs/architecture.md](architecture.md)'s Turn form objects section). **Item 10 explicitly
   deferred, not MVP:** clicking "Discard" shouldn't unselect an already-checked card if you meant to
-  click something else — no fix attempted, revisit if it comes up again. **Known latent bug noticed
-  but not fixed** (pre-existing, app-wide, predates this session): the toast/offline-banner markup
-  uses `.alert_messages`/`.alert_title`/`.alert_description` (single underscore) but Optics' actual
-  BEM classes are `.alert__messages`/`.alert__title`/`.alert__description` (double underscore) — those
-  inner elements never get Optics' intended spacing/font styling as a result.
+  click something else — no fix attempted, revisit if it comes up again. **Latent bug fixed
+  (2026-07-24):** the toast/offline-banner markup used `.alert_messages`/`.alert_title`/
+  `.alert_description` (single underscore) instead of Optics' actual BEM classes
+  `.alert__messages`/`.alert__title`/`.alert__description` (double underscore), so those inner
+  elements never got Optics' intended spacing/font styling — corrected as part of the UI polish
+  pass below.
+- **UI polish pass, 5 items (2026-07-24):** the turn badge now shows a filled-vs-hollow circle icon
+  (`li-circle-dot`/`li-circle`) to distinguish whose turn it is, since Lucide (the icon set here) has
+  no true solid-circle glyph; the error toast and offline banner (see the BEM class-typo fix above)
+  were repositioned from a full-bleed bar rendering above the header into a proper floating toast —
+  fixed `position`, a slide-in/out transition using `@starting-style`/`display: ... allow-discrete`
+  (the same modern-CSS pattern Optics' own accordion component already uses), and a borderless
+  dismiss button via Optics' `btn--no-border`; the game-over ranking list now gives 2nd/3rd place a
+  subtle silver/bronze-ish color emphasis while other ranks stay plain; the topbar's stock-count pill
+  styling (previously mobile-only, plain text on desktop) is now consistent across breakpoints and
+  height-matched to the turn badge; and the Rummy meld/discard "must draw first" lock icon —
+  previously hardcoded `hidden=true` in the Slim template, relying entirely on JS to correct it after
+  page load — now derives `hidden`/`disabled` directly from `presenter.awaiting_draw` server-side (a
+  non-JS reproduction spec proved the bug before the fix). Also deleted the now-fully-stale
+  `/board_preview` dev route (see Phase 1 above).
 
 ## Known flaky/incomplete tests (2026-07-21)
 
@@ -168,3 +183,178 @@ rather than duplicating when revisiting a topic.
   supersede the older `znotes/plans/engine-refactor-plan.md`, which is now annotated as such).
   Revisit whether full engine unification is still worth pursuing now that 4a/4b have landed, or
   whether the incremental cards already captured most of the value.
+
+## UI/view-layer debt (2026-07-24)
+
+- **`RummyPresenter` extraction — done (2026-07-24):** Rummy's inline `board` hash
+  (`app/views/rummy_games/_rummy_game.html.slim`) is now a `RummyPresenter` PORO
+  (`app/presenters/rummy_presenter.rb`) with a granular method-per-value API, wired via a new
+  `presenter_class` contract on the `Game` models (mirroring `turn_class`/`engine_class` —
+  raises `NotImplementedError` by default). `show.html.slim` builds one presenter (carrying
+  `turn`/`turn_timer_seconds`) as the sole local passed to each game partial. Go Fish/Crazy Eights
+  get a `NullPresenter` stub (`app/presenters/null_presenter.rb`) so the shared show view doesn't
+  error on them; they still build their own display data inline pending their own conversion. No
+  shared `GamePresenter` base class yet — deferred until that conversion gives a second real data
+  point to factor against.
+- **`game-board.css` decomposition** (`znotes/plans/game-board-css-decomposition.md`): shrink the
+  558-line `game-board.css` down to just its layout shell by extracting each section (feed drawer,
+  game-over modal, players panel, piles, hand/actions) into small reusable component files, leaning
+  on Optics built-ins (`side-panel`, `modal`, `card`, `tab-group`) where they fit. Intended to give
+  Go Fish/Crazy Eights reusable pieces once they convert to the new board design. Not started.
+  **Superseded in part (2026-07-24):** the Go Fish/Crazy Eights migration plan below decided those
+  two games do NOT reuse the `player-list` sidebar this bullet assumed — they get a seated
+  `game-table` layout instead. The feed drawer/game-over modal/hand pieces are still reusable.
+- **Go Fish & Crazy Eights migration to the game-board design + presenters — DONE (2026-07-25):**
+  a BRAVE-style breakdown (two rounds of artifact mockups) produced a full
+  migration plan, now split into `znotes/plans/gf-c8-migration/README.md` (decisions/context) plus
+  ordered, commit-sized TDD execution docs `go-fish.md` (done first, builds the shared infra) and
+  `crazy-eights.md` (reuses it) in the same folder. Key decisions:
+  each game gets its own PORO presenter (`GoFishPresenter`/`CrazyEightsPresenter`, matching
+  `RummyPresenter`'s shape — no shared base class yet, rule of three); both drop their turn forms
+  entirely for a click-a-card-then-click-a-target interaction via a new shared single-select
+  `card-select` Stimulus controller (mirroring Rummy's `layOff` requestSubmit pattern); both are
+  seated around a central `game-table` grid (evolved from the existing
+  `components/game-table.css`, generalized to fit 1–6 opponent seats) with the center region blank
+  for Go Fish and holding the draw/discard piles for Crazy Eights; a new shared bottom-center
+  "what just happened" action notice (`aria-live="polite"`, reusing
+  `game_board_toast_controller`'s value-changed→auto-dismiss pattern) was designed for all games,
+  worded per-viewer from the same narration source as the feed. An engine audit found
+  `GoFish`/`CrazyEights` `TurnResult`s lack Rummy's `occurred_at`/`feed_lines(viewer_id)`/
+  `actor_label(viewer_id)`/`ranking` — the plan adds these for real parity rather than working
+  around the gap in the presenters. **Turn timer/auto-play wiring is explicitly deferred** to a
+  separate future initiative — keep `timer_controller.js`/`auto_play_controller.js`, just don't
+  wire them into the new boards yet. Sequencing: one PR, Go Fish fully end-to-end first (the
+  harder one — new presenter + new UX), then Crazy Eights reusing that foundation; old code
+  (`_player_accordion`, old feeds, `ask_button_controller.js`, `gf-game` grid, etc.) gets deleted
+  only after each game's new board is verified and safely committed, not interleaved with the
+  other game's build.
+  **Go Fish execution progress (2026-07-24):** sections A (engine/PORO parity —
+  `occurred_at`/`feed_lines`/`actor_label`/`ranking`/`to_file_name`), B (`GoFishPresenter`), C (the
+  `game-table` layout + seated-tile partial + atomic presenter flip), D (the shared `card-select` +
+  `gofish-turn` Stimulus controllers, click-a-card-then-click-a-seat interaction, server-rendered
+  `disabled` hand cards), and most of E (feed drawer + game-over modal, both reusing the shared
+  `_game_board_feed`/`_game_board_game_over` partials) are done per
+  `znotes/plans/gf-c8-migration/go-fish.md`. Wiring the shared game-over partial to Go Fish required
+  generalizing it beyond Rummy's hardcoded "pip total"/"pips" text: both presenters now expose a
+  `ranking_subtitle` method and each `ranking` entry carries a generic `score:` string, additive to
+  Rummy's existing `pips:` key (Rummy's own spec/rendered output updated to match, confirmed
+  byte-identical via its full system-spec suite). The old GoFish-specific game-over specs in
+  `spec/system/games_spec.rb`/`spec/system/turns_spec.rb` (testing the removed dropdown UI and
+  literal "Game Over"/"won the game!" text) were deleted as redundant with the new coverage in
+  `spec/system/go_fish_spec.rb`. **E3 done too:** a new `action-notice` component (own CSS file,
+  `action_notice_controller.js` generalizing `game_board_toast_controller.js`'s value-changed→
+  show→auto-dismiss pattern, `aria-live="polite"`) shows the latest turn's last feed line
+  bottom-center, distinct from the top-right error toast; `GoFishPresenter#action_notice` sources it
+  from the same `feed`/`feed_lines(viewer_id)` data the drawer uses. Built generically so Rummy can
+  adopt it later — Rummy untouched this pass. **F (cleanup) done too:** deleted
+  `_player_accordion.html.slim`, `_go_fish_feed.html.slim`, `_go_fish_form.html.slim`, and
+  `ask_button_controller.js` (all had zero remaining callers). Three items from the plan's original
+  cleanup list — `_button_card_collection.html.slim`, the `.gf-game` grid in `game.css`, and the
+  `message-bubble--go-fish` modifier — turned out to still be shared with Crazy Eights' own
+  not-yet-migrated view and were deliberately left in place; revisit once Crazy Eights' migration
+  removes its old view. **The full Go Fish migration (sections A–F) is now done.**
+  **Crazy Eights execution progress (2026-07-25):** sections G (engine/PORO parity —
+  `occurred_at`/`feed_lines`/`actor_label` on `CrazyEights::TurnResult`, `ranking` by fewest cards
+  left on `CrazyEights::Game`; `Card#to_file_name` already existed), H (`CrazyEightsPresenter`,
+  same shape as `GoFishPresenter`), I (rewrote `_crazy_eights_game.html.slim` onto the shared
+  `game-table` layout with a populated center holding `card-piles` + an on-board wild-suit
+  indicator, reusing Go Fish's seated-tile partial — generalized to skip the book-count row/click
+  action when a `book_count` key isn't present in the opponent hash — and flipped
+  `presenter_class` atomically with the view rewrite), J (`crazyeights_turn_controller.js` mounted
+  alongside the reused, unmodified `card-select` controller: wild-8 opens `dialog.modal#wild-dialog`
+  for a suit pick before submitting, draw pile stays a plain form submit), K (feed/game-over/action-
+  notice wired for Crazy Eights — composition only, no new CSS/JS needed beyond presenter mapping),
+  and L (cleanup) are all done per `znotes/plans/gf-c8-migration/crazy-eights.md`. **Two real bugs
+  surfaced and fixed along the way:** (1) the unified turn form always submits a `wild_suit` field,
+  so every *normal* play was silently recording an empty-string wild suit —
+  `CrazyEights::Game#set_wild_suit` now treats a blank string the same as `nil`; (2) a classic CSS
+  Grid "blowout" bug in the shared `game-table.css` — `.game-table__center` had no `min-height: 0`,
+  so on short viewports its content (draw/discard piles + wild-suit badge) overflowed past its `1fr`
+  grid track instead of being constrained to it, leaving zero visible gap before the hand footer and
+  sometimes hiding the wild-suit badge entirely. Fixed with `min-height: 0`,
+  `justify-content: safe center` (degrades to top-aligned instead of symmetric center-overflow when
+  space is tight), and a guaranteed `padding-bottom`; verified at several viewport sizes including
+  mobile, and confirmed Go Fish's (empty-center) board is unaffected. **L (cleanup) deleted**
+  the now-fully-dead `_crazy_eights_game_table.html.slim`, `_crazy_eights_feed.html.slim`,
+  `_button_card_collection.html.slim`, the old `_game_over.html.slim`, the `.gf-game` grid
+  (`game.css`), and `message-bubble.css` (only used by the deleted old feed) — the three items Go
+  Fish's own cleanup had left alone specifically because Crazy Eights' old view still referenced
+  them. Old-UI specs (`spec/system/turns_spec.rb`) were dropped as redundant with the new
+  `spec/system/crazy_eights_spec.rb`, matching how Go Fish's migration dropped its own stale specs.
+  **The full Go Fish + Crazy Eights migration (both games, all sections) is now done** and
+  committed. Before/after reference screenshots for both games live in `docs/screenshots/go_fish/`
+  and `docs/screenshots/crazy_eights/`. **A
+  real test-coverage gap opened by this work:** the only system-level coverage of
+  `timer_controller.js`/`auto_play_controller.js` lived in `spec/system/games_spec.rb`, riding on Go
+  Fish's old UI — that whole block was deleted (not deferred) since the feature it drove no longer
+  renders and won't again until a future initiative wires the timer into the new boards. Until that
+  happens, the turn timer has zero system-spec coverage anywhere in the suite.
+- **Game-hand layout bugs (2026-07-24):** the empty/off-center hand issue (label sitting at the
+  bottom when the hand is short, action buttons hugging the bottom instead of centering) is fixed —
+  `.game-hand`'s `align-items` changed from `flex-end` to `center` in `game-hand.css`. **Still open:**
+  when the hand has exactly one card (or every card is selected at once), hovering/selecting raises
+  the card via a negative `margin-top` (`playing-card.css`), which visibly shrinks the whole
+  `.card-collection`/`.game-hand` container instead of just lifting the card. A fix attempt — adding
+  `padding-top` on `.card-collection--*` equal to the hover offset, expecting the reserved padding to
+  absorb the flex line's margin-driven height reduction — was tried and empirically disproven
+  (measured via `getBoundingClientRect()` in a throwaway system spec): the container still shrinks by
+  exactly the hover offset regardless of the padding, because padding and margin don't interact the
+  way that fix assumed. Reverted. The user explicitly wants to keep the negative-margin lift technique
+  (not switch to `transform: translateY(...)`, which was also considered and rejected as "brings the
+  div to the top and looks weird") — next attempt needs a different mechanism for reserving space
+  that doesn't rely on padding offsetting margin.
+- **Player-list panel redesign (2026-07-24):** `RummyPresenter#opponents` now returns
+  `last_action` (each opponent's most recent turn, via `TurnResult#feed_lines` — see
+  [docs/architecture.md](architecture.md)'s feed-rendering section for the viewer-id gotcha this
+  surfaced), `current_turn` (highlights whichever opponent row is up next), and `avatar_url`
+  (hardcoded to a new `RummyPresenter::DEFAULT_AVATAR_URL` = `/default_avatar.png`, the same
+  placeholder image `users/show.html.slim` already uses — swap for the real per-user avatar once
+  that feature exists). The row itself (`_game_board_player.html.slim`/`player-list.css`) was
+  reworked to avatar+name on the left, melded badge (now a small circular checkmark button using
+  Optics' `[data-tooltip-text]` tooltip — already covers hover *and* focus/click out of the box, no
+  override needed) + mini card-fan + `+n` overflow on the right, with the old total-hand-size
+  number dropped entirely. Two open threads from this pass:
+  - `.card-collection` bakes in `padding: 0 var(--op-space-medium)` regardless of size modifier —
+    caused a real, non-obvious gap between the mini-fan and the `+n` text; fixed locally via
+    `.card-collection.player-list__mini-card { padding: 0; }`, but the same trap could bite the next
+    new modifier added to that component.
+  - `.player-list` keeps `overflow: hidden` (needed to clip row backgrounds/shadows to the card's
+    rounded corners), but this also clips the Optics tooltip popup on the truncated last-action
+    text. A fix (scoping border-radius to `:first-child`/`:last-child` instead of clipping the
+    whole container) was tried and reverted — the last-action tooltip may currently be invisible
+    when it pops outside the container's bounds. Revisit if that's confirmed.
+- **Go Fish board UI polish pass (2026-07-24):** seat tiles are bigger and richer (avatar, name,
+  hand/book counts, a `last_action` line sourced the same way as `RummyPresenter`'s) — a card-back
+  mini-fan was added to each tile then **removed** per explicit feedback, keeping the tile free of
+  card imagery. The opponent detail modal (`_game_table_player_dialog.html.slim`) was rebuilt with
+  a real `.modal__header` (avatar + name + close X, own stylesheet `player-detail-dialog.css`) and
+  labeled `.modal__body` sections (Hand/Books, with an empty-books state) instead of everything
+  flattened into `.modal__body`. **Feed/game-over launcher unified across every game:** both
+  buttons (icon-only, `data-testid="open-feed-button"`/`"view-results-button"`) now live solely in
+  the shared `_board_topbar.html.slim` partial — Rummy was retrofitted to render that same partial
+  instead of its own inline topbar, and its now-redundant tab-bar launcher buttons/CSS
+  (`.game-board__launcher`) were deleted. This is the intended pattern for Crazy Eights' migration
+  too — one launcher location for all games, not a per-game convention. Sharing the game-over
+  partial required generalizing it beyond Rummy's hardcoded "pips" text: both presenters expose a
+  `ranking_subtitle` method and each `ranking` entry now carries a generic `score:` string,
+  additive to Rummy's existing `pips:` key (confirmed byte-identical output via Rummy's full
+  system-spec suite). **Mobile seat layout:** a "shrink to fit in one row" approach (tiles shrink
+  indefinitely as opponent count grows) was tried and rejected — replaced with a wrapping,
+  centered flex layout (reads as a 2–3-per-row grid) so tiles stay a legible, consistent size
+  regardless of player count. Two reusable CSS gotchas surfaced and are worth remembering before
+  they bite again elsewhere:
+  - The card-fan overlap technique (`playing-card.css`/`card-collection.css`: each card gets a
+    negative `margin-left`, the container compensates with one matching positive `margin-left`)
+    only works for a single row — under `flex-wrap: wrap`, every wrapped row's leading card still
+    gets pulled left with no per-row compensation, visibly misaligning it. Fixed for the hand
+    footer via `.game-hand__main .card-collection { flex-wrap: nowrap; padding: 0; }` (scroll
+    instead of wrap). Any future card-collection usage that might wrap needs the same nowrap
+    treatment, not a padding/margin tweak.
+  - Flex/grid items default to `min-width: auto` (won't shrink below content's min-content size) —
+    this must be overridden at *every* nesting level, not just the innermost item. The seats row
+    itself (a grid item of `.game-table`) needed its own explicit `min-width: 0` in addition to its
+    flex children's, or the row silently overflows its own parent's width.
+  - **Open, unresolved:** the user spotted a color-bar visual artifact on the right edge of a seat
+    tile, not reproducible in headless Chromium screenshots across several attempts — possibly a
+    browser-specific native affordance for the `commandfor`/`command="show-modal"` button
+    attributes. Revisit with a screenshot or browser/version info from the user.
