@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   attribute :password_confirmation
 
-  validates :name, presence: true
+  validates :name, presence: true, length: { in: 3..25 }
   validates :email_address, presence: true, uniqueness: { case_insensitive: true }, format: { with: URI::MailTo::EMAIL_REGEXP }, on: :create
   validates :password, presence: true, length: { in: 6..20 }, on: :create
   validates :password_confirmation, presence: true, unless: -> { password.nil? }
@@ -21,7 +21,7 @@ class User < ApplicationRecord
   end
 
   def country_flag
-    return unless self.country
+    return "" unless self.country
     self.country.upcase.chars.map { |char| char.ord + 127397 }.pack("U*")
   end
 end

@@ -19,6 +19,11 @@ RSpec.describe User, type: :model do
       expect(user).to be_invalid
     end
 
+    it 'returns false if name it too long' do
+      user = build :long_name_user
+      expect(user).to be_invalid
+    end
+
     it 'returns false if no email' do
       user = build :no_email_user
       expect(user).to be_invalid
@@ -93,7 +98,7 @@ RSpec.describe User, type: :model do
 
     it 'returns nil when country is not present' do
       user = create :user
-      expect(user.country_flag).to be_nil
+      expect(user.country_flag).to be_empty
     end
   end
 end
