@@ -208,6 +208,7 @@ RSpec.describe Game, type: :model do
     let!(:game2) { create :finished_game }
     let!(:game3) { create(:game, player_count: 1) }
     let!(:game4) { create(:archived_game, player_count: 1) }
+    let!(:game5) { create :game }
     it 'returns list of open games', :js do
       expected_output = [ game1.id, game3.id ].sort
       game = described_class.new
