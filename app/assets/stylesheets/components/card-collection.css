@@ -7,7 +7,7 @@
   --_gf-x-small-card-hover: calc(var(--op-size-unit) * 0); /* 0px */
 
   --_gf-small-card-width: calc(var(--op-size-unit) * 19); /* 76px */
-  --_gf-small-card-margin: calc(var(--op-size-unit) * 14); /* 56px */
+  --_gf-small-card-margin: calc(var(--op-size-unit) * 12); /* 56px */
   --_gf-small-card-hover: calc(var(--op-size-unit) * -2); /* -8px */
 
   --_gf-medium-card-width: calc(var(--op-size-unit) * 21); /* 84px */
@@ -15,7 +15,7 @@
   --_gf-medium-card-hover: calc(var(--op-size-unit) * -3); /* -12px */
 
   --_gf-large-card-width: calc(var(--op-size-unit) * 27); /* 108px */
-  --_gf-large-card-margin: calc(var(--op-size-unit) * 21); /* 84px */
+  --_gf-large-card-margin: calc(var(--op-size-unit) * 17); /* 68px */
   --_gf-large-card-hover: calc(var(--op-size-unit) * -4); /* -16px */
 
   --_gf-x-large-card-width: calc(var(--op-size-unit) * 30); /* 120px */
