@@ -41,6 +41,17 @@ RSpec.describe Game, type: :model do
       expect(game).to be_invalid
     end
 
+    it 'returns false if name is too long' do
+      game = build :long_name_game
+      expect(game).to be_invalid
+    end
+
+    it 'returns false if name is no unique' do
+      create :game2
+      game = build :game2
+      expect(game).to be_invalid
+    end
+
     it 'returns false if game size is to small for that game type' do
       game = build :too_small_game
       expect(game).to be_invalid

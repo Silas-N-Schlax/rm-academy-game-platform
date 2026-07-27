@@ -7,7 +7,7 @@ class Game < ApplicationRecord
   after_update_commit { broadcast_refresh_later_to "games" }
   after_update_commit { broadcast_refresh_later_to self }
 
-  validates :name, presence: true, length: { minimum: 4 }
+  validates :name, presence: true, length: { in: 4..25 }, uniqueness: { case_sensitive: true }
   validates :type, presence: true, inclusion: { in: ->(game) { game.valid_types } }
   validates :game_size, presence: true
   validate :valid_game_size
