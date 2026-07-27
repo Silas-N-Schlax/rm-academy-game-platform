@@ -17,3 +17,11 @@
   --_op-tooltip-text-color: var(--op-color-alerts-warning-on-plus-three);
   --_op-tooltip-tooltip-radius: var(--op-radius-small);
 }
+
+/* Optics only reveals the tooltip on :hover, which touch devices can't reach. */
+[data-tooltip-text]:focus-visible::before,
+[data-tooltip-text]:focus-visible::after {
+  opacity: var(--op-opacity-full);
+  visibility: visible;
+}
+
