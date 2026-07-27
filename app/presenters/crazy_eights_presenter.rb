@@ -73,7 +73,8 @@ class CrazyEightsPresenter
     {
       id: player.id, name: player.name, hand_size: player.hand_size,
       last_action: last_action_for(player),
-      current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL
+      current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL,
+      flag: User.find(player.id).country_flag
     }
   end
 
@@ -83,7 +84,8 @@ class CrazyEightsPresenter
   end
 
   def ranking_entry(player, index)
-    { place: index + 2, name: player.name, flag: "", cards_left: player.hand_size, score: "#{player.hand_size} card#{"s" if player.hand_size != 1} left" }
+    flag = User.find(player.id).country_flag
+    { place: index + 2, name: player.name, flag: flag, cards_left: player.hand_size, score: "#{player.hand_size} card#{"s" if player.hand_size != 1} left" }
   end
 
   def feed_turn(result)

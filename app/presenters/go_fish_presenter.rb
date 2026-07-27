@@ -76,7 +76,8 @@ class GoFishPresenter
       id: player.id, name: player.name, hand_size: player.hand_size, book_count: player.books_size,
       hand_backs: Array.new(player.hand_size), books: player.books.map(&:to_s),
       last_action: last_action_for(player),
-      current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL
+      current_turn: player.id == current_player.id, avatar_url: DEFAULT_AVATAR_URL,
+      flag: User.find(player.id).country_flag
     }
   end
 
@@ -90,7 +91,8 @@ class GoFishPresenter
   end
 
   def ranking_entry(player, index)
-    { place: index + 2, name: player.name, flag: "", books: player.books_size, score: "#{player.books_size} books" }
+    flag = User.find(player.id).country_flag
+    { place: index + 2, name: player.name, flag: flag, books: player.books_size, score: "#{player.books_size} books" }
   end
 
   def feed_turn(result)
