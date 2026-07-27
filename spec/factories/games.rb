@@ -62,6 +62,21 @@ FactoryBot.define do
       updated_at { 3.days.ago }
     end
 
+    trait :with_players do
+      player_count { 0 }
+
+      transient do
+        participants { [] }
+        winning_user { nil }
+      end
+
+      after(:create) do |game, evaluator|
+        evaluator.participants.each do |user|
+          create(user == evaluator.winning_user ? :player_as_winner : :player, user:, game:)
+        end
+      end
+    end
+
     factory :no_name_game, traits: [ :no_name ]
     factory :short_name_game, traits: [ :short_name ]
     factory :no_game_size_game, traits: [ :no_game_size ]
