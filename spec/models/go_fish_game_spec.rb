@@ -75,6 +75,36 @@ RSpec.describe GoFishGame, type: :model do
         expect(updated_game.finished_at).to_not be_nil
         expect(updated_game.players.first.winner).to be true
       end
+
+      it 'marks the non-winning player as having lost, not left undecided' do
+        db_game.play(player: user2.id, rank: 'A')
+        updated_game = Game.find_by(id: game.id)
+        expect(updated_game.players.last.winner).to be false
+      end
+    end
+
+    context 'when the game is over with more than two players' do
+      let!(:game) { create :game, player_count: 3, game_size: 3 }
+      let(:db_game) { Game.find_by(id: game.id) }
+      let(:winner) { game.players.first.user }
+      let(:runner_up) { game.players.second.user }
+      let(:last_place) { game.players.third.user }
+      before do
+        game.start!
+        game_state = game.game_state
+        game_state.deck.cards = []
+        game_state.players.first.hand = [ GoFish::Card.new('A'), GoFish::Card.new('A'), GoFish::Card.new('A') ]
+        game_state.players.second.hand = [ GoFish::Card.new('A') ]
+        game_state.players.third.hand = []
+        game.save!
+      end
+      it 'marks every non-winning player as having lost' do
+        db_game.play(player: runner_up.id, rank: 'A')
+        updated_game = Game.find_by(id: game.id)
+        expect(updated_game.players.find { |player| player.user_id == winner.id }.winner).to be true
+        expect(updated_game.players.find { |player| player.user_id == runner_up.id }.winner).to be false
+        expect(updated_game.players.find { |player| player.user_id == last_place.id }.winner).to be false
+      end
     end
   end
 

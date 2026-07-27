@@ -132,9 +132,8 @@ class Game < ApplicationRecord
 
   def end_game(winner_id)
     self.finished_at = Time.current
-    player = Player.find_by(user_id: winner_id, game_id: self.id)
-    player.winner = true
-    player.save!
+    players.update_all(winner: false)
+    Player.find_by(user_id: winner_id, game_id: self.id).update!(winner: true)
   end
 
 
