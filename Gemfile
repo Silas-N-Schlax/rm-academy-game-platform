@@ -81,3 +81,5 @@ gem "good_job", "~> 4.19"
 gem "data_for"
 
 gem "scenic"
+
+gem "kaminari", "~> 1.2"
