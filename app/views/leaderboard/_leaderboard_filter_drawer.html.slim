@@ -1,9 +1,9 @@
-.filter-drawer__scrim data-testid="leaderboard-filter-drawer-scrim" data-leaderboard-filter-drawer-target="scrim" data-action="click->leaderboard-filter-drawer#close"
+.slide-drawer__scrim data-testid="leaderboard-filter-drawer-scrim" data-slide-drawer-target="scrim" data-action="click->slide-drawer#close"
 
-aside.side-panel.side-panel--border-left.filter-drawer data-testid="leaderboard-filter-drawer" data-leaderboard-filter-drawer-target="drawer" aria-label="Filters"
+aside.side-panel.side-panel--border-left.slide-drawer.filter-drawer data-testid="leaderboard-filter-drawer" data-slide-drawer-target="panel" aria-label="Filters"
   .side-panel__header.side-panel__header--padded
     h2.filter-drawer__title Filters
-    button.btn.btn--icon type="button" aria-label="Close filters" data-testid="leaderboard-filter-drawer-close" data-action="click->leaderboard-filter-drawer#close"
+    button.btn.btn--icon type="button" aria-label="Close filters" data-testid="leaderboard-filter-drawer-close" data-action="click->slide-drawer#close"
       i.li.li-x.icon.icon--small
   .side-panel__body.side-panel__body--padded
     = form_tag leaderboard_index_path, method: :get, class: 'filter-drawer__form' do

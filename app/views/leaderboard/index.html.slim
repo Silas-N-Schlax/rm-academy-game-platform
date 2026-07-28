@@ -1,9 +1,9 @@
 - filters = leaderboard_filters(wins_bounds: wins_bounds, games_bounds: games_bounds)
 
-.page data-controller="leaderboard-filter-drawer"
+.page data-controller="slide-drawer"
   .leaderboard__controls
     = render 'leaderboard_sort', search: search, per_page: per_page
-    button.btn.btn--icon.leaderboard__filter-trigger type="button" aria-label="Filters" data-testid="leaderboard-filter-trigger" data-action="click->leaderboard-filter-drawer#open"
+    button.btn.btn--icon.leaderboard__filter-trigger type="button" aria-label="Filters" data-testid="leaderboard-filter-trigger" data-action="click->slide-drawer#open"
       i.li.li-sliders-horizontal.icon
       - if filters.any?
         span.leaderboard__filter-badge data-testid="leaderboard-filter-badge" = filters.size

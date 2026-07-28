@@ -1,16 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="leaderboard-filter-drawer"
+// Connects to data-controller="slide-drawer"
 export default class extends Controller {
-  static targets = ["drawer", "scrim"]
+  static targets = ["panel", "scrim"]
 
   open() {
-    this.drawerTarget.classList.add("is-open")
+    this.panelTarget.classList.add("is-open")
     this.scrimTarget.classList.add("is-open")
   }
 
   close() {
-    this.drawerTarget.classList.remove("is-open")
+    this.panelTarget.classList.remove("is-open")
     this.scrimTarget.classList.remove("is-open")
   }
 }
