@@ -1,4 +1,6 @@
 class Leaderboard < ApplicationRecord
+  belongs_to :user, foreign_key: :id
+
   SORT_OPTIONS = {
     "total_games" => "Games",
     "total_wins" => "Won",
@@ -14,7 +16,7 @@ class Leaderboard < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    []
+    [ "user" ]
   end
 
   PER_PAGE_OPTIONS = [ 10, 25, 50, 100 ].freeze
@@ -60,5 +62,9 @@ class Leaderboard < ApplicationRecord
 
   def self.stat_bounds(column)
     (minimum(column) || 0)..(maximum(column) || 0)
+  end
+
+  def self.present_countries
+    joins(:user).distinct.pluck(:"users.country").compact.filter_map { |code| Country.data.find(code) }.sort_by(&:name)
   end
 end

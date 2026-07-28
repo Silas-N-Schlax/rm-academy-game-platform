@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_28_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_28_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -198,7 +198,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_180000) do
       SELECT users.id,
       users.name,
       users.created_at,
-      users.country,
       count(games.id) AS total_games,
       count(games.id) FILTER (WHERE players.winner) AS total_wins,
           CASE

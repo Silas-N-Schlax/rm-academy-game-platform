@@ -13,6 +13,10 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
+  def self.ransackable_attributes(_auth_object = nil)
+    [ "country" ]
+  end
+
   def has_games?
     return false if self.games.empty?
     return true unless self.games.where(finished_at: nil).empty?

@@ -94,12 +94,12 @@ RSpec.describe Leaderboard, type: :model do
       expect(row.seconds_played).to eq 0
     end
 
-    it 'exposes the user\'s country' do
+    it 'reaches the country through the user association' do
       user = create(:user, name: 'From Wakanda', country: 'WK')
 
       row = described_class.sorted_by.find { |candidate| candidate.name == 'From Wakanda' }
 
-      expect(row.country).to eq 'WK'
+      expect(row.user.country).to eq 'WK'
     end
 
     it 'nils out win_percentage for a user with fewer than 5 finished games, even with all wins' do
