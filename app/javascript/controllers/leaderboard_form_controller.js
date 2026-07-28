@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="leaderboard-sort"
+// Connects to data-controller="leaderboard-form"
 export default class extends Controller {
   submit(event) {
     event.target.form.requestSubmit()

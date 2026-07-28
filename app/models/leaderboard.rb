@@ -8,6 +8,16 @@ class Leaderboard < ApplicationRecord
 
   SORT_COLUMNS = SORT_OPTIONS.keys.freeze
 
+  PER_PAGE_OPTIONS = [ 10, 25, 50, 100 ].freeze
+  DEFAULT_PER_PAGE = 50
+  MIN_PER_PAGE = PER_PAGE_OPTIONS.min
+  MAX_PER_PAGE = PER_PAGE_OPTIONS.max
+
+  def self.clamp_per_page(value)
+    return DEFAULT_PER_PAGE if value.blank?
+    value.to_i.clamp(MIN_PER_PAGE, MAX_PER_PAGE)
+  end
+
   UNIVERSAL_RANK_ORDER = [
     "total_wins DESC NULLS LAST",
     "total_games DESC NULLS LAST",

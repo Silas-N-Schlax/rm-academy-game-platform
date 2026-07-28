@@ -1,5 +1,5 @@
 .page
-  = render 'leaderboard_sort', sort: sort
+  = render 'leaderboard_sort', sort: sort, per_page: per_page
   header.content-header
     .content-header__details
       .content-header__title Leaderboard
@@ -7,7 +7,7 @@
       | You're
       strong = " ##{your_rank} "
       | of
-      strong = " #{@rows.size} "
+      strong = " #{@rows.total_count} "
       | players
     .divider.divider--medium
 
@@ -22,5 +22,8 @@
         col.leaderboard__col-stat.leaderboard__col-stat--time
       = render 'leaderboard_head'
       tbody
-        - @rows.each_with_index do |row, index|
-          = render 'leaderboard_row', row: row, rank: index + 1
+        - @rows.each do |row|
+          = render 'leaderboard_row', row: row
+    .leaderboard__pagination
+      = render 'leaderboard_per_page', per_page: per_page, sort: sort
+      == paginate @rows

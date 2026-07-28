@@ -120,6 +120,72 @@ RSpec.describe 'Leaderboard', type: :system do
     expect(rank_sorted_by_games).to eq rank_sorted_by_wins
   end
 
+  it 'shows 50 rows per page by default when more than 50 users exist' do
+    create_list(:user, 60)
+
+    visit leaderboard_index_path
+
+    expect(page).to have_css('.leaderboard__row', count: 50)
+  end
+
+  it 'shows a page-size selector with options 10, 25, 50, and 100, defaulting to 50' do
+    visit leaderboard_index_path
+
+    expect(page).to have_field('10')
+    expect(page).to have_field('25')
+    expect(page).to have_field('50')
+    expect(page).to have_field('100')
+    expect(page).to have_checked_field('50')
+  end
+
+  it 'shows fewer rows when a smaller page size is chosen', :js do
+    create_list(:user, 20)
+
+    visit leaderboard_index_path
+    choose '10'
+
+    expect(page).to have_css('.leaderboard__row', count: 10)
+  end
+
+  it 'resets to page 1 when the sort option is changed while on a later page', :js do
+    create_list(:user, 60)
+
+    visit leaderboard_index_path(page: 2)
+    expect(page).to_not have_content('Top Player')
+
+    choose 'Games'
+
+    expect(page).to have_content('Top Player')
+  end
+
+  it 'resets to page 1 when the page size is changed while on a later page', :js do
+    create_list(:user, 60)
+
+    visit leaderboard_index_path(page: 2)
+    expect(page).to_not have_content('Top Player')
+
+    choose '10'
+
+    expect(page).to have_content('Top Player')
+  end
+
+  it 'shows a link to the first page but no link to the last page, when on a later page' do
+    create_list(:user, 60)
+
+    visit leaderboard_index_path(page: 2)
+
+    expect(page).to have_css(data_test('pagination-first-page'))
+    expect(page).to_not have_css(data_test('pagination-last-page'))
+  end
+
+  it "shows \"You're #N of X players\" reflecting the total player count, not just the current page" do
+    create_list(:user, 60)
+
+    visit leaderboard_index_path
+
+    expect(find('.leaderboard-standing').text).to include('of 63 players')
+  end
+
   it 'redirects a signed-out visitor' do
     sign_out
 

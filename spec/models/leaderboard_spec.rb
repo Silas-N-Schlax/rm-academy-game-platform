@@ -164,6 +164,24 @@ RSpec.describe Leaderboard, type: :model do
       expect(query_count).to eq 1
     end
   end
+
+  describe '.clamp_per_page' do
+    it 'clamps a value below the minimum up to 10' do
+      expect(described_class.clamp_per_page(1)).to eq 10
+    end
+
+    it 'clamps a value above the maximum down to 100' do
+      expect(described_class.clamp_per_page(500)).to eq 100
+    end
+
+    it 'leaves an in-range value unchanged' do
+      expect(described_class.clamp_per_page(39)).to eq 39
+    end
+
+    it 'defaults to 50 when given a blank value' do
+      expect(described_class.clamp_per_page(nil)).to eq 50
+    end
+  end
 end
 
 def create_finished_game(winner:, others: [], started_at: 1.hour.ago, finished_at: Time.current)
