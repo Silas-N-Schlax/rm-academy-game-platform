@@ -25,15 +25,39 @@ RSpec.describe Leaderboard, type: :model do
       expect(names.index('More Wins')).to be < names.index('Fewer Wins')
     end
 
-    it 'breaks a tie on the sort column alphabetically by name' do
+    it 'breaks a tie on a non-default sort column alphabetically by name' do
       zed = create(:user, name: 'Zed')
       alice = create(:user, name: 'Alice')
       create_finished_game(winner: zed)
       create_finished_game(winner: alice)
 
-      names = described_class.sorted_by('total_wins').map(&:name)
+      names = described_class.sorted_by('total_games').map(&:name)
 
       expect(names.index('Alice')).to be < names.index('Zed')
+    end
+
+    it 'breaks a name tie on a non-default sort column by created_at ascending' do
+      older = create(:user, name: 'Same Name', created_at: 2.days.ago)
+      newer = create(:user, name: 'Same Name', created_at: 1.day.ago)
+      create_finished_game(winner: older)
+      create_finished_game(winner: newer)
+
+      ids_in_order = described_class.sorted_by('total_games').map(&:id)
+
+      expect(ids_in_order.index(older.id)).to be < ids_in_order.index(newer.id)
+    end
+
+    it 'sorts by the full universal rank chain, not just name, when sorting by the default "total_wins" column' do
+      started_at = 1.hour.ago
+      finished_at = Time.current
+      older = create(:user, name: 'Zed', created_at: 2.days.ago)
+      newer = create(:user, name: 'Alice', created_at: 1.day.ago)
+      create_finished_game(winner: older, started_at:, finished_at:)
+      create_finished_game(winner: newer, started_at:, finished_at:)
+
+      names = described_class.sorted_by('total_wins').map(&:name)
+
+      expect(names.index('Zed')).to be < names.index('Alice')
     end
 
     it 'excludes an in-progress game from every column' do
@@ -93,6 +117,41 @@ RSpec.describe Leaderboard, type: :model do
 
     it 'returns nil for an unrecognized sort column' do
       expect(described_class.sorted_by('name')).to be_nil
+    end
+
+    it 'breaks a full tie on every stat column by created_at ascending, older account ranking higher' do
+      older = create(:user, name: 'Older Account', created_at: 2.days.ago)
+      newer = create(:user, name: 'Newer Account', created_at: 1.day.ago)
+
+      rows = described_class.sorted_by.index_by(&:name)
+
+      expect(rows['Older Account'].rank).to be < rows['Newer Account'].rank
+    end
+
+    it 'never assigns the same rank to two different users' do
+      create_list(:user, 3, created_at: 1.day.ago)
+
+      ranks = described_class.sorted_by.map(&:rank)
+
+      expect(ranks.uniq.size).to eq ranks.size
+    end
+
+    it 'assigns consecutive ranks starting at 1 with no gaps' do
+      create_list(:user, 3)
+
+      ranks = described_class.sorted_by.map(&:rank).sort
+
+      expect(ranks).to eq (1..3).to_a
+    end
+
+    it "keeps a user's rank the same no matter which column the results are sorted by" do
+      top_scorer = create(:user, name: 'Top Scorer')
+      create_finished_game(winner: top_scorer)
+
+      rank_when_sorted_by_wins = described_class.sorted_by('total_wins').find { |row| row.name == 'Top Scorer' }.rank
+      rank_when_sorted_by_games = described_class.sorted_by('total_games').find { |row| row.name == 'Top Scorer' }.rank
+
+      expect(rank_when_sorted_by_wins).to eq rank_when_sorted_by_games
     end
 
     it 'issues exactly one SQL query' do

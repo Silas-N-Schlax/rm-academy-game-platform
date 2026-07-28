@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_28_170406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -201,7 +201,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_120000) do
       count(games.id) AS total_games,
       count(games.id) FILTER (WHERE players.winner) AS total_wins,
       (((count(games.id) FILTER (WHERE players.winner))::numeric * 100.0) / (NULLIF(count(games.id), 0))::numeric) AS win_percentage,
-      COALESCE(sum(EXTRACT(epoch FROM (games.finished_at - games.started_at))), (0)::numeric) AS seconds_played
+      COALESCE(sum(EXTRACT(epoch FROM (games.finished_at - games.started_at))), (0)::numeric) AS seconds_played,
+      row_number() OVER (ORDER BY (count(games.id) FILTER (WHERE players.winner)) DESC, (count(games.id)) DESC, COALESCE(sum(EXTRACT(epoch FROM (games.finished_at - games.started_at))), (0)::numeric) DESC, (((count(games.id) FILTER (WHERE players.winner))::numeric * 100.0) / (NULLIF(count(games.id), 0))::numeric) DESC NULLS LAST, users.created_at) AS rank
      FROM ((users
        LEFT JOIN players ON ((players.user_id = users.id)))
        LEFT JOIN games ON (((games.id = players.game_id) AND (games.finished_at IS NOT NULL))))

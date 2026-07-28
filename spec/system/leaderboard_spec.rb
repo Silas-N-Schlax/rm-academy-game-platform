@@ -110,6 +110,16 @@ RSpec.describe 'Leaderboard', type: :system do
     expect(page).to have_checked_field('Games')
   end
 
+  it "shows the same rank for a player regardless of which sort option is chosen" do
+    visit leaderboard_index_path
+    rank_sorted_by_wins = find('.leaderboard__row', text: 'Top Player').find('.leaderboard__rank').text
+
+    choose 'Games'
+
+    rank_sorted_by_games = find('.leaderboard__row', text: 'Top Player').find('.leaderboard__rank').text
+    expect(rank_sorted_by_games).to eq rank_sorted_by_wins
+  end
+
   it 'redirects a signed-out visitor' do
     sign_out
 
