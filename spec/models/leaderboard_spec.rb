@@ -119,6 +119,65 @@ RSpec.describe Leaderboard, type: :model do
       expect(described_class.sorted_by('name')).to be_nil
     end
 
+    it 'orders by total wins ascending, without the universal tiebreak chain, when direction is "asc"' do
+      more_wins = create(:user, name: 'More Wins')
+      fewer_wins = create(:user, name: 'Fewer Wins')
+      create_finished_game(winner: more_wins)
+      create_finished_game(winner: more_wins)
+      create_finished_game(winner: fewer_wins)
+
+      names = described_class.sorted_by('total_wins', direction: 'asc').map(&:name)
+
+      expect(names.index('Fewer Wins')).to be < names.index('More Wins')
+    end
+
+    it 'orders a non-default column ascending when direction is "asc"' do
+      more_games = create(:user, name: 'More Games')
+      fewer_games = create(:user, name: 'Fewer Games')
+      create_finished_game(winner: more_games, others: [ fewer_games ])
+      create_finished_game(winner: more_games)
+
+      names = described_class.sorted_by('total_games', direction: 'asc').map(&:name)
+
+      expect(names.index('Fewer Games')).to be < names.index('More Games')
+    end
+
+    it 'still breaks a tie by name/created_at when sorting a non-default column ascending' do
+      zed = create(:user, name: 'Zed')
+      alice = create(:user, name: 'Alice')
+      create_finished_game(winner: zed)
+      create_finished_game(winner: alice)
+
+      names = described_class.sorted_by('total_games', direction: 'asc').map(&:name)
+
+      expect(names.index('Alice')).to be < names.index('Zed')
+    end
+
+    it 'falls back to descending for an unrecognized direction' do
+      more_wins = create(:user, name: 'More Wins')
+      fewer_wins = create(:user, name: 'Fewer Wins')
+      create_finished_game(winner: more_wins)
+      create_finished_game(winner: more_wins)
+      create_finished_game(winner: fewer_wins)
+
+      names = described_class.sorted_by('total_wins', direction: 'sideways').map(&:name)
+
+      expect(names.index('More Wins')).to be < names.index('Fewer Wins')
+    end
+
+    it 'only applies the universal tiebreak chain to total_wins descending, not total_wins ascending' do
+      started_at = 1.hour.ago
+      finished_at = Time.current
+      older = create(:user, name: 'Zed', created_at: 2.days.ago)
+      newer = create(:user, name: 'Alice', created_at: 1.day.ago)
+      create_finished_game(winner: older, started_at:, finished_at:)
+      create_finished_game(winner: newer, started_at:, finished_at:)
+
+      names = described_class.sorted_by('total_wins', direction: 'asc').map(&:name)
+
+      expect(names.index('Alice')).to be < names.index('Zed')
+    end
+
     it 'breaks a full tie on every stat column by created_at ascending, older account ranking higher' do
       older = create(:user, name: 'Older Account', created_at: 2.days.ago)
       newer = create(:user, name: 'Newer Account', created_at: 1.day.ago)
@@ -162,6 +221,21 @@ RSpec.describe Leaderboard, type: :model do
       ActiveSupport::Notifications.subscribed(counter, 'sql.active_record') { described_class.sorted_by.to_a }
 
       expect(query_count).to eq 1
+    end
+  end
+
+  describe '.stat_bounds' do
+    it 'returns the min and max of the given stat across all users' do
+      low = create(:user, name: 'Low')
+      high = create(:user, name: 'High')
+      create_finished_game(winner: high, others: [ low ])
+      create_finished_game(winner: high)
+
+      expect(described_class.stat_bounds(:total_wins)).to eq(0..2)
+    end
+
+    it 'returns 0..0 when there are no users' do
+      expect(described_class.stat_bounds(:total_wins)).to eq(0..0)
     end
   end
 
