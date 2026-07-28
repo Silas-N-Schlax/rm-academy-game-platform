@@ -65,6 +65,21 @@ rather than duplicating when revisiting a topic.
   automatically, so it was never being read during the join regardless. Add the `finished_at` index
   if `games` grows large enough for this to actually show up in a slow-query log; don't add it
   preemptively.
+- **Pagination + universal rank shipped (2026-07-28):** Kaminari pagination (50/page default, hard
+  10–100 clamp, a 10/25/50/100 page-size selector, first-page-link shown but no last-page link) —
+  see `docs/architecture.md`'s Core models section for the `rank` window-function column and the
+  `Leaderboard.sorted_by`/generator/Stimulus-rename details this surfaced.
+- **Future idea, not yet needed:** show a player's overall `rank` on their own profile page — a
+  nice touch, explicitly deferred since Rummy is next up.
+- **Known test gap, not fixed:** `spec/system/leaderboard_spec.rb`'s "resorts the table by total
+  games when 'Games' is chosen" example isn't tagged `:js`, so it runs under `rack_test` (no JS) —
+  the Stimulus auto-submit-on-change never actually fires. It passes anyway, purely because the
+  fixture users happen to sort identically whether ordered by wins or by games, so it doesn't
+  actually prove the sort control works. Worth tagging `:js` and asserting a real reorder.
+- **Known flake, not fixed (pre-existing, unrelated to this session):** `spec/models/
+  leaderboard_spec.rb`'s "issues exactly one SQL query" example fails if run in total isolation —
+  Postgres schema-introspection queries fire once per process the first time the view-backed model
+  is touched, inflating the count. Passes reliably as part of the full suite/file.
 
 ## Rummy — new game, in progress (2026-07-22)
 
