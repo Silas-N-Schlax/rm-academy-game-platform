@@ -111,6 +111,22 @@ RSpec.describe 'Leaderboard', type: :system do
       end
     end
 
+    it 'does not let the mobile navbar cover the last row when scrolled to the bottom' do
+      create_list(:user, 20)
+
+      resize_page(390, 844) do
+        visit leaderboard_index_path
+        page.execute_script(<<~JS)
+          document.querySelector('.op-page__main').scrollTo(0, document.querySelector('.op-page__main').scrollHeight)
+        JS
+
+        last_row_bottom = page.evaluate_script("document.querySelector('.leaderboard__row:last-child').getBoundingClientRect().bottom")
+        navbar_top = page.evaluate_script("document.querySelector('.op-page-sidebar--mobile').getBoundingClientRect().top")
+
+        expect(last_row_bottom).to be <= navbar_top
+      end
+    end
+
     it 'reveals a tooltip when a stat trigger is focused' do
       resize_page(390, 844) do
         visit leaderboard_index_path
