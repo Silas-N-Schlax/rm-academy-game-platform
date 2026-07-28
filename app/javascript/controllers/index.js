@@ -40,11 +40,17 @@ application.register("gofish-turn", GofishTurnController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import LeaderboardFilterDrawerController from "./leaderboard_filter_drawer_controller"
+application.register("leaderboard-filter-drawer", LeaderboardFilterDrawerController)
+
 import LeaderboardFormController from "./leaderboard_form_controller"
 application.register("leaderboard-form", LeaderboardFormController)
 
 import OfflineController from "./offline_controller"
 application.register("offline", OfflineController)
+
+import RangeSliderController from "./range_slider_controller"
+application.register("range-slider", RangeSliderController)
 
 import ServiceWorkerController from "./service_worker_controller"
 application.register("service-worker", ServiceWorkerController)

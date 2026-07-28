@@ -1,3 +1,4 @@
 = simple_form_for :per_page, url: leaderboard_index_path, method: :get, html: { class: 'leaderboard__per-page', data: { controller: 'leaderboard-form' } } do |f|
-  = hidden_field_tag :sort, sort
+  - (params[:q] || {}).each do |key, value|
+    = hidden_field_tag "q[#{key}]", value
   = f.input :option, as: :segmented_control, label: false, required: false, size: :small, full_width: true, checked: per_page.to_s, collection: Leaderboard::PER_PAGE_OPTIONS.map { |option| [ option.to_s, option.to_s ] }, input_html: { name: 'per_page', data: { action: 'change->leaderboard-form#submit' } }

@@ -1,0 +1,15 @@
+.filter-drawer__scrim data-testid="leaderboard-filter-drawer-scrim" data-leaderboard-filter-drawer-target="scrim" data-action="click->leaderboard-filter-drawer#close"
+
+aside.side-panel.side-panel--border-left.filter-drawer data-testid="leaderboard-filter-drawer" data-leaderboard-filter-drawer-target="drawer" aria-label="Filters"
+  .side-panel__header.side-panel__header--padded
+    h2.filter-drawer__title Filters
+    button.btn.btn--icon type="button" aria-label="Close filters" data-testid="leaderboard-filter-drawer-close" data-action="click->leaderboard-filter-drawer#close"
+      i.li.li-x.icon.icon--small
+  .side-panel__body.side-panel__body--padded
+    = form_tag leaderboard_index_path, method: :get, class: 'filter-drawer__form' do
+      = hidden_field_tag 'q[s]', params.dig(:q, 's')
+      = hidden_field_tag :per_page, per_page
+      = render 'leaderboard_range_field', column: 'total_wins', label: 'Games Won', bounds: wins_bounds, testid_prefix: 'leaderboard-wins'
+      = render 'leaderboard_range_field', column: 'total_games', label: 'Games Played', bounds: games_bounds, testid_prefix: 'leaderboard-games'
+      button.btn.btn--primary.filter-drawer__apply type="submit" data-testid="leaderboard-filter-apply"
+        | Apply Filters

@@ -1,5 +1,21 @@
-.page
-  = render 'leaderboard_sort', sort: sort, per_page: per_page
+- filters = leaderboard_filters(wins_bounds: wins_bounds, games_bounds: games_bounds)
+
+.page data-controller="leaderboard-filter-drawer"
+  .leaderboard__controls
+    = render 'leaderboard_sort', search: search, per_page: per_page
+    button.btn.btn--icon.leaderboard__filter-trigger type="button" aria-label="Filters" data-testid="leaderboard-filter-trigger" data-action="click->leaderboard-filter-drawer#open"
+      i.li.li-sliders-horizontal.icon
+      - if filters.any?
+        span.leaderboard__filter-badge data-testid="leaderboard-filter-badge" = filters.size
+
+  - if filters.any?
+    .leaderboard__filter-chips
+      - filters.each do |filter|
+        span.leaderboard__filter-chip data-testid="leaderboard-filter-chip-#{filter[:column]}"
+          = filter[:label]
+          a.leaderboard__filter-chip-remove href=filter[:remove_url] data-testid="leaderboard-filter-chip-#{filter[:column]}-remove" aria-label="Remove #{filter[:label]} filter"
+            | ×
+
   header.content-header
     .content-header__details
       .content-header__title Leaderboard
@@ -25,5 +41,7 @@
         - @rows.each do |row|
           = render 'leaderboard_row', row: row
     .leaderboard__pagination
-      = render 'leaderboard_per_page', per_page: per_page, sort: sort
+      = render 'leaderboard_per_page', per_page: per_page
       == paginate @rows
+
+  = render 'leaderboard_filter_drawer', per_page: per_page, wins_bounds: wins_bounds, games_bounds: games_bounds

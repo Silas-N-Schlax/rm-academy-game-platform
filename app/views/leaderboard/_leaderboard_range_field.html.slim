@@ -1,0 +1,12 @@
+- min_value = params.dig(:q, "#{column}_gteq") || bounds.first
+- max_value = params.dig(:q, "#{column}_lteq") || bounds.last
+
+.filter-drawer__field data-controller="range-slider"
+  .filter-drawer__field-label
+    = label
+    span.filter-drawer__field-output data-range-slider-target="output" = "#{min_value}–#{max_value}"
+  .range-slider
+    input.range-slider__input type="range" min=bounds.first max=bounds.last step="1" value=min_value data-range-slider-target="minInput" data-action="input->range-slider#updateMin" data-testid="#{testid_prefix}-min-range"
+    input.range-slider__input type="range" min=bounds.first max=bounds.last step="1" value=max_value data-range-slider-target="maxInput" data-action="input->range-slider#updateMax" data-testid="#{testid_prefix}-max-range"
+  input type="hidden" name="q[#{column}_gteq]" value=min_value data-range-slider-target="minHidden"
+  input type="hidden" name="q[#{column}_lteq]" value=max_value data-range-slider-target="maxHidden"

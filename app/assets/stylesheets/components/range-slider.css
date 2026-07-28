@@ -1,0 +1,48 @@
+.range-slider {
+  position: relative;
+  block-size: calc(var(--op-size-unit) * 6); /* 24px */
+}
+
+.range-slider__input {
+  position: absolute;
+  inset-inline: 0;
+  inline-size: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+
+  &::-webkit-slider-runnable-track {
+    block-size: calc(var(--op-size-unit) * 1); /* 4px */
+    background-color: var(--op-color-neutral-plus-five);
+    border-radius: var(--op-radius-small);
+  }
+
+  &::-moz-range-track {
+    block-size: calc(var(--op-size-unit) * 1); /* 4px */
+    background-color: var(--op-color-neutral-plus-five);
+    border-radius: var(--op-radius-small);
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    pointer-events: auto;
+    inline-size: calc(var(--op-size-unit) * 3); /* 12px */
+    block-size: calc(var(--op-size-unit) * 3); /* 12px */
+    /* centers the 12px thumb on the 4px track */
+    margin-block-start: calc(var(--op-size-unit) * -1); /* -4px */
+    border-radius: 50%;
+    background-color: var(--op-color-primary-base);
+    cursor: pointer;
+  }
+
+  &::-moz-range-thumb {
+    pointer-events: auto;
+    inline-size: calc(var(--op-size-unit) * 3); /* 12px */
+    block-size: calc(var(--op-size-unit) * 3); /* 12px */
+    border: none;
+    border-radius: 50%;
+    background-color: var(--op-color-primary-base);
+    cursor: pointer;
+  }
+}
