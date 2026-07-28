@@ -14,7 +14,7 @@ Game (STI base, type: "GoFishGame" | "CrazyEightsGame" | "RummyGame")
 - `has_many :players`/`has_many :users` have no explicit `order`. Rails implicitly orders `.first`/`.last` by `id`, but `.map`/`.each`/`.to_a` do not — those can return rows in a different order under DB load. `GoFish::Game.create`/`CrazyEights::Game.create` learned this the hard way (players could get seated in the wrong turn order) and now `sort_by(&:id)` explicitly before mapping. `app/views/application/_go_fish_form.html.slim`'s player-select dropdown has the same latent gap and is not yet fixed — see `docs/roadmap.md`.
 - `Player` is the join model between `User` and `Game` — one row per seat, holding `winner` (boolean/nil: `true` = won a finished game, `false` = lost a finished game, `nil` = the game hasn't finished yet). `Game#end_game` sets every non-winning player to `false` (not just leaving them `nil`) when a game ends — fixed 2026-07-27; before that, a non-winner was indistinguishable from a player in an unfinished game, which inflated loss/game counts in `Stat`. Games finished before that fix still have `nil` for their losers (no backfill migration was written — see `docs/roadmap.md`).
 - `Session`/`Current` follow the standard Rails 8 authentication-generator pattern: a signed cookie holds a `session_id`, `Current.session` is set per-request in `Authentication` (a controller concern), and `Current.user` delegates to it.
-- `Stat` is a plain (non-AR) query object that computes win/loss/average stats per user, optionally filtered by game `type` string, plus a `#leaderboard` method (a single grouped query ranking every user by total wins → total games → win/loss ratio → time played → account age). Every column across `Stat` — including `#leaderboard` — is scoped to **finished games only**; this is why `#total_games` doesn't just equal `user.games.size`.
+- `Stat` (2026-07-28: migrated off a plain PORO, same pattern as `Leaderboard`) is now `Stat < ApplicationRecord` backed by a Scenic-managed Postgres view (`db/views/stats_v01.sql`, queried via `Stat.for(user)`), returning one row per game type the user has actually finished a game in, plus one rollup "overall" row (`type: nil`), via a single `GROUPING SETS ((players.user_id, games.type), (players.user_id))` query — collapses what used to be ~12 queries per stats-page load into 1. Two gotchas this surfaced: (1) the view's `type` column is treated as an STI discriminator by Rails unless the model sets `self.inheritance_column = nil` — any Scenic view with a literal `type` column needs the same guard; (2) an earlier draft joined via `LEFT JOIN games` (so a user's non-finished games would also match) which produced a spurious extra `type: nil` row whenever a user had unfinished-game participations — a `LEFT JOIN`'s unmatched row has `games.type = NULL`, and `GROUPING SETS` treats that as its own group, colliding with the real rollup row. Fixed by `JOIN`ing (not `LEFT JOIN`) restricted to finished games only — the real behavior change this brings: a user with zero finished games now returns **no rows at all**, not a zeroed row, so callers must handle an empty relation rather than assume a row always exists. Also needed a synthetic `ROW_NUMBER() OVER () AS id` primary key, since `user_id` repeats across a user's several rows and isn't unique the way `Leaderboard`'s one-row-per-user `id` is. A `StatsPresenter` sits in front of it, filling in a zeroed row for any game type in `Game.new.valid_types` that a user hasn't played, so the stats page always shows a row per known type without hardcoding the list. `Leaderboard`, meanwhile, is a separate `ActiveRecord` model backed by its own Scenic view (`db/views/leaderboards_v01.sql`, migrated via `create_view :leaderboards`). `Leaderboard.sorted_by(column)` orders by one of `SORT_COLUMNS` (`total_wins`/`total_games`/`win_percentage`/`seconds_played`) descending with **`NULLS LAST`** explicitly — Postgres sorts nulls *first* on a naive `order(column => :desc)` for `DESC`, which put users with no finished games (nil `win_percentage`) ahead of users who'd actually won something — plus alphabetical-by-name as the tiebreak. Editing an already-migrated view SQL file in place has **no effect on the live database**; to change a view's SQL, run `rails generate scenic:view <name>` to bump the version (creates a `_v02.sql` + an `update_view` migration), edit the new file, then migrate.
 - `Game.open_games` used to silently exclude any open game with **zero players** — it originally used `joins(:players)` (an INNER JOIN), which produces no row at all for a game with no matching `players` row. Changed to `includes(:players)` plus a correlated subquery so a zero-player open game is correctly included. This is a real behavior change: an existing system spec assumed only one open game would ever show a "Join" button and broke when a second (zero-player) one appeared — fixed by scoping the click to `dom_id(game)` rather than relying on there being just one match.
 
 ### STI gotchas
@@ -171,6 +171,17 @@ sizes to its own content height instead of matching its taller siblings, leaving
 where its short background/border ends before the row's actual bottom edge. Keep the flex layout on
 a child element inside the cell, never the `<td>` itself.
 
+Converting a table into stacked mobile "cards" (`stats-ledger`'s `@media` block, 2026-07-28) needs
+the gap between cards created by margin on the **row** element itself, not on its last child. A
+child's `margin-block-end` only escapes its parent's own background box if the parent has no
+bottom padding/border to block the collapse — once the row has its own `padding-block` (for
+internal breathing room, as `.stats-ledger__row` does), that collapse can't happen, so a margin on
+the row's last cell just adds more space still painted in the row's own background color,
+visually indistinguishable from padding rather than a true gap revealing what's behind it.
+Confirmed by sampling the rendered page's raw pixel colors: moving the margin from `td:last-child`
+to `tr:not(:last-child)` was what actually revealed the surrounding `.stats-ledger` background
+between cards.
+
 A CSS Grid item needs an explicit `min-height: 0` (or `min-width: 0` for row-direction tracks) to
 actually respect a `1fr` track size — a grid item's default `min-height` is `auto`, meaning it
 refuses to shrink below its own content's intrinsic size even when that's taller than the track it
@@ -183,6 +194,34 @@ Fixed with `min-height: 0` plus `justify-content: safe center` (degrades to top-
 overflowing symmetrically top-and-bottom when content doesn't fit) and a guaranteed `padding-bottom`.
 Any future grid layout with a `1fr`/`auto` mix and variable-height content needs the same
 `min-height: 0` guard, or a short viewport can reproduce this exact silent overflow.
+
+Overriding a vendor Optics rule that's written as **nested** CSS requires nesting your own override
+the same way, or it silently loses on specificity regardless of file load order (found fixing the
+mobile bottom-navbar overlap, 2026-07-28): `optics-overrides/op-page.css` had
+`.op-page { .op-page__sidebar {...} }` correctly nested, but a new `.op-page__main {...}` rule was
+added as a **sibling** of `.op-page { }` instead of nested inside it — compiling to the flat selector
+`.op-page__main` (specificity 0,1,0) instead of `.op-page .op-page__main` (0,2,0). The vendor's own
+nested `.op-page .op-page__main { display: grid; ... }` rule kept winning regardless of `display:
+block` being declared later in a later-loaded stylesheet, because higher specificity always beats
+source order. `getComputedStyle` kept reporting the override's value for properties the vendor rule
+never explicitly set (e.g. `align-items`, no real contest there) which made the real cause — the
+missing nesting — look unrelated for a while.
+
+Related, same investigation: `display: grid` + `overflow: auto` on a container whose grid item's
+content overflows its track does **not** reliably extend that container's own `scrollHeight` via a
+trailing `padding-bottom`, in this rendering engine — confirmed by comparing identical padding
+values on `display:grid` vs `display:flex`/`block` ancestors of the same overflowing content, with
+the grid version consistently coming up ~116px short regardless of where in the ancestor chain the
+padding was placed. Switching the container from `display: grid` to `display: block` (this app
+doesn't use `.op-page__main`'s vendor-provided header/content/footer grid areas anyway) fixed it.
+This is why the fixed-mobile-navbar-clears-scrolled-content padding lives directly on
+`.op-page__main` — global, not a per-page `.page`/`.page__content` workaround.
+
+SimpleForm's `CollectionRadioButtonsInput` (the base class behind `SegmentedControlInput`) takes
+`checked:` to preselect an option, not `selected:` — `selected:` is a `collection_select`-only
+option and fails **silently** on a radio collection (no error, the option just never renders
+checked). Cost real time on the leaderboard's sort control before the fix was found by reading
+Rails' `collection_radio_buttons` source directly.
 
 `app/javascript/controllers/index.js` is **auto-generated** (per its own header comment) and does not
 pick up a new controller file just by existing — a new `data-controller="foo"` in a view is silently
