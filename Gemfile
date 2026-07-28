@@ -83,3 +83,5 @@ gem "data_for"
 gem "scenic"
 
 gem "kaminari", "~> 1.2"
+
+gem "ransack"
