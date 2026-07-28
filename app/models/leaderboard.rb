@@ -4,6 +4,6 @@ class Leaderboard < ApplicationRecord
   def self.sorted_by(column = "total_wins")
     column = column.downcase
     return unless SORT_COLUMNS.include?(column)
-    order(column => :desc, name: :asc)
+    order(Arel.sql("#{column} DESC NULLS LAST"), name: :asc)
   end
 end

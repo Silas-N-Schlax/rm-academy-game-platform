@@ -81,6 +81,16 @@ RSpec.describe Leaderboard, type: :model do
       expect(matching_rows.size).to eq 1
     end
 
+    it 'sorts a user with no win percentage after users with a win percentage, when sorted by win_percentage' do
+      never_played = create(:user, name: 'Never Played')
+      has_a_win = create(:user, name: 'Has A Win')
+      create_finished_game(winner: has_a_win)
+
+      names = described_class.sorted_by('win_percentage').map(&:name)
+
+      expect(names.index('Has A Win')).to be < names.index('Never Played')
+    end
+
     it 'issues exactly one SQL query' do
       create(:user)
       query_count = 0
