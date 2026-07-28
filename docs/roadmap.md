@@ -3,6 +3,30 @@
 Future plans and known issues not yet in progress, grouped by theme. Amend entries in place
 rather than duplicating when revisiting a topic.
 
+## Stats page — shipped (2026-07-28)
+
+- **`Stat` migrated off a plain PORO onto a Scenic-view-backed `ActiveRecord` model**
+  (`Stat < ApplicationRecord`, `db/views/stats_v01.sql`), the same pattern as `Leaderboard` —
+  collapses ~12 queries per stats-page load into 1 using a single `GROUPING SETS` query (one row
+  per game type the user has played, plus one rollup "overall" row). See `docs/architecture.md`'s
+  Core models section for the STI-collision and phantom-row gotchas this surfaced.
+- **New `StatsPresenter`** groups those rows and iterates `Game.new.valid_types` so a row always
+  renders for every known game type (zeroed if unplayed), rather than a hardcoded
+  `["GoFishGame", "CrazyEightsGame"]` list — a new game type (Rummy) is picked up automatically
+  with no view change needed.
+- **View redesigned as a single comparison "ledger" table** (`stats-ledger` BEM component)
+  replacing the old per-game-type card grid — chosen specifically so cross-game comparison is a
+  glance, not four separate cards. Mobile collapses each table row into a stacked label/value card
+  via `data-label` attributes; see `docs/architecture.md`'s Asset pipeline section for the
+  margin/padding-collapse gotcha found while spacing those stacked cards apart.
+- **`db/seeds.rb` gained `USER1_GAME_COUNT`**: weaves a known, heavily-played `user1@rolemodel.test`
+  into the existing `GAME_COUNT` seeding loop (not a separate loop) for load-testing the stats page
+  at realistic volume.
+- **Future idea, not yet needed:** win/loss streaks (current + longest) were considered and
+  deliberately deferred — unlike the other stats, they need an ordered window-function query over
+  each user's game history, a different shape than the `GROUPING SETS` aggregate this view already
+  uses. Revisit as a separate view/column if requested.
+
 ## Leaderboard — shipped (2026-07-27)
 
 - **`/leaderboard` page shipped**, ranking every user by total wins → total games → win/loss ratio →
@@ -15,10 +39,32 @@ rather than duplicating when revisiting a topic.
 - **Known gap, not fixed:** games that finished **before** this session land still have `nil` for
   their losers instead of `false`. No backfill migration was written — revisit if historical
   loss/win-percentage counts for existing games need to be corrected retroactively.
-- **Deferred follow-up:** a denser "tight standings" mobile treatment (sticky header, hairline rows
-  instead of per-row borders, a shorter `14h 22m`-style time format) was designed and set aside in
-  favor of the simpler bordered-row treatment for the initial ship. Worth revisiting once the board
-  regularly runs past a single phone screenful.
+- **Deferred follow-up, partially resolved (2026-07-28):** a denser "tight standings" mobile
+  treatment (sticky header, hairline rows instead of per-row borders, a shorter `14h 22m`-style time
+  format) was designed and set aside for the initial ship. The **sticky header** shipped (`table--
+  sticky-header`, Optics' built-in modifier). Hairline rows and the shorter time format are still
+  not done — revisit once the board regularly runs past a single phone screenful.
+- **Reworked (2026-07-28): migrated off `Stat#leaderboard` onto a Scenic-view-backed `Leaderboard`
+  model.** `Leaderboard < ApplicationRecord` now reads from a Postgres view
+  (`db/views/leaderboards_v01.sql`) instead of a plain query object; see `docs/architecture.md`'s
+  Core models section for the model/view split and the Scenic versioning workflow. Added a
+  Games/Won/W-L/Time-Played sort control (Optics segmented control, GET param, Stimulus auto-
+  submit on change) replacing the old fixed five-level sort cascade — sorting is now single-column
+  (one of `total_wins`/`total_games`/`win_percentage`/`seconds_played`, descending) with
+  alphabetical-by-name as the only tiebreak. Fixed a real bug found while building this: sorting by
+  `win_percentage` put users with no finished games (nil win %) **first** instead of last — Postgres
+  sorts nulls first on a naive `DESC` order; fixed with an explicit `NULLS LAST`. Also fixed a
+  global mobile bug found and reported by the user while testing this page: the fixed bottom mobile
+  navbar could cover a page's last scrolled-into-view content on any page using `.op-page__main`,
+  not just the leaderboard — see `docs/architecture.md`'s Asset pipeline section for the CSS
+  specificity + grid/overflow root causes.
+- **Future idea, not yet needed (2026-07-28):** `games` has **zero indexes**, including none on
+  `finished_at` (the leaderboard view's join filter does a full seq scan there). Confirmed via
+  `EXPLAIN ANALYZE` this is a non-issue at current scale (~1k rows, ~4ms total) and that
+  `game_state` jsonb isn't the culprit either — Postgres TOASTs it out of the main heap
+  automatically, so it was never being read during the join regardless. Add the `finished_at` index
+  if `games` grows large enough for this to actually show up in a slow-query log; don't add it
+  preemptively.
 
 ## Rummy — new game, in progress (2026-07-22)
 
@@ -110,6 +156,11 @@ rather than duplicating when revisiting a topic.
 
 ## Known flaky/incomplete tests (2026-07-21)
 
+- **`spec/models/leaderboard_spec.rb` "issues exactly one SQL query" (2026-07-28)** — fails when run
+  standalone (extra schema-introspection queries fire on the process's first touch of the table) but
+  passes reliably as part of the full spec file. Confirmed pre-existing and unrelated to the
+  Leaderboard model rework this session — reproduced identically via `git stash` on the prior
+  commit. Not worth chasing unless it starts failing in the full-file/full-suite run too.
 - **`spec/system/games_spec.rb` "displays offline banner"** — flaky under full-suite load (~1 in
   3-4 runs), passes reliably in isolation. Root cause: `emulate_worker_network`
   (`spec/support/helpers/offline_helper.rb`) applies Chrome DevTools Protocol network emulation to
