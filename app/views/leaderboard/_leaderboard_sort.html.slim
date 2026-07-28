@@ -1,0 +1,2 @@
+= simple_form_for :sort, url: leaderboard_index_path, method: :get, html: { class: 'leaderboard__sort', data: { controller: 'leaderboard-sort' } } do |f|
+  = f.input :option, as: :segmented_control, label: false, required: false, size: :small, full_width: true, checked: sort || 'total_wins', collection: Leaderboard::SORT_OPTIONS.invert, input_html: { name: 'sort', data: { action: 'change->leaderboard-sort#submit' } }

@@ -91,6 +91,10 @@ RSpec.describe Leaderboard, type: :model do
       expect(names.index('Has A Win')).to be < names.index('Never Played')
     end
 
+    it 'returns nil for an unrecognized sort column' do
+      expect(described_class.sorted_by('name')).to be_nil
+    end
+
     it 'issues exactly one SQL query' do
       create(:user)
       query_count = 0

@@ -114,6 +114,12 @@
   font-size: var(--op-font-small);
 }
 
+.leaderboard__sort {
+  display: flex;
+  justify-content: end;
+  margin-block: var(--op-space-small);
+}
+
 @media (width <= 768px) {
   /* --op-breakpoint-small */
   .leaderboard {
@@ -132,7 +138,7 @@
     th,
     td {
       font-size: var(--op-font-x-small);
-      padding-inline: var(--op-space-3x-small);
+      padding-inline: var(--op-space-2x-small);
     }
 
     .leaderboard__head-label {
@@ -142,5 +148,15 @@
     .leaderboard__head-icon {
       display: inline-flex;
     }
+  }
+}
+
+@media (width > 768px) {
+  /* --op-breakpoint-small */
+  .leaderboard__sort {
+    --_op-segmented-control-height-small: var(--_op-segmented-control-height-medium);
+    --_op-segmented-control-font-small: var(--_op-segmented-control-font-medium);
+    --_op-segmented-control-label-padding-small: var(--_op-segmented-control-label-padding-medium);
+    --_op-segmented-control-label-gap-small: var(--_op-segmented-control-label-gap-medium);
   }
 }

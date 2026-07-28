@@ -83,6 +83,33 @@ RSpec.describe 'Leaderboard', type: :system do
     expect(cells[2..4]).to eq [ '1', '—', '—' ]
   end
 
+  it 'shows a sort control with an option for each stat, defaulting to total wins' do
+    visit leaderboard_index_path
+
+    expect(page).to have_field('Games')
+    expect(page).to have_field('Won')
+    expect(page).to have_field('W/L')
+    expect(page).to have_field('Time Played')
+    expect(page).to have_checked_field('Won')
+  end
+
+  it 'resorts the table by total games when "Games" is chosen' do
+    visit leaderboard_index_path
+
+    choose 'Games'
+
+    names_in_order = page.all('.leaderboard__player-name').map(&:text)
+    expect(names_in_order).to eq [ 'Top Player', 'Runner Up', 'Viewer' ]
+  end
+
+  it 'keeps the chosen sort option selected after resorting' do
+    visit leaderboard_index_path
+
+    choose 'Games'
+
+    expect(page).to have_checked_field('Games')
+  end
+
   it 'redirects a signed-out visitor' do
     sign_out
 
