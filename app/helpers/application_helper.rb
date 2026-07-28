@@ -17,6 +17,12 @@ module ApplicationHelper
     "#{value.round(1)}%"
   end
 
+  def formatted_date(date)
+    return NO_VALUE if date.blank?
+
+    date.strftime("%b %-d, %Y")
+  end
+
   def formatted_count(value)
     return NO_VALUE if value.blank? || value.zero?
 

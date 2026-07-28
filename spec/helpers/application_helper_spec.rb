@@ -40,6 +40,18 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
+  describe '#formatted_date' do
+    it 'formats a date as Mon D, YYYY' do
+      expected_output = 'Feb 9, 2026'
+      expect(helper.formatted_date(Date.new(2026, 2, 9))).to eq expected_output
+    end
+
+    it 'returns a dash for nil' do
+      expected_output = '—'
+      expect(helper.formatted_date(nil)).to eq expected_output
+    end
+  end
+
   describe '#formatted_count' do
     it 'formats a positive integer as a plain number' do
       expected_output = '5'
