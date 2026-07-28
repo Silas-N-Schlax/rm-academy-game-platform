@@ -9,6 +9,9 @@ aside.side-panel.side-panel--border-left.filter-drawer data-testid="leaderboard-
     = form_tag leaderboard_index_path, method: :get, class: 'filter-drawer__form' do
       = hidden_field_tag 'q[s]', params.dig(:q, 's')
       = hidden_field_tag :per_page, per_page
+      .filter-drawer__field
+        label.filter-drawer__field-label for="leaderboard-name-filter" Name
+        = text_field_tag 'q[name_cont]', params.dig(:q, 'name_cont'), id: 'leaderboard-name-filter', data: { testid: 'leaderboard-name-filter' }
       = render 'leaderboard_range_field', column: 'total_wins', label: 'Games Won', bounds: wins_bounds, testid_prefix: 'leaderboard-wins'
       = render 'leaderboard_range_field', column: 'total_games', label: 'Games Played', bounds: games_bounds, testid_prefix: 'leaderboard-games'
       button.btn.btn--primary.filter-drawer__apply type="submit" data-testid="leaderboard-filter-apply"

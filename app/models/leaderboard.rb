@@ -7,9 +7,10 @@ class Leaderboard < ApplicationRecord
   }.freeze
 
   SORT_COLUMNS = SORT_OPTIONS.keys.freeze
+  FILTERABLE_ATTRIBUTES = [ "name" ].freeze
 
   def self.ransackable_attributes(_auth_object = nil)
-    SORT_COLUMNS
+    SORT_COLUMNS + FILTERABLE_ATTRIBUTES
   end
 
   def self.ransackable_associations(_auth_object = nil)

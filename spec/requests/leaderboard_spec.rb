@@ -72,9 +72,27 @@ RSpec.describe 'Leaderboard', type: :request do
   end
 
   it 'returns 200 and ignores an unpermitted ransack attribute' do
-    get leaderboard_index_path, params: { q: { name_cont: 'ignored' } }
+    get leaderboard_index_path, params: { q: { created_at_cont: 'ignored' } }
 
     expect(response).to have_http_status(:ok)
+  end
+
+  describe 'filtering by name' do
+    it 'includes a player whose name contains the search term' do
+      player = create(:user, name: 'Searchable Player')
+
+      get leaderboard_index_path, params: { q: { name_cont: 'Searchable' } }
+
+      expect(response.body).to include('Searchable Player')
+    end
+
+    it 'excludes a player whose name does not contain the search term' do
+      create(:user, name: 'Unrelated Player')
+
+      get leaderboard_index_path, params: { q: { name_cont: 'Searchable' } }
+
+      expect(response.body).to_not include('Unrelated Player')
+    end
   end
 
   it 'falls back to the default sort instead of erroring when the sort column is unrecognized' do

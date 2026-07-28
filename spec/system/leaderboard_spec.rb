@@ -279,6 +279,30 @@ RSpec.describe 'Leaderboard', type: :system do
       expect(page).to have_css(data_test('leaderboard-filter-badge'), text: '1')
     end
 
+    it 'filters the table to players whose name matches the search term when applied' do
+      visit leaderboard_index_path
+      find(data_test('leaderboard-filter-trigger')).click
+      find(data_test('leaderboard-name-filter')).set('Runner')
+      find(data_test('leaderboard-filter-apply')).click
+
+      expect(page).to have_css(data_test('leaderboard-filter-chip-name'), text: 'Runner')
+      names_in_order = page.all('.leaderboard__player-name').map(&:text)
+      expect(names_in_order).to eq [ 'Runner Up' ]
+    end
+
+    it "clears the name filter when the chip's remove control is clicked" do
+      visit leaderboard_index_path
+      find(data_test('leaderboard-filter-trigger')).click
+      find(data_test('leaderboard-name-filter')).set('Runner')
+      find(data_test('leaderboard-filter-apply')).click
+
+      find(data_test('leaderboard-filter-chip-name-remove')).click
+
+      expect(page).to have_no_css(data_test('leaderboard-filter-chip-name'))
+      names_in_order = page.all('.leaderboard__player-name').map(&:text)
+      expect(names_in_order).to eq [ 'Top Player', 'Runner Up', 'Viewer' ]
+    end
+
     it "shows a filtered player's true global rank, not a renumbered position" do
       third_place = create(:user, name: 'Third Place')
       game = create(:finished_game, player_count: 0)
