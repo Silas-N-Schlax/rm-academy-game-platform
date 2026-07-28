@@ -4,11 +4,17 @@ class LeaderboardController < ApplicationController
   def index
     per_page = Leaderboard.clamp_per_page(params[:per_page])
     search = Leaderboard.ransack(search_params)
-    @rows = search.result.page(params[:page]).per(per_page)
+    @rows = sorted_result(search).page(params[:page]).per(per_page)
     render locals: render_locals(search, per_page)
   end
 
   private
+
+  def sorted_result(search)
+    sort = search.sorts.first
+    order_args = Leaderboard.order_args_for(sort&.name, sort&.dir) || Leaderboard.order_args_for(nil)
+    search.result.reorder(*order_args)
+  end
 
   def render_locals(search, per_page)
     {

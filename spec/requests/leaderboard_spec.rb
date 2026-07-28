@@ -43,6 +43,28 @@ RSpec.describe 'Leaderboard', type: :request do
     end
   end
 
+  describe 'sorting by win percentage' do
+    it 'places a user with no win percentage last when sorted descending' do
+      winner = create(:user, name: 'Has A Win')
+      finish_a_game_won_by(winner)
+      never_played = create(:user, name: 'Never Played')
+
+      get leaderboard_index_path, params: { q: { s: 'win_percentage desc' } }
+
+      expect(response.body.index('Has A Win')).to be < response.body.index('Never Played')
+    end
+
+    it 'places a user with no win percentage last when sorted ascending' do
+      winner = create(:user, name: 'Has A Win')
+      finish_a_game_won_by(winner)
+      never_played = create(:user, name: 'Never Played')
+
+      get leaderboard_index_path, params: { q: { s: 'win_percentage asc' } }
+
+      expect(response.body.index('Has A Win')).to be < response.body.index('Never Played')
+    end
+  end
+
   it 'returns 200 instead of erroring when a range value is non-numeric' do
     get leaderboard_index_path, params: { q: { total_wins_gteq: 'not-a-number' } }
 

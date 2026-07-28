@@ -41,14 +41,20 @@ class Leaderboard < ApplicationRecord
     SORT_DIRECTIONS.index_with { |direction| "#{column} #{direction.upcase} NULLS LAST" }
   }.freeze
 
-  def self.sorted_by(column = "total_wins", direction: DEFAULT_SORT_DIRECTION)
+  def self.order_args_for(column, direction = DEFAULT_SORT_DIRECTION)
     column = column.presence || "total_wins"
     column = column.downcase
     direction = direction.presence&.downcase
     direction = DEFAULT_SORT_DIRECTION unless SORT_DIRECTIONS.include?(direction)
     return unless SORT_COLUMNS.include?(column)
-    return order(Arel.sql(UNIVERSAL_RANK_ORDER)) if column == "total_wins" && direction == DEFAULT_SORT_DIRECTION
-    order(Arel.sql(ORDER_CLAUSES.fetch(column).fetch(direction)), name: :asc, created_at: :asc)
+    return [ Arel.sql(UNIVERSAL_RANK_ORDER) ] if column == "total_wins" && direction == DEFAULT_SORT_DIRECTION
+    [ Arel.sql(ORDER_CLAUSES.fetch(column).fetch(direction)), { name: :asc, created_at: :asc } ]
+  end
+
+  def self.sorted_by(column = "total_wins", direction: DEFAULT_SORT_DIRECTION)
+    args = order_args_for(column, direction)
+    return unless args
+    order(*args)
   end
 
   def self.stat_bounds(column)
