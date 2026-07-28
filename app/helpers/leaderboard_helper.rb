@@ -6,7 +6,7 @@ module LeaderboardHelper
     bounds_by_column = { total_wins: wins_bounds, total_games: games_bounds }
     range_chips = FILTER_STATS.filter_map { |column, label| leaderboard_range_filter_chip(column, label, bounds_by_column.fetch(column)) }
     text_chips = TEXT_FILTER_STATS.filter_map { |column, label| leaderboard_text_filter_chip(column, label) }
-    range_chips + text_chips
+    range_chips + text_chips + [ leaderboard_country_filter_chip ].compact
   end
 
   def leaderboard_range_filter_chip(column, label, bounds)
@@ -20,6 +20,12 @@ module LeaderboardHelper
     value = params.dig(:q, "#{column}_cont").presence
     return if value.nil?
     { column: column, label: "#{label}: #{value}", remove_url: leaderboard_url_without("#{column}_cont") }
+  end
+
+  def leaderboard_country_filter_chip
+    code = params.dig(:q, "user_country_eq").presence
+    return if code.nil?
+    { column: :country, label: "Country: #{Country.data.find(code)&.name || code}", remove_url: leaderboard_url_without("user_country_eq") }
   end
 
   def leaderboard_url_without(*keys)

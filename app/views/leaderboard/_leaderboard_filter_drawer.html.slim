@@ -12,6 +12,9 @@ aside.side-panel.side-panel--border-left.filter-drawer data-testid="leaderboard-
       .filter-drawer__field
         label.filter-drawer__field-label for="leaderboard-name-filter" Name
         = text_field_tag 'q[name_cont]', params.dig(:q, 'name_cont'), id: 'leaderboard-name-filter', data: { testid: 'leaderboard-name-filter' }
+      .filter-drawer__field
+        label.filter-drawer__field-label for="leaderboard-country-filter" Country
+        = select_tag 'q[user_country_eq]', options_for_select(country_options.map { |country| [ country.name, country.id ] }, params.dig(:q, 'user_country_eq')), include_blank: true, id: 'leaderboard-country-filter', data: { testid: 'leaderboard-country-filter' }
       = render 'leaderboard_range_field', column: 'total_wins', label: 'Games Won', bounds: wins_bounds, testid_prefix: 'leaderboard-wins'
       = render 'leaderboard_range_field', column: 'total_games', label: 'Games Played', bounds: games_bounds, testid_prefix: 'leaderboard-games'
       button.btn.btn--primary.filter-drawer__apply type="submit" data-testid="leaderboard-filter-apply"

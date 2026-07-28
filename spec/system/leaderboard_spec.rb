@@ -303,6 +303,34 @@ RSpec.describe 'Leaderboard', type: :system do
       expect(names_in_order).to eq [ 'Top Player', 'Runner Up', 'Viewer' ]
     end
 
+    it 'filters the table to players from the selected country when applied' do
+      create(:user, name: 'From Argentina', country: 'AR')
+
+      visit leaderboard_index_path
+      find(data_test('leaderboard-filter-trigger')).click
+      select 'Argentina', from: 'Country'
+      find(data_test('leaderboard-filter-apply')).click
+
+      expect(page).to have_css(data_test('leaderboard-filter-chip-country'), text: 'Argentina')
+      names_in_order = page.all('.leaderboard__player-name').map(&:text)
+      expect(names_in_order).to eq [ 'From Argentina' ]
+    end
+
+    it "clears the country filter when the chip's remove control is clicked" do
+      create(:user, name: 'From Argentina', country: 'AR')
+
+      visit leaderboard_index_path
+      find(data_test('leaderboard-filter-trigger')).click
+      select 'Argentina', from: 'Country'
+      find(data_test('leaderboard-filter-apply')).click
+
+      find(data_test('leaderboard-filter-chip-country-remove')).click
+
+      expect(page).to have_no_css(data_test('leaderboard-filter-chip-country'))
+      names_in_order = page.all('.leaderboard__player-name').map(&:text)
+      expect(names_in_order).to eq [ 'Top Player', 'Runner Up', 'Viewer', 'From Argentina' ]
+    end
+
     it "shows a filtered player's true global rank, not a renumbered position" do
       third_place = create(:user, name: 'Third Place')
       game = create(:finished_game, player_count: 0)

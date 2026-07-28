@@ -22,7 +22,8 @@ class LeaderboardController < ApplicationController
       your_rank: Leaderboard.find_by(id: current_user.id)&.rank,
       per_page: per_page,
       wins_bounds: Leaderboard.stat_bounds(:total_wins),
-      games_bounds: Leaderboard.stat_bounds(:total_games)
+      games_bounds: Leaderboard.stat_bounds(:total_games),
+      country_options: Leaderboard.present_countries
     }
   end
 

@@ -65,6 +65,26 @@ RSpec.describe 'Leaderboard', type: :request do
     end
   end
 
+  describe 'filtering by country' do
+    it 'includes a player from the specified country' do
+      player = create(:user, name: 'From Argentina', country: 'AR')
+      finish_a_game_won_by(player)
+
+      get leaderboard_index_path, params: { q: { user_country_eq: 'AR' } }
+
+      expect(response.body).to include('From Argentina')
+    end
+
+    it 'excludes a player from a different country' do
+      player = create(:user, name: 'From Austria', country: 'AT')
+      finish_a_game_won_by(player)
+
+      get leaderboard_index_path, params: { q: { user_country_eq: 'AR' } }
+
+      expect(response.body).to_not include('From Austria')
+    end
+  end
+
   it 'returns 200 instead of erroring when a range value is non-numeric' do
     get leaderboard_index_path, params: { q: { total_wins_gteq: 'not-a-number' } }
 
