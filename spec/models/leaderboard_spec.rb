@@ -94,6 +94,32 @@ RSpec.describe Leaderboard, type: :model do
       expect(row.seconds_played).to eq 0
     end
 
+    it 'exposes the user\'s country' do
+      user = create(:user, name: 'From Wakanda', country: 'WK')
+
+      row = described_class.sorted_by.find { |candidate| candidate.name == 'From Wakanda' }
+
+      expect(row.country).to eq 'WK'
+    end
+
+    it 'nils out win_percentage for a user with fewer than 5 finished games, even with all wins' do
+      user = create(:user, name: 'Undefeated Newcomer')
+      4.times { create_finished_game(winner: user) }
+
+      row = described_class.sorted_by.find { |candidate| candidate.name == 'Undefeated Newcomer' }
+
+      expect(row.win_percentage).to be_nil
+    end
+
+    it 'computes a real win_percentage once a user has played exactly 5 finished games' do
+      user = create(:user, name: 'Seasoned Player')
+      5.times { create_finished_game(winner: user) }
+
+      row = described_class.sorted_by.find { |candidate| candidate.name == 'Seasoned Player' }
+
+      expect(row.win_percentage).to eq 100.0
+    end
+
     it 'returns one row per user, not one row per game' do
       user = create(:user, name: 'Frequent Player')
       create_finished_game(winner: user)

@@ -14,6 +14,12 @@ RSpec.describe 'Leaderboard', type: :system do
     create(:player_as_winner, user: top_player, game: second_finished_game)
     create(:player, user: viewer, game: second_finished_game)
 
+    [ runner_up, viewer, runner_up ].each do |opponent|
+      game = create(:finished_game, player_count: 0)
+      create(:player_as_winner, user: top_player, game:)
+      create(:player, user: opponent, game:)
+    end
+
     sign_in_as viewer
   end
 
@@ -29,7 +35,7 @@ RSpec.describe 'Leaderboard', type: :system do
 
     cells = find('.leaderboard__row', text: 'Top Player').all('td').map(&:text)
 
-    expect(cells[2..4]).to eq [ '2', '2', '100.0%' ]
+    expect(cells[2..4]).to eq [ '5', '5', '100.0%' ]
   end
 
   it 'shows a formatted time played for each row' do
@@ -81,6 +87,20 @@ RSpec.describe 'Leaderboard', type: :system do
 
     cells = find('.leaderboard__row', text: 'Always Loses').all('td').map(&:text)
     expect(cells[2..4]).to eq [ '1', '—', '—' ]
+  end
+
+  it 'shows a dash for the ratio when a player has fewer than 5 finished games, even undefeated' do
+    newcomer = create(:user, name: 'Undefeated Newcomer')
+    4.times do
+      game = create(:finished_game, player_count: 0)
+      create(:player_as_winner, user: newcomer, game:)
+      create(:player, user: create(:user), game:)
+    end
+
+    visit leaderboard_index_path
+
+    cells = find('.leaderboard__row', text: 'Undefeated Newcomer').all('td').map(&:text)
+    expect(cells[2..4]).to eq [ '4', '4', '—' ]
   end
 
   it 'shows a sort control with a link for each stat, defaulting to total wins' do
