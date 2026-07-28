@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_28_112833) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -206,5 +206,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_112833) do
        LEFT JOIN players ON ((players.user_id = users.id)))
        LEFT JOIN games ON (((games.id = players.game_id) AND (games.finished_at IS NOT NULL))))
     GROUP BY users.id;
+  SQL
+  create_view "stats", sql_definition: <<-SQL
+      SELECT row_number() OVER () AS id,
+      players.user_id,
+      games.type,
+      count(games.id) AS total_games,
+      count(games.id) FILTER (WHERE players.winner) AS total_wins,
+      COALESCE(sum(EXTRACT(epoch FROM (games.finished_at - games.started_at))), (0)::numeric) AS seconds_played,
+      min(games.started_at) AS first_played_at
+     FROM (players
+       JOIN games ON (((games.id = players.game_id) AND (games.finished_at IS NOT NULL))))
+    GROUP BY GROUPING SETS ((players.user_id, games.type), (players.user_id));
   SQL
 end
