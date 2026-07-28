@@ -1,0 +1,17 @@
+tr.stats-ledger__row class=("stats-ledger__row--overall" if icon.nil?) data-testid="stats-ledger-row-#{card.slug}"
+  td
+    .stats-ledger__game
+      - if icon
+        span.stats-ledger__game-icon = icon
+      = card.title
+  td data-testid="total-games" data-label="Played" = formatted_count(card.total_games)
+  td data-testid="total-wins" data-label="Won" = formatted_count(card.total_wins)
+  td data-testid="total-losses" data-label="Lost" = formatted_count(card.total_losses)
+  td data-testid="win-percentage" data-label="Win Rate"
+    .stats-ledger__winrate
+      .stats-ledger__winrate-bar
+        .stats-ledger__winrate-fill style="width: #{card.win_percentage}%"
+      span = formatted_percentage(card.win_percentage)
+  td data-testid="seconds-played" data-label="Time Played" = formatted_duration(card.seconds_played)
+  td data-testid="average-game-duration" data-label="Avg. Length" = formatted_duration(card.average_game_duration)
+  td data-testid="first-played-at" data-label="First Played" = formatted_date(card.first_played_at)

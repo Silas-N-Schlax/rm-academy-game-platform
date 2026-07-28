@@ -220,10 +220,40 @@ RSpec.describe Game, type: :model do
     let!(:game2) { create :finished_game }
     let!(:game3) { create(:game, player_count: 1) }
     let!(:game4) { create(:archived_game, player_count: 1) }
+    let!(:game5) { create :game }
     it 'returns list of open games', :js do
       expected_output = [ game1.id, game3.id ].sort
       game = described_class.new
       expect(game.open_games(game3.users.first).map(&:id).sort).to eq expected_output
+    end
+  end
+
+  describe '#finished_games_by_user' do
+    let!(:user) { create :user }
+    let!(:other_user) { create :user }
+    let!(:finished_game1) { create(:finished_game, player_count: 0) }
+    let!(:finished_game2) { create(:finished_game, player_count: 0) }
+    let!(:started_game) { create(:started_game, player_count: 0) }
+
+    before do
+      create(:player, user:, game: finished_game1)
+      create(:player, user: other_user, game: finished_game2)
+      create(:player, user:, game: started_game)
+    end
+
+    it "returns the user's finished games" do
+      game = described_class.new
+      expect(game.finished_games_by_user(user.id)).to contain_exactly(finished_game1)
+    end
+
+    it 'does not return finished games belonging to other users' do
+      game = described_class.new
+      expect(game.finished_games_by_user(user.id)).not_to include(finished_game2)
+    end
+
+    it 'does not return games the user has not finished' do
+      game = described_class.new
+      expect(game.finished_games_by_user(user.id)).not_to include(started_game)
     end
   end
 end

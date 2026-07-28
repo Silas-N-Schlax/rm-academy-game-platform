@@ -1,0 +1,10 @@
+tr.leaderboard__row class=class_names("leaderboard__row--first" => row.rank == 1, "leaderboard__row--second" => row.rank == 2, "leaderboard__row--third" => row.rank == 3, "leaderboard__row--you" => row.id == current_user.id, "leaderboard__row--empty" => row.total_games.zero?)
+  td.leaderboard__rank = row.rank
+  td.leaderboard__player
+    span.leaderboard__player-name = row.name
+    - if row.id == current_user.id
+      span.leaderboard__you-chip YOU
+  td = formatted_count(row.total_games)
+  td = formatted_count(row.total_wins)
+  td = formatted_percentage(row.win_percentage)
+  td = formatted_duration(row.seconds_played)

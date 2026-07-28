@@ -72,8 +72,11 @@ class Game < ApplicationRecord
   def open_games(user_id)
     Game.joins(:players)
       .where(finished_at: nil, started_at: nil, archived_at: nil)
-      .group("games.id")
-      .having("COUNT(players.id) < games.game_size")
+      .where("(SELECT COUNT(*) FROM players WHERE players.game_id = games.id) < games.game_size")
+  end
+
+  def finished_games_by_user(user_id)
+    Game.includes(:players).where.not(finished_at: nil).where(players: { user_id: })
   end
 
   def winner
@@ -139,8 +142,7 @@ class Game < ApplicationRecord
 
   def end_game(winner_id)
     self.finished_at = Time.current
-    player = Player.find_by(user_id: winner_id, game_id: self.id)
-    player.winner = true
-    player.save!
+    players.update_all(winner: false)
+    Player.find_by(user_id: winner_id, game_id: self.id).update!(winner: true)
   end
 end

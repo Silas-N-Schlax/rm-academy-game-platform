@@ -8,6 +8,10 @@
     }
   }
 
+  .op-page__main {
+    overflow-y: auto;
+  }
+
 }
 
 /* --op-breakpoint-small */
@@ -31,9 +35,10 @@
         color: var(--op-color-neutral-on-plus-seven);
       }
     }
-  }
 
-  .op-page__main {
-    margin-bottom: calc(var(--op-size-unit) * 275);
+    .op-page__main {
+      display: block;
+      padding-block-end: calc(var(--op-size-unit) * 31); /* 124px, matches the fixed mobile navbar's height, so scrolled content always clears it */
+    }
   }
 }

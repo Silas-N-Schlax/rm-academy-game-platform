@@ -26,8 +26,7 @@ class GamesController < ApplicationController
   end
 
   def history
-    @games = Game.all
-    @user = current_user
+    @games = Game.new.finished_games_by_user(current_user)
   end
 
   private

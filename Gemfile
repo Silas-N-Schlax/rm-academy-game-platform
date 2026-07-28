@@ -55,6 +55,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "bullet"
 end
 gem 'rolemodel-rails'
 
@@ -78,3 +79,7 @@ end
 gem "good_job", "~> 4.19"
 
 gem "data_for"
+
+gem "scenic"
+
+gem "kaminari", "~> 1.2"

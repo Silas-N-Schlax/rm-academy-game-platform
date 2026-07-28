@@ -40,6 +40,9 @@ application.register("gofish-turn", GofishTurnController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import LeaderboardFormController from "./leaderboard_form_controller"
+application.register("leaderboard-form", LeaderboardFormController)
+
 import OfflineController from "./offline_controller"
 application.register("offline", OfflineController)
 
