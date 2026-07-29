@@ -40,8 +40,6 @@
       tbody
         - @rows.each do |row|
           = render 'leaderboard_row', row: row
-    .leaderboard__pagination
-      = render 'leaderboard_per_page', per_page: per_page
-      == paginate @rows
+    = render 'application/pager', url: leaderboard_index_path, per_page: per_page, per_page_options: Leaderboard::PER_PAGE_OPTIONS, hidden_params: leaderboard_hidden_pager_params, collection: @rows
 
   = render 'leaderboard_filter_drawer', per_page: per_page, wins_bounds: wins_bounds, games_bounds: games_bounds, country_options: country_options

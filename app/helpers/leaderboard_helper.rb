@@ -32,4 +32,8 @@ module LeaderboardHelper
     stripped_q = (params[:q] || {}).to_unsafe_h.except(*keys)
     url_for(request.query_parameters.merge("q" => stripped_q, "page" => nil))
   end
+
+  def leaderboard_hidden_pager_params
+    (params[:q]&.to_unsafe_h || {}).transform_keys { |key| "q[#{key}]" }
+  end
 end

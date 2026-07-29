@@ -184,13 +184,6 @@
   cursor: pointer;
 }
 
-.leaderboard__pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-block-start: var(--op-space-small);
-}
-
 @media (width <= 768px) {
   /* --op-breakpoint-small */
   .leaderboard {
@@ -218,22 +211,6 @@
 
     .leaderboard__head-icon {
       display: inline-flex;
-    }
-  }
-
-  .leaderboard__pagination {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--op-space-x-small);
-
-    .pagination {
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .btn {
-      padding-inline: var(--op-space-2x-small);
-      font-size: var(--op-font-x-small);
     }
   }
 }
