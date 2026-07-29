@@ -144,13 +144,21 @@ browser's built-in `dialog:not([open]) { display: none }`, making the Rummy game
 permanently visible and breaking the whole board's layout/width. Fixed by renaming the block to
 `game-board-over`. Grep a candidate class name across `components/**` before naming a new BEM block.
 
-A related nesting mistake (leaderboard pagination, 2026-07-28): `.leaderboard__sort` and
-`.leaderboard__pagination` are **siblings** of `.leaderboard` (the `<table>`) in the markup, not
-descendants of it. A media-query override nested as `.leaderboard { @media (...) { .leaderboard__
-sort { ... } } }` compiles to the descendant selector `.leaderboard .leaderboard__sort`, which can
-never match anything — the rule silently does nothing, no error, no warning. CSS nesting only pays
-off when the nested selector's real DOM position matches the nesting; check the markup's actual
-parent/child relationship before nesting a rule, not just which block it's conceptually "part of."
+A related nesting mistake (leaderboard pagination, 2026-07-28): `.leaderboard__sort` and the pager
+(`.pager`, shared with History since 2026-07-29 — originally `.leaderboard__pagination`) are
+**siblings** of `.leaderboard` (the `<table>`) in the markup, not descendants of it. A media-query
+override nested as `.leaderboard { @media (...) { .leaderboard__sort { ... } } }` compiles to the
+descendant selector `.leaderboard .leaderboard__sort`, which can never match anything — the rule
+silently does nothing, no error, no warning. CSS nesting only pays off when the nested selector's
+real DOM position matches the nesting; check the markup's actual parent/child relationship before
+nesting a rule, not just which block it's conceptually "part of."
+
+Building that shared pager (2026-07-29) surfaced a `to_unsafe_h` gotcha worth remembering anywhere
+a controller forwards current query params as hidden fields: `params[:q]` is `nil` (not an empty
+`ActionController::Parameters`) when no `q` params are present in the request, so `(params[:q] ||
+{}).to_unsafe_h` raises `NoMethodError` on the plain `Hash` fallback — `.to_unsafe_h` only exists on
+`ActionController::Parameters`. The fix is `params[:q]&.to_unsafe_h || {}`, applying the safe-nav
+before the fallback instead of after.
 
 Every game's card-fan/overlap effect (`playing-card.css`/`card-collection.css`'s negative-margin
 technique) depends on each card `<img>` being a **direct flex child** of `.card-collection` —

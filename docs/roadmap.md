@@ -81,6 +81,36 @@ rather than duplicating when revisiting a topic.
   Postgres schema-introspection queries fire once per process the first time the view-backed model
   is touched, inflating the count. Passes reliably as part of the full suite/file.
 
+## History page — shipped (2026-07-29)
+
+- **`PerPageClampable` concern** (`app/models/concerns/per_page_clampable.rb`) extracted from what
+  was Leaderboard-only clamping logic, now shared by `Leaderboard` and `Game` — each includer just
+  defines its own `PER_PAGE_OPTIONS`/`DEFAULT_PER_PAGE`.
+- **Shared pager partials** (`app/views/application/_pager.html.slim` +
+  `_per_page_selector.html.slim`) replace Leaderboard's page-specific `_leaderboard_per_page`.
+  Any future paginated index page should render `'application/pager'` rather than duplicating the
+  per-page selector + Kaminari `paginate` call.
+- **Mobile pager layout fixed to full-width** (`pager.css`) — previously a centered, wrapped column
+  stack that looked broken on small viewports; now both the per-page control and the pagination nav
+  stretch full-width. This changed Leaderboard's mobile look too, not just History's.
+- **History redesigned from a card-grid + modal into a real table** (`history-ledger` BEM
+  component, own `history.css`) — desktop columns are Game/Played/Size/Winner/Length/chevron; the
+  Game and chevron columns get fixed widths, and the remaining columns divide the leftover space
+  evenly since `table-layout: fixed` auto-splits width among columns with no explicit size — a
+  useful trick for self-balancing columns without hand-computing percentages. Mobile hides
+  Played/Size (freeing that width to the Game column) and relies on the existing per-game detail
+  dialog for the full picture; the dialog gained a "Played" field to cover what the hidden columns
+  no longer show.
+- **`Game#type_label`/`#type_glyph`/`#type_slug`** added for the per-row game-type icon, using the
+  real Optics `[data-tooltip-text][data-tooltip-position="right"]` tooltip (no custom tooltip CSS
+  needed) to name the game type on hover/tap — positioned right specifically so it doesn't clip off
+  a short mobile viewport.
+- **New `history-row` Stimulus controller** opens a row's existing detail dialog on click — native
+  `commandfor`/`command="show-modal"` (used everywhere else in the app) only works on `<button>`
+  elements, not `<tr>`, so a table row needs this small explicit JS instead.
+- **`Game#finished_games_by_user` now orders `started_at: :desc`** — previously unordered, so page
+  contents could shift unpredictably across paginated requests.
+
 ## Rummy — new game, in progress (2026-07-22)
 
 - **Rules doc complete:** [docs/rummy_rules.md](rummy_rules.md), reflecting decisions made during
@@ -262,6 +292,11 @@ rather than duplicating when revisiting a topic.
   error on them; they still build their own display data inline pending their own conversion. No
   shared `GamePresenter` base class yet — deferred until that conversion gives a second real data
   point to factor against.
+- **`LeaderboardPresenter` extraction — proposed, not started (2026-07-29):** scoped via a
+  BRAVE-breakdown conversation (mirroring the `RummyPresenter` pattern above, to move
+  helper/params-reaching logic out of the leaderboard views) but paused before any implementation
+  to prioritize the History page pagination work instead. Revisit when picking leaderboard cleanup
+  back up.
 - **`game-board.css` decomposition** (`znotes/plans/game-board-css-decomposition.md`): shrink the
   558-line `game-board.css` down to just its layout shell by extracting each section (feed drawer,
   game-over modal, players panel, piles, hand/actions) into small reusable component files, leaning
