@@ -7,13 +7,14 @@ RSpec.describe 'Rules', type: :request do
       expect(response).to redirect_to new_session_path
     end
 
-    it 'lists both games' do
+    it 'lists all games' do
       user = create :user
       sign_in_as user
       get rules_path
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('Go Fish')
       expect(response.body).to include('Crazy Eights')
+      expect(response.body).to include('Rummy')
     end
   end
 
