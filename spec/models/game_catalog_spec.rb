@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe GameCatalog, type: :model do
-  it 'returns both games' do
-    expect(GameCatalog.data.all.map(&:id)).to contain_exactly('go-fish', 'crazy-eights')
+  it 'returns all games' do
+    expect(GameCatalog.data.all.map(&:id)).to contain_exactly('go-fish', 'crazy-eights', 'rummy')
   end
 
   it 'finds a game by slug and returns its details, including sections and type' do

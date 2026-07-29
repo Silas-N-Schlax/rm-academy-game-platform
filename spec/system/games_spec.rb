@@ -93,6 +93,54 @@ RSpec.describe 'Games', type: :system do
       expect(page).to have_css '[data-testid="history-column"]', count: 1
       expect(page).to have_content user.name
     end
+
+    it 'opens the game detail dialog when a row is clicked', :js do
+      find(data_test('history-row')).click
+      expect(page).to have_content 'Played:'
+      expect(page).to have_content 'Game Length:'
+      expect(page).to have_content 'Game size:'
+    end
+
+    context 'on a phone-width viewport', :js do
+      it 'hides the played and size columns, keeping them available in the detail modal' do
+        resize_page(390, 844) do
+          visit history_games_path
+
+          expect(page).to_not have_content('Played')
+          expect(page).to_not have_content('Size')
+        end
+      end
+    end
+
+    context 'with more finished games than fit on one page' do
+      before do
+        create_list(:finished_game, 12, player_count: 0).each { |game| create(:player_as_winner, user:, game:) }
+        visit history_games_path
+      end
+
+      it 'shows 10 games per page by default' do
+        expect(page).to have_css('[data-testid="history-column"]', count: 10)
+      end
+
+      it 'shows a page-size selector with options 10, 25, 50, and 100, defaulting to 10' do
+        expect(page).to have_field('10')
+        expect(page).to have_field('25')
+        expect(page).to have_field('50')
+        expect(page).to have_field('100')
+        expect(page).to have_checked_field('10')
+      end
+
+      it 'shows more games when a larger page size is chosen', :js do
+        choose '25'
+        expect(page).to have_css(data_test('history-row'), count: 13)
+      end
+
+      it 'shows a link to the first page but no link to the last page, when on a later page' do
+        visit history_games_path(page: 2)
+        expect(page).to have_css(data_test('pagination-first-page'))
+        expect(page).to_not have_css(data_test('pagination-last-page'))
+      end
+    end
   end
 
 

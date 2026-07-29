@@ -22,9 +22,6 @@ application.register("crazyeights-turn", CrazyeightsTurnController)
 import DialogController from "./dialog_controller"
 application.register("dialog", DialogController)
 
-import GameBoardFeedController from "./game_board_feed_controller"
-application.register("game-board-feed", GameBoardFeedController)
-
 import GameBoardSelectionController from "./game_board_selection_controller"
 application.register("game-board-selection", GameBoardSelectionController)
 
@@ -40,14 +37,23 @@ application.register("gofish-turn", GofishTurnController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import HistoryRowController from "./history_row_controller"
+application.register("history-row", HistoryRowController)
+
 import LeaderboardFormController from "./leaderboard_form_controller"
 application.register("leaderboard-form", LeaderboardFormController)
 
 import OfflineController from "./offline_controller"
 application.register("offline", OfflineController)
 
+import RangeSliderController from "./range_slider_controller"
+application.register("range-slider", RangeSliderController)
+
 import ServiceWorkerController from "./service_worker_controller"
 application.register("service-worker", ServiceWorkerController)
+
+import SlideDrawerController from "./slide_drawer_controller"
+application.register("slide-drawer", SlideDrawerController)
 
 import TimerController from "./timer_controller"
 application.register("timer", TimerController)

@@ -1,3 +1,4 @@
-= simple_form_for :sort, url: leaderboard_index_path, method: :get, html: { class: 'leaderboard__sort', data: { controller: 'leaderboard-form' } } do |f|
-  = hidden_field_tag :per_page, per_page
-  = f.input :option, as: :segmented_control, label: false, required: false, size: :small, full_width: true, checked: sort || 'total_wins', collection: Leaderboard::SORT_OPTIONS.invert, input_html: { name: 'sort', data: { action: 'change->leaderboard-form#submit' } }
+.leaderboard__sort
+  .segmented-control.segmented-control--large.segmented-control--full-width
+    - Leaderboard::SORT_OPTIONS.each do |column, label|
+      = sort_link search, column, label, { page: nil, class: 'segmented-control__label', default_order: 'desc' }

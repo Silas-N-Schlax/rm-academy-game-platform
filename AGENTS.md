@@ -63,6 +63,7 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - **Full-viewport game-board shells** (e.g. `.gf-game`, `.game-board`) need `overflow: hidden` (fallback) followed by `overflow: clip` on both `html` and `body` to fully lock page scroll — `hidden` alone still permits touch-drag/programmatic scroll into off-screen content in some browsers.
 - **Split a Stimulus controller by concern once it's grown multiple unrelated responsibilities** (see `game_board_toast_controller.js` and the `game_board_tabs`/`game_board_feed`/`game_board_selection` split it was extracted alongside). Mount the resulting controllers on the same shared DOM scope via space-separated `data-controller` values rather than reaching for custom events or one controller calling another's methods directly — each controller should only ever react to DOM events on its own targets.
 - `znotes/` is where the project owner stores plans and files that don't need to be committed (gitignored via a global gitignore, not this repo's `.gitignore`).
+- **Any new paginated index page should reuse the shared `application/_pager`/`_per_page_selector` partials and the `PerPageClampable` concern** (see `Leaderboard`/`Game`, `app/views/application/_pager.html.slim`) rather than duplicating pagination UI or per-page clamping logic.
 
 ## Git
 

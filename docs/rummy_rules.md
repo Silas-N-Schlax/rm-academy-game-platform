@@ -1,8 +1,9 @@
 # Rummy Rules (as implemented)
 
-This mirrors the in-app rules page (planned: `/rules`, content-driven from `config/games.yml` via
-the `GameCatalog` model). Rules are deliberately adapted from the traditional in-person game to
-work online — keep this doc, the rules page, and the engine in sync as it's built.
+This mirrors the in-app rules page (`/rules`, content-driven from `config/games.yml` via the
+`GameCatalog` model — Rummy's entry shipped 2026-07-29). Rules are deliberately adapted from the
+traditional in-person game to work online — keep this doc, the rules page, and the engine in sync
+as it's built.
 
 **Engine status:** Phase 1 is done — `Rummy::Game`/`Player`/`Card`/`Deck`/`Discard` (deal +
 serialization only, see `docs/roadmap.md`). Phase 2 (the actual turn logic below — draw, meld,

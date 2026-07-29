@@ -4,35 +4,19 @@
       h1 History
     .divider.divider--medium
 
-
   .page__content
-    .dynamic-grid
-      - @games.each do |game|
-        - unless game.finished_at.nil?
-
-          button.card.card--padded.card--shadow-small commandfor="history-#{game.id}-dialog" command="show-modal"
-            .op-split
-              p #{game.name}
-              p #{game.started_at.strftime("%B %d, %Y")}
-          dialog.modal id="history-#{game.id}-dialog" data-testid='history-column'
-            .modal__header
-              | #{game.name}
-            .modal__body
-              .op-stack
-                .text-pair.text-pair--inline
-                  .text-pair__title Game Length:
-                  .text-pair__subtitle #{game.formatted_time}
-
-
-                .text-pair.text-pair--inline
-                  .text-pair__title Winner:
-                  .text-pair__subtitle #{game.winner.user.name} #{game.winner.user.country_flag}
-
-                .text-pair.text-pair--inline
-                  .text-pair__title Game size:
-                  .text-pair__subtitle #{game.game_size}
-            .modal__footer
-              = link_to "View Game", game_path(game), class: 'btn btn--active'
-              form method='dialog'
-                = button_tag 'Close', class: 'btn'
-
+    table.table.table--fixed-layout.table--sticky-header.history-ledger
+      thead
+        tr
+          th scope="col" Game
+          th scope="col" Played
+          th scope="col" Size
+          th scope="col" Winner
+          th scope="col" Length
+          th scope="col"
+      tbody
+        - @games.each do |game|
+          = render 'history_row', game: game
+    - @games.each do |game|
+      = render 'history_dialog', game: game
+    = render 'application/pager', url: history_games_path, per_page: per_page, per_page_options: Game::PER_PAGE_OPTIONS, hidden_params: {}, collection: @games

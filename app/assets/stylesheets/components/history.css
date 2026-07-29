@@ -1,18 +1,118 @@
-.history {
-  flex-grow: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.history-ledger {
+  border-collapse: separate;
+  border-spacing: 0 var(--op-space-x-small);
+  box-shadow: none;
 
-  .history__players {
-    display: flex;
-    flex-direction: column;
+  th,
+  td {
+    text-align: start;
   }
 
-  .history__replay {
-    &:hover {
-      background-color: var(--op-color-primary-plus-five);
-      color: var(--op-color-primary-on-plus-five);
+  td {
+    font-variant-numeric: tabular-nums;
+    border-block: var(--op-border-width) solid var(--op-color-border);
+  }
+
+  td:first-child {
+    border-inline-start: var(--op-border-width) solid var(--op-color-border);
+    border-radius: var(--op-radius-medium) 0 0 var(--op-radius-medium);
+  }
+
+  td:last-child {
+    border-inline-end: var(--op-border-width) solid var(--op-color-border);
+    border-radius: 0 var(--op-radius-medium) var(--op-radius-medium) 0;
+  }
+
+  th:first-child,
+  td:first-child {
+    inline-size: 32%;
+  }
+
+  th:last-child,
+  td:last-child {
+    inline-size: calc(var(--op-size-unit) * 9); /* 36px */
+    padding-inline-end: var(--op-space-small);
+  }
+
+  .history-ledger__row {
+    cursor: pointer;
+  }
+
+  .history-ledger__game-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--op-space-2x-small);
+    min-width: 0;
+    font-weight: var(--op-font-weight-semi-bold);
+  }
+
+  .history-ledger__game-name {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .history-ledger__suit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: calc(var(--op-size-unit) * 5); /* 20px */
+    block-size: calc(var(--op-size-unit) * 5); /* 20px */
+    border-radius: var(--op-radius-small);
+    flex-shrink: 0;
+  }
+
+  .history-ledger__suit--go-fish {
+    background-color: var(--op-color-primary-base);
+    color: var(--op-color-primary-on-base);
+  }
+
+  .history-ledger__suit--crazy-eights {
+    background-color: var(--op-color-alerts-danger-base);
+    color: var(--op-color-alerts-danger-on-base);
+  }
+
+  .history-ledger__suit--rummy {
+    background-color: var(--op-color-alerts-warning-base);
+    color: var(--op-color-alerts-warning-on-base);
+  }
+
+  .history-ledger__winner {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--op-space-2x-small);
+  }
+
+  .history-ledger__chev {
+    color: var(--op-color-neutral-on-plus-max-alt);
+    text-align: end;
+  }
+}
+
+@media (width <= 768px) {
+  /* --op-breakpoint-small */
+  .history-ledger {
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3) {
+      display: none;
+    }
+
+    th:first-child,
+    td:first-child {
+      inline-size: 48%;
+    }
+
+    th:last-child,
+    td:last-child {
+      inline-size: calc(var(--op-size-unit) * 7); /* 28px */
+      padding-inline-end: var(--op-space-2x-small);
+    }
+
+    th,
+    td {
+      font-size: var(--op-font-x-small);
+      padding-inline: var(--op-space-2x-small);
     }
   }
 }

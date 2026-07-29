@@ -3,12 +3,13 @@ require 'rails_helper'
 RSpec.describe 'Rules', type: :system do
   let!(:user) { create(:user) }
 
-  it 'lists both games with their type and a link to their rules' do
+  it 'lists all games with their type and a link to their rules' do
     sign_in_as user
     visit rules_path
     expect(page).to have_content 'Go Fish'
     expect(page).to have_content 'Crazy Eights'
-    expect(page).to have_content('Card Game', count: 2)
+    expect(page).to have_content 'Rummy'
+    expect(page).to have_content('Card Game', count: 3)
     click_on 'View rules', match: :first
     expect(page).to have_content 'The Pack'
   end
@@ -28,5 +29,12 @@ RSpec.describe 'Rules', type: :system do
     visit rule_path('crazy-eights')
     expect(page).to have_content 'Crazy Eights'
     expect(page).to have_content 'wild'
+  end
+
+  it 'shows the rummy rules' do
+    sign_in_as user
+    visit rule_path('rummy')
+    expect(page).to have_content 'Rummy'
+    expect(page).to have_content 'meld'
   end
 end

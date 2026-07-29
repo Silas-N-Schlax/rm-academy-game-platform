@@ -1,0 +1,4 @@
+= simple_form_for :per_page, url: url, method: :get, html: { class: 'pager__per-page', data: { controller: 'leaderboard-form' } } do |f|
+  - hidden_params.each do |name, value|
+    = hidden_field_tag name, value
+  = f.input :option, as: :segmented_control, label: false, required: false, size: :small, full_width: true, checked: per_page.to_s, collection: per_page_options.map { |option| [ option.to_s, option.to_s ] }, input_html: { name: 'per_page', data: { action: 'change->leaderboard-form#submit' } }

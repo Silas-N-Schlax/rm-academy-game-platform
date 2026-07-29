@@ -114,17 +114,74 @@
   font-size: var(--op-font-small);
 }
 
-.leaderboard__sort {
+.leaderboard__controls {
   display: flex;
-  justify-content: end;
+  align-items: center;
+  gap: var(--op-space-x-small);
   margin-block: var(--op-space-small);
 }
 
-.leaderboard__pagination {
+.leaderboard__sort {
+  display: flex;
+  justify-content: end;
+  flex: 1;
+
+  .segmented-control__label.sort_link {
+    text-decoration: none;
+
+    &.asc,
+    &.desc {
+      background-color: var(--op-color-primary-plus-one);
+      color: var(--op-color-primary-on-plus-one);
+    }
+  }
+}
+
+.leaderboard__filter-trigger {
+  position: relative;
+}
+
+.leaderboard__filter-badge {
+  position: absolute;
+  top: calc(var(--op-size-unit) * -1); /* -4px */
+  right: calc(var(--op-size-unit) * -1); /* -4px */
+  inline-size: calc(var(--op-size-unit) * 4); /* 16px */
+  block-size: calc(var(--op-size-unit) * 4); /* 16px */
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-block-start: var(--op-space-small);
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--op-color-primary-base);
+  color: var(--op-color-primary-on-base);
+  font-size: var(--op-font-x-small);
+}
+
+.leaderboard__filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--op-space-x-small);
+  margin-block-end: var(--op-space-small);
+}
+
+.leaderboard__filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--op-space-3x-small);
+  padding: var(--op-space-3x-small) var(--op-space-x-small);
+  border-radius: var(--op-radius-large);
+  background-color: var(--op-color-neutral-plus-seven);
+  color: var(--op-color-neutral-on-plus-seven);
+  font-size: var(--op-font-x-small);
+
+  &:hover {
+    background-color: var(--op-color-neutral-plus-five);
+    color: var(--op-color-neutral-on-plus-five);
+  }
+}
+
+.leaderboard__filter-chip-remove {
+  font-weight: var(--op-font-weight-semi-bold);
+  cursor: pointer;
 }
 
 @media (width <= 768px) {
@@ -154,22 +211,6 @@
 
     .leaderboard__head-icon {
       display: inline-flex;
-    }
-  }
-
-  .leaderboard__pagination {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--op-space-x-small);
-
-    .pagination {
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .btn {
-      padding-inline: var(--op-space-2x-small);
-      font-size: var(--op-font-x-small);
     }
   }
 }

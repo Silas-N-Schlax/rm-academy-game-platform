@@ -42,3 +42,24 @@ shared:
         body: On your turn, play a card that matches the top card of the discard pile in rank or suit, or play an eight. Playing an eight lets you choose a new suit for play to continue on. If you don't have a playable card, draw from the stock pile until you draw one you can play — unlike the traditional game, you can't stop after drawing just one card, and you can't choose to draw if you already have a playable card. If the stock pile runs out, the discard pile (all but the top card) is reshuffled into a new stock pile. If there's truly nothing left to draw, your turn is skipped.
       - title: Ending the Game
         body: The moment a player plays their last card, the game ends immediately. There's always exactly one winner in Crazy Eights — no ties.
+  - id: rummy
+    name: Rummy
+    description: A classic set-collecting game where you race to empty your hand into matched melds.
+    min_players: 2
+    max_players: 6
+    duration: 15-30 mins
+    game_type: Card Game
+    logo: /rummy_game_logo.png
+    sections:
+      - title: The Pack
+        body: A standard 52-card pack is used. No jokers, no wild cards.
+      - title: Object of the Game
+        body: Be the first to "go out" — get rid of every card in your hand by forming it into matched sets (melds).
+      - title: Rank of Cards
+        body: Cards rank A (low) 2 3 4 5 6 7 8 9 10 J Q K. The Ace is low only — A-2-3 (same suit) is a valid run, Q-K-A is not, and runs never wrap around. A meld is either a set (3 or 4 cards of the same rank, each a different suit) or a run (3 or more consecutive same-suit cards).
+      - title: The Deal
+        body: The dealer deals one card at a time face down, starting with the player to the left. 2 players are dealt 10 cards each, 3-4 players 7 each, 5-6 players 6 each. The rest form the face-down stock, and the top stock card is turned face up to start the discard pile.
+      - title: The Play
+        body: On your turn, draw one card from the top of the stock or the top of the discard pile. You may then lay down any number of new melds from your hand, and lay off cards from your hand onto melds already on the table — but only after you've laid down at least one meld of your own at some point in the game. Finally, discard one card face up onto the discard pile, unless you're going out. If you took the top discard card, you can't discard that same card this turn — unless it's the only card left in your hand, in which case discarding it wins the game immediately. If the stock runs out, the discard pile (minus its top card) is turned over without shuffling to form a new stock.
+      - title: Ending the Game
+        body: You go out, and win, the moment your hand is empty — either by melding/laying off down to one card and discarding it, or by melding/laying off your entire remaining hand with no final discard. Everyone else is then ranked by the total pip value left in their hand, lowest first (face cards count 10, Ace counts 1, everything else its face value).

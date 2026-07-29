@@ -13,7 +13,7 @@ header.board-topbar
     span.badge class=(presenter.your_turn ? "badge--notice" : "badge--primary")
       i.li.icon.icon--small class=(presenter.your_turn ? "li-circle-dot" : "li-circle")
       = presenter.turn_label
-    button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-testid="open-feed-button" data-action="click->game-board-feed#openFeed"
+    button.btn.btn--icon type="button" aria-label="Open play-by-play feed" data-testid="open-feed-button" data-action="click->slide-drawer#open"
       i.li.li-list.icon.icon--small
     - if presenter.winner_name.present?
       button.btn.btn--icon type="button" aria-label="View game results" data-testid="view-results-button" commandfor="game-over-modal" command="show-modal"
