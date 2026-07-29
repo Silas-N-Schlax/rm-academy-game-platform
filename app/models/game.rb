@@ -1,7 +1,17 @@
 class Game < ApplicationRecord
+  include PerPageClampable
+
   has_many :players, dependent: :destroy
   has_many :users, through: :players
 
+  PER_PAGE_OPTIONS = [ 10, 25, 50, 100 ].freeze
+  DEFAULT_PER_PAGE = PER_PAGE_OPTIONS.min
+
+  TYPE_ICONS = {
+    "GoFishGame" => { glyph: "♣", slug: "go-fish" },
+    "CrazyEightsGame" => { glyph: "♦", slug: "crazy-eights" },
+    "RummyGame" => { glyph: "♠", slug: "rummy" }
+  }.freeze
 
   after_create_commit { broadcast_refresh_later_to "games" }
   after_update_commit { broadcast_refresh_later_to "games" }
@@ -16,6 +26,18 @@ class Game < ApplicationRecord
 
   def implementation
     @implementation ||= game_state
+  end
+
+  def type_label
+    type.underscore.titleize.delete_suffix(" Game")
+  end
+
+  def type_glyph
+    TYPE_ICONS.fetch(type).fetch(:glyph)
+  end
+
+  def type_slug
+    TYPE_ICONS.fetch(type).fetch(:slug)
   end
 
   def save_new_game(user_id)
@@ -76,7 +98,7 @@ class Game < ApplicationRecord
   end
 
   def finished_games_by_user(user_id)
-    Game.includes(:players).where.not(finished_at: nil).where(players: { user_id: })
+    Game.includes(:players).where.not(finished_at: nil).where(players: { user_id: }).order(started_at: :desc)
   end
 
   def winner

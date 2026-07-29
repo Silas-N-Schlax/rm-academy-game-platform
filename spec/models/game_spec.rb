@@ -255,5 +255,65 @@ RSpec.describe Game, type: :model do
       game = described_class.new
       expect(game.finished_games_by_user(user.id)).not_to include(started_game)
     end
+
+    it 'orders games most recently started first' do
+      more_recent_game = create(:finished_game, player_count: 0, started_at: 2.days.ago)
+      create(:player, user:, game: more_recent_game)
+      game = described_class.new
+      expect(game.finished_games_by_user(user.id)).to eq [ more_recent_game, finished_game1 ]
+    end
+  end
+
+  describe '#type_label' do
+    it 'returns a friendly label for Go Fish' do
+      expect(build(:game, type: 'GoFishGame').type_label).to eq 'Go Fish'
+    end
+
+    it 'returns a friendly label for Crazy Eights' do
+      expect(build(:game, type: 'CrazyEightsGame').type_label).to eq 'Crazy Eights'
+    end
+
+    it 'returns a friendly label for Rummy' do
+      expect(build(:game, type: 'RummyGame').type_label).to eq 'Rummy'
+    end
+  end
+
+  describe '#type_glyph' do
+    it 'returns a distinct glyph per game type' do
+      glyphs = %w[GoFishGame CrazyEightsGame RummyGame].map { |type| build(:game, type:).type_glyph }
+      expect(glyphs.uniq.length).to eq 3
+    end
+  end
+
+  describe '#type_slug' do
+    it 'returns a CSS-friendly slug for Go Fish' do
+      expect(build(:game, type: 'GoFishGame').type_slug).to eq 'go-fish'
+    end
+
+    it 'returns a CSS-friendly slug for Crazy Eights' do
+      expect(build(:game, type: 'CrazyEightsGame').type_slug).to eq 'crazy-eights'
+    end
+
+    it 'returns a CSS-friendly slug for Rummy' do
+      expect(build(:game, type: 'RummyGame').type_slug).to eq 'rummy'
+    end
+  end
+
+  describe '.clamp_per_page' do
+    it 'clamps a value below the minimum up to 10' do
+      expect(described_class.clamp_per_page(1)).to eq 10
+    end
+
+    it 'clamps a value above the maximum down to 100' do
+      expect(described_class.clamp_per_page(500)).to eq 100
+    end
+
+    it 'leaves an in-range value unchanged' do
+      expect(described_class.clamp_per_page(39)).to eq 39
+    end
+
+    it 'defaults to 10 when given a blank value' do
+      expect(described_class.clamp_per_page(nil)).to eq 10
+    end
   end
 end
