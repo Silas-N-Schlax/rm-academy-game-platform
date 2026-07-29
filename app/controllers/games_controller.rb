@@ -26,7 +26,9 @@ class GamesController < ApplicationController
   end
 
   def history
-    @games = Game.new.finished_games_by_user(current_user)
+    per_page = Game.clamp_per_page(params[:per_page])
+    @games = Game.new.finished_games_by_user(current_user).page(params[:page]).per(per_page)
+    render locals: { per_page: per_page }
   end
 
   private

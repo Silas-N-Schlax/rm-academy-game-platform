@@ -1,0 +1,15 @@
+tr.history-ledger__row data-testid="history-row" data-controller="history-row" data-history-row-dialog-id-value="history-#{game.id}-dialog" data-action="click->history-row#open" tabindex="0"
+  td
+    span.history-ledger__game-chip
+      span class="history-ledger__suit history-ledger__suit--#{game.type_slug}" data-tooltip-text=game.type_label data-tooltip-position="right" tabindex="0"
+        = game.type_glyph
+      = render "truncated_text", text: game.name, position: "bottom", additional_class: "history-ledger__game-name"
+  td.history-ledger__num = game.started_at.strftime("%B %-d, %Y")
+  td.history-ledger__num = "#{game.game_size} players"
+  td
+    span.history-ledger__winner
+      = game.winner.user.country_flag
+      = game.winner.user.name
+  td.history-ledger__num = game.formatted_time
+  td.history-ledger__chev
+    i.li.li-chevron-right.icon.icon--large

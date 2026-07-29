@@ -37,6 +37,9 @@ application.register("gofish-turn", GofishTurnController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import HistoryRowController from "./history_row_controller"
+application.register("history-row", HistoryRowController)
+
 import LeaderboardFormController from "./leaderboard_form_controller"
 application.register("leaderboard-form", LeaderboardFormController)
 
