@@ -3,6 +3,19 @@
 Future plans and known issues not yet in progress, grouped by theme. Amend entries in place
 rather than duplicating when revisiting a topic.
 
+## Production deployment — shipped (2026-07-29)
+
+- **App deployed live on Fly.io** (`rm-academy-game-platform.fly.dev`) — Postgres, Redis (for
+  ActionCable), and in-process GoodJob all provisioned and wired up. See
+  [docs/deployment.md](docs/deployment.md) for the infra shape and the gotchas hit getting there
+  (missing Node/Yarn in the Dockerfile, non-root port binding, health-check SSL exclusion).
+- **Deferred, not yet done:** real SMTP for password-reset emails (currently a no-op failure in the
+  background — no crash, but no email actually sends). Revisit if password reset needs to actually
+  work for real users.
+- **Known gap, deliberately left as-is:** the `/good_job` dashboard has no authentication. Anyone
+  with the URL can view queue internals and retry/discard jobs. Acceptable for now given this is a
+  low-stakes assignment deploy; revisit (HTTP Basic Auth is the standard fix) before wider exposure.
+
 ## Stats page — shipped (2026-07-28)
 
 - **`Stat` migrated off a plain PORO onto a Scenic-view-backed `ActiveRecord` model**

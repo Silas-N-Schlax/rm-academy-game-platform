@@ -11,7 +11,7 @@ A Rails web app where people play classic card games online with friends, family
 - **Ruby on Rails 8.1**, PostgreSQL (`jsonb` for serialized game state)
 - **Hotwire**: Turbo (Streams/Frames) + Stimulus — no SPA framework, no custom ActionCable channels (see [docs/architecture.md](docs/architecture.md))
 - **Slim** templates, **simple_form**, `rolemodel-rails` house gem
-- **esbuild** bundles `app/javascript`; **GoodJob** runs background jobs (Postgres-backed, no Redis)
+- **esbuild** bundles `app/javascript`; **GoodJob** runs background jobs (Postgres-backed, no Redis for jobs — production does run a separate Redis for ActionCable, see [docs/deployment.md](docs/deployment.md))
 - **RSpec** + FactoryBot + Capybara (Playwright driver) for tests
 
 ## Running the app
@@ -75,3 +75,4 @@ Game rules (including deliberate deviations from traditional in-person rules to 
 - [docs/go_fish_rules.md](docs/go_fish_rules.md) — Go Fish rules as implemented here (matches the in-app rules page)
 - [docs/crazy_eights_rules.md](docs/crazy_eights_rules.md) — Crazy Eights rules as implemented here, including online-specific rule changes and edge cases
 - [docs/rummy_rules.md](docs/rummy_rules.md) — Rummy rules as implemented here (engine not yet built — see `docs/roadmap.md`)
+- [docs/deployment.md](docs/deployment.md) — Fly.io production setup: infra shape, required secrets, and gotchas hit getting it running
